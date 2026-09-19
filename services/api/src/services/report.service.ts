@@ -4,7 +4,7 @@ export interface CreateReportInput {
   scanId: string;
   summary?: string;
   riskLevel?: string;
-  recommendations?: any;
+  recommendations?: string[];
 }
 
 export async function createReport(input: CreateReportInput) {
