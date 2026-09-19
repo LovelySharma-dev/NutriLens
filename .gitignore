@@ -8,9 +8,18 @@ out/
 
 # Environment variables
 .env
+apps/web/.env
+apps/web/.env.local
+services/api/.env
+services/api/config/.env
+packages/database/.env
+.env.development
+.env.production
+.env.test
 .env.local
 .env.*.local
 !.env.example
+.env*
 
 # Logs
 *.log

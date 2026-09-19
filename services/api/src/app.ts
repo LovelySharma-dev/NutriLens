@@ -9,7 +9,7 @@ import nutritionRoutes from "./routes/nutrition.routes.js"
 import evidenceRoutes from "./routes/evidence.routes.js"
 import trustRoutes from "./routes/trust.routes.js"
 import reportRoutes from "./routes/report.routes.js"
-
+import databaseRoutes from "./routes/database.routes.js"
 
 const app = express()
 
@@ -31,6 +31,6 @@ app.use("/api/v1/nutrition", nutritionRoutes)
 app.use("/api/v1/evidence", evidenceRoutes)
 app.use("/api/v1/trust", trustRoutes)
 app.use("/api/v1/reports", reportRoutes)
-
+app.use("/api/v1/database", databaseRoutes)
 
 export default app
