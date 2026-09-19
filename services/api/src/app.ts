@@ -11,6 +11,8 @@ import trustRoutes from "./routes/trust.routes.js"
 import reportRoutes from "./routes/report.routes.js"
 import databaseRoutes from "./routes/database.routes.js"
 import scanRoutes from "./routes/scan.routes.js";
+
+
 const app = express()
 
 app.use(cors())
