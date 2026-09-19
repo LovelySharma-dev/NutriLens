@@ -137,6 +137,40 @@ Express API
 - [ ] User interface improvements.
 - [ ] Backend API integration.
 
+```
+                 FOOD LABEL
+                     │
+                     ▼
+                    OCR
+                     │
+          ┌──────────┴──────────┐
+          ▼                     ▼
+    Nutrition Text        Ingredients Text
+          │                     │
+          ▼                     ▼
+    Normalization        Ingredient Parser
+          │                     │
+          ▼                     ├── Allergens
+    Random Forest               ├── Colors
+          │                     ├── Preservatives
+          ▼                     ├── Additives
+     Nutri-Score                ├── Sweeteners
+                                ├── Flavouring
+                                └── Other agents
+                                │
+                                ▼
+                         Evidence Engine
+                                │
+                ┌───────────────┴───────────────┐
+                ▼                               ▼
+          Evidence status                Explanation
+                │                               │
+                └───────────────┬───────────────┘
+                                ▼
+                         TRUST / REPORT
+
+```
+
 ## License
 
 This project is currently for development and educational purposes.
