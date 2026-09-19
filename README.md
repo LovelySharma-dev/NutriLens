@@ -75,6 +75,59 @@ The backend should return a JSON response similar to:
   "service": "NutriTrust Backend"
 }
 ```
+## Foundations
+``` 
+Next.js
+   ↓
+Express API
+   ↓
+Routes
+   ↓
+Prisma 7
+   ↓
+PrismaPg
+   ↓
+PostgreSQL
+   ↓
+NutriLens DB 
+```
+## Backend Architecture
+```
+                    Next.js Frontend
+                           │
+                           ▼
+                    Express API
+                           │
+              ┌────────────┴────────────┐
+              ▼                         ▼
+        Controllers                 Middleware
+              │
+              ▼
+          Services
+              │
+      ┌───────┼────────┬──────────┐
+      ▼       ▼        ▼          ▼
+    Scan    Label    Evidence   Report
+   Service  Service   Service   Service
+      │       │        │          │
+      └───────┴────────┴──────────┘
+                    │
+                    ▼
+              Prisma Client
+                    │
+                    ▼
+               PostgreSQL
+
+Later-
+Express API
+     │
+     ├─ OCR Service->PythonML 
+     │
+     ├─ Verification Service
+     │
+     └─ Trust Score Service
+
+```
 
 ## Roadmap
 
