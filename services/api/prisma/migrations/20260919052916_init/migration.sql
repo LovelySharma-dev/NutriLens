@@ -58,7 +58,7 @@ CREATE TABLE "Ingredient" (
 CREATE TABLE "NutritionFact" (
     "id" TEXT NOT NULL,
     "labelDataId" TEXT NOT NULL,
-    "nutritent" TEXT NOT NULL,
+    "nutrient" TEXT NOT NULL,
     "value" DOUBLE PRECISION,
     "unit" TEXT,
     "servingSize" TEXT,

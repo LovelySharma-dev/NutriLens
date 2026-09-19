@@ -12,7 +12,7 @@ export async function createNutritionFact(input: CreateNutritionInput) {
   return prisma.nutritionFact.create({
     data: {
       labelDataId: input.labelDataId,
-      nutritent: input.nutrient,
+      nutrient: input.nutrient,
       value: input.value,
       unit: input.unit,
       servingSize: input.servingSize,
