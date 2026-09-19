@@ -1,12 +1,20 @@
 import { Router } from "express";
 
-const router = Router()
+import {
+  calculateTrustScoreController,
+  getTrustScoreController,
+} from "../controllers/trust.controller.js";
 
-router.get("/", (_req, res) => {
-    res.json({
-        module: "trust",
-        message: "Trust module is ready for implemetation"
-    })
-})
+const router = Router();
 
-export default router
+router.post(
+  "/calculate/:reportId",
+  calculateTrustScoreController,
+);
+
+router.get(
+  "/:reportId",
+  getTrustScoreController,
+);
+
+export default router;
