@@ -1,12 +1,8 @@
 import { Router } from "express";
+import { extractOcrController } from "../controllers/ocr.controller.js";
 
-const router = Router()
+const router = Router();
 
-router.get("/", (_req, res) => {
-    res.json({
-        module: "ocr",
-        message: "OCR module is ready for implemetation"
-    })
-})
+router.post("/extract", extractOcrController);
 
-export default router
+export default router;
