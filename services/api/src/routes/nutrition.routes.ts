@@ -1,12 +1,17 @@
 import { Router } from "express";
 
+import {
+  createNutritionController,
+  getNutritionController,
+} from "../controllers/nutrition.controller.js";
+
 const router = Router()
 
-router.get("/", (_req, res) => {
-    res.json({
-        module: "nutrition",
-        message: "Nutrition module is ready for implemetation"
-    })
-})
+router.post("/", createNutritionController);
+
+router.get(
+  "/label/:labelDataId",
+  getNutritionController,
+);
 
 export default router
