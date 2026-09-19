@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ScanStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum VerificationStatus {
+  VERIFIED
+  FLAGGED
+  UNCERTAIN
+}
+
+enum EvidenceType {
+  RESEARCH
+  REGULATION
+  DATABASE
+  MANUFACTURER
+  OTHER
+}
+
+model User {
+  id        String @id @default(uuid())
+  email     String @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  scans Scan[]
+}
+
+model Scan {
+  id        String     @id @default(uuid())
+  userId    String?
+  imageUrl  String?
+  status    ScanStatus @default(PENDING)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user User?           @relation(fields: [userId], references: [id])
+  labelData LabelData?
+  report    Report?
+}
+
+
+model LabelData {
+  id          String      @id @default(uuid())
+  scanId      String      @unique
+  productName String?  
+  brand       String?
+  rawOcrText  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  scan            Scan         @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  ingredients     Ingredient[]
+  nutritionFacts  NutritionFact[]
+  claims          Claim[]
+}
+
+model Ingredient {
+  id              String @id @default(uuid())
+  labelDataId     String
+  name            String
+  position        Int?
+  confidence      Float?
+
+  labelData LabelData @relation(fields: [labelDataId], references: [id], onDelete: Cascade)
+}
+
+model NutritionFact {
+  id              String @id @default(uuid())
+  labelDataId     String
+  nutritent       String
+  value           Float?
+  unit            String?
+  servingSize     String?
+
+  labelData  LabelData @relation(fields: [labelDataId], references: [id], onDelete: Cascade)
+}
+
+model Claim {
+  id              String @id @default(uuid())
+  labelDataId     String
+  text            String
+  category        String?
+  confidence      Float?
+
+  labelData       LabelData @relation(fields: [labelDataId], references: [id], onDelete: Cascade)
+
+  verifications    Verification[]
+}
+
+model Evidence {
+  id    String     @id @default(uuid())
+  title String
+  source String?
+  url    String?
+  type   EvidenceType
+  description  String?
+  retrievedAt  DateTime?
+
+  verifications  Verification[]
+}
+
+model Verification {
+  id   String      @id @default(uuid())
+  claimId String?
+  evidenceId  String?
+  status VerificationStatus
+  score  Float?
+  explanation  String?
+  createdAt   DateTime      @default(now())
+
+  claim  Claim?  @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  evidence Evidence? @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+}
+
+model TrustScore {
+  id          String   @id @default(uuid())
+  reportId    String   @unique
+  overallScore Float?
+  confidence  Float?
+  methodology String?
+  createdAt   DateTime @default(now())
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}
+
+model Report {
+  id             String   @id @default(uuid())
+  scanId         String   @unique
+  summary        String?
+  riskLevel      String?
+  recommendations Json?
+  createdAt      DateTime @default(now())
+
+  scan      Scan       @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  trustScore TrustScore?
+}
