@@ -1,12 +1,15 @@
 import { Router } from "express";
-
+import {
+  createEvidenceController,
+  getEvidenceController,
+  getEvidenceListController,
+} from "../controllers/evidence.controller.js";
 const router = Router()
 
-router.get("/", (_req, res) => {
-    res.json({
-        module: "evidence",
-        message: "Evidence module is ready for implemetation"
-    })
-})
+router.post("/", createEvidenceController);
+
+router.get("/", getEvidenceListController);
+
+router.get("/:id", getEvidenceController);
 
 export default router
