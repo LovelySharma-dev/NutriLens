@@ -1,22 +1,24 @@
 import type { Request, Response } from "express";
-import { extractTextFromImage } from "../services/ocr.service.js";
+import { extractLabelWithOcr } from "../services/ocr.client.service.js";
 
 export async function extractOcrController(
   req: Request,
   res: Response,
 ) {
   try {
-    const { imageUrl } = req.body;
-
-    if (!imageUrl) {
+    if (!req.file) {
       res.status(400).json({
         status: "error",
-        message: "imageUrl is required",
+        message: "Image file is required",
       });
       return;
     }
 
-    const result = await extractTextFromImage(imageUrl);
+    const result = await extractLabelWithOcr(
+      req.file.buffer,
+      req.file.originalname,
+      req.file.mimetype,
+    );
 
     res.json({
       status: "success",
