@@ -1,0 +1,28 @@
+{
+  "model": "RandomForestClassifier",
+  "target": "nutrition_grade_fr",
+  "classes": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e"
+  ],
+  "features": [
+    "energy_100g",
+    "fat_100g",
+    "saturated-fat_100g",
+    "carbohydrates_100g",
+    "sugars_100g",
+    "fiber_100g",
+    "proteins_100g",
+    "salt_100g"
+  ],
+  "n_estimators": 200,
+  "max_depth": null,
+  "max_features": "log2",
+  "min_samples_leaf": 1,
+  "min_samples_split": 2,
+  "class_weight": "balanced",
+  "random_state": 42
+}
