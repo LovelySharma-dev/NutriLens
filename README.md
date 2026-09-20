@@ -147,36 +147,33 @@ Express API
 - Database → Ingredient Analysis ✅
 
 ```
-                 FOOD LABEL
-                     │
-                     ▼
-                    OCR
-                     │
-          ┌──────────┴──────────┐
-          ▼                     ▼
-    Nutrition Text        Ingredients Text
-          │                     │
-          ▼                     ▼
-    Normalization        Ingredient Parser
-          │                     │
-          ▼                     ├── Allergens
-    Random Forest               ├── Colors
-          │                     ├── Preservatives
-          ▼                     ├── Additives
-     Nutri-Score                ├── Sweeteners
-                                ├── Flavouring
-                                └── Other agents
-                                │
-                                ▼
-                         Evidence Engine
-                                │
-                ┌───────────────┴───────────────┐
-                ▼                               ▼
-          Evidence status                Explanation
-                │                               │
-                └───────────────┬───────────────┘
-                                ▼
-                         TRUST / REPORT
+                   FOOD LABEL
+                        │
+                        ▼
+                       OCR
+                        │
+              ┌─────────┴─────────┐
+              ▼                   ▼
+         Nutrition            Ingredients
+              │                   │
+              ▼                   ▼
+       Normalize 100g      Ingredient Analysis
+              │             ├── Allergens
+              ▼             ├── Preservatives
+       Random Forest        ├── Colors
+              │             ├── Additives
+              ▼             └── Sweeteners
+        Nutri-Score
+              │                   │
+              └─────────┬─────────┘
+                        ▼
+                   Claims/Evidence
+                        │
+                        ▼
+                   Trust Analysis
+                        │
+                        ▼
+                     Report
 
 ```
 
