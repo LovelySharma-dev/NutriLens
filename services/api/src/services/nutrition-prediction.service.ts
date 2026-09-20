@@ -9,6 +9,11 @@ import {
   type MlPredictionResult,
 } from "./ml-client.service.js";
 
+import {
+  calculateHealthRisk,
+  type HealthRiskResult,
+} from "./health-risk.service.js";
+
 export interface NutritionPredictionInput {
   servingSizeGrams: number;
   nutrition: NutritionInput;
@@ -18,6 +23,7 @@ export interface NutritionPredictionResult {
   servingSizeGrams: number;
   normalizedNutrition: ReturnType<typeof normalizeTo100g>;
   prediction: MlPredictionResult;
+  healthRisk: HealthRiskResult;
 }
 
 export async function predictNutrition(
@@ -72,9 +78,18 @@ export async function predictNutrition(
     salt_100g: normalizedNutrition.salt_100g!,
   });
 
+  const healthRisk = calculateHealthRisk({
+    energy_100g: normalizedNutrition.energy_100g,
+    sugars_100g: normalizedNutrition.sugars_100g,
+    saturated_fat_100g:
+      normalizedNutrition.saturated_fat_100g,
+    salt_100g: normalizedNutrition.salt_100g,
+  });
+
   return {
     servingSizeGrams: input.servingSizeGrams,
     normalizedNutrition,
     prediction,
+    healthRisk,
   };
 }

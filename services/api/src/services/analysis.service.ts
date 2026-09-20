@@ -1,6 +1,11 @@
 import prisma from "../config/database.js";
+import { getMissingNutritionFeatures } from "./nutrition-feature-validation.service.js";
 import { calculateTrustScore } from "./trust.service.js";
 import { analyzeIngredients } from "./ingredient-analysis.service.js";
+import { mapNutritionFactsToInput } from "./nutrition-fact-mapper.service.js";
+import {
+  predictNutrition,
+} from "./nutrition-prediction.service.js";
 
 export async function analyzeScan(scanId: string) {
   const scan = await prisma.scan.findUnique({
@@ -30,27 +35,49 @@ export async function analyzeScan(scanId: string) {
   }
 
   const claims = scan.labelData.claims;
-
   const ingredients = scan.labelData.ingredients;
 
-const ingredientText = ingredients
-  .map((ingredient) => ingredient.name)
-  .join(", ");
+  const ingredientText = ingredients
+    .map((ingredient) => ingredient.name)
+    .join(", ");
 
-const ingredientAnalysis =
-  ingredients.length > 0
-    ? analyzeIngredients(ingredientText)
-    : null;
+  const ingredientAnalysis =
+    ingredients.length > 0 ? analyzeIngredients(ingredientText) : null;
 
+  const nutritionMapping = mapNutritionFactsToInput(
+    scan.labelData.nutritionFacts,
+  );
+
+  const missingNutritionFeatures = getMissingNutritionFeatures(
+    nutritionMapping.nutrition,
+  );
+
+  const nutritionPredictionStatus =
+    missingNutritionFeatures.length === 0 ? "READY" : "INCOMPLETE";
+
+  let nutritionPrediction = null;
+
+if (
+  nutritionPredictionStatus === "READY" &&
+  nutritionMapping.servingSizeGrams !== undefined
+) {
+  nutritionPrediction = await predictNutrition({
+    servingSizeGrams:
+      nutritionMapping.servingSizeGrams,
+    nutrition: nutritionMapping.nutrition,
+  });
+}
   const verificationScores = claims.flatMap((claim) =>
     claim.verifications.map(
       (verification) =>
         verification.score ??
-        ({
-          VERIFIED: 1,
-          UNCERTAIN: 0.5,
-          FLAGGED: 0,
-        } as const)[verification.status],
+        (
+          {
+            VERIFIED: 1,
+            UNCERTAIN: 0.5,
+            FLAGGED: 0,
+          } as const
+        )[verification.status],
     ),
   );
 
@@ -81,9 +108,7 @@ const ingredientAnalysis =
   const recommendations: string[] = [];
 
   if (flaggedClaims.length > 0) {
-    recommendations.push(
-      "Review claims flagged during evidence verification.",
-    );
+    recommendations.push("Review claims flagged during evidence verification.");
   }
 
   if (claims.length === 0) {
@@ -97,33 +122,27 @@ const ingredientAnalysis =
       "Nutrition information was not available in the extracted label data.",
     );
   }
-  if (
-  ingredientAnalysis &&
-  ingredientAnalysis.allergens.length > 0
-) {
-  recommendations.push(
-    `${ingredientAnalysis.allergens.length} potential allergen(s) detected in the ingredient list.`,
-  );
-}
 
-if (
-  ingredientAnalysis &&
-  (
-    ingredientAnalysis.preservatives.length > 0 ||
-    ingredientAnalysis.colors.length > 0 ||
-    ingredientAnalysis.additives.length > 0 ||
-    ingredientAnalysis.sweeteners.length > 0
-  )
-) {
-  recommendations.push(
-    "Food additives were detected. Review their identities and supporting evidence.",
-  );
-}
+  if (ingredientAnalysis && ingredientAnalysis.allergens.length > 0) {
+    recommendations.push(
+      `${ingredientAnalysis.allergens.length} potential allergen(s) detected in the ingredient list.`,
+    );
+  }
+
+  if (
+    ingredientAnalysis &&
+    (ingredientAnalysis.preservatives.length > 0 ||
+      ingredientAnalysis.colors.length > 0 ||
+      ingredientAnalysis.additives.length > 0 ||
+      ingredientAnalysis.sweeteners.length > 0)
+  ) {
+    recommendations.push(
+      "Food additives were detected. Review their identities and supporting evidence.",
+    );
+  }
 
   if (recommendations.length === 0) {
-    recommendations.push(
-      "No immediate verification issues were identified.",
-    );
+    recommendations.push("No immediate verification issues were identified.");
   }
 
   const summary =
@@ -163,6 +182,17 @@ if (
 
       ingredientsAnalyzed: ingredients.length,
       ingredientAnalysis,
+
+      nutrition: {
+        factsAnalyzed: scan.labelData.nutritionFacts.length,
+        mappedInput: nutritionMapping.nutrition,
+        servingSizeGrams: nutritionMapping.servingSizeGrams,
+      },
+      nutritionPrediction: {
+        status: nutritionPredictionStatus,
+        missingFeatures: missingNutritionFeatures,
+        result: nutritionPrediction,
+      },
     },
   };
 }
