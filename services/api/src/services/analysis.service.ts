@@ -1,5 +1,6 @@
 import prisma from "../config/database.js";
 import { calculateTrustScore } from "./trust.service.js";
+import { analyzeIngredients } from "./ingredient-analysis.service.js";
 
 export async function analyzeScan(scanId: string) {
   const scan = await prisma.scan.findUnique({
@@ -29,6 +30,17 @@ export async function analyzeScan(scanId: string) {
   }
 
   const claims = scan.labelData.claims;
+
+  const ingredients = scan.labelData.ingredients;
+
+const ingredientText = ingredients
+  .map((ingredient) => ingredient.name)
+  .join(", ");
+
+const ingredientAnalysis =
+  ingredients.length > 0
+    ? analyzeIngredients(ingredientText)
+    : null;
 
   const verificationScores = claims.flatMap((claim) =>
     claim.verifications.map(
@@ -85,6 +97,28 @@ export async function analyzeScan(scanId: string) {
       "Nutrition information was not available in the extracted label data.",
     );
   }
+  if (
+  ingredientAnalysis &&
+  ingredientAnalysis.allergens.length > 0
+) {
+  recommendations.push(
+    `${ingredientAnalysis.allergens.length} potential allergen(s) detected in the ingredient list.`,
+  );
+}
+
+if (
+  ingredientAnalysis &&
+  (
+    ingredientAnalysis.preservatives.length > 0 ||
+    ingredientAnalysis.colors.length > 0 ||
+    ingredientAnalysis.additives.length > 0 ||
+    ingredientAnalysis.sweeteners.length > 0
+  )
+) {
+  recommendations.push(
+    "Food additives were detected. Review their identities and supporting evidence.",
+  );
+}
 
   if (recommendations.length === 0) {
     recommendations.push(
@@ -126,6 +160,9 @@ export async function analyzeScan(scanId: string) {
       flaggedClaims: flaggedClaims.length,
       averageScore,
       riskLevel,
+
+      ingredientsAnalyzed: ingredients.length,
+      ingredientAnalysis,
     },
   };
 }
