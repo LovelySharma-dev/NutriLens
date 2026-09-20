@@ -10,6 +10,15 @@ import evidenceRoutes from "./routes/evidence.routes.js"
 import trustRoutes from "./routes/trust.routes.js"
 import reportRoutes from "./routes/report.routes.js"
 import databaseRoutes from "./routes/database.routes.js"
+import scanRoutes from "./routes/scan.routes.js";
+import ingredientRoutes from "./routes/ingredient.routes.js";
+import claimRoutes from "./routes/claim.routes.js";
+import verificationRoutes from "./routes/verification.routes.js";
+import analysisRoutes from "./routes/analysis.routes.js";
+import ingredientAnalysisRoutes from "./routes/ingredient-analysis.routes.js";
+import scanIngredientAnalysisRoutes from "./routes/scan-ingredient-analysis.routes.js";
+import nutritionPredictionRoutes from "./routes/nutrition-prediction.routes.js";
+import healthRiskRoutes from "./routes/health-risk.routes.js";
 
 const app = express()
 
@@ -32,5 +41,22 @@ app.use("/api/v1/evidence", evidenceRoutes)
 app.use("/api/v1/trust", trustRoutes)
 app.use("/api/v1/reports", reportRoutes)
 app.use("/api/v1/database", databaseRoutes)
-
+app.use("/api/v1/scans", scanRoutes)
+app.use("/api/v1/ingredients", ingredientRoutes)
+app.use("/api/v1/claims", claimRoutes)
+app.use("/api/v1/verifications", verificationRoutes)
+app.use("/api/v1/analysis", analysisRoutes)
+app.use(
+  "/api/v1/ingredients",
+  ingredientAnalysisRoutes,
+);
+app.use(
+  "/api/v1/scan-ingredients",
+  scanIngredientAnalysisRoutes,
+);
+app.use(
+  "/api/v1/nutrition",
+  nutritionPredictionRoutes,
+);
+app.use("/api/v1/health-risk", healthRiskRoutes);
 export default app

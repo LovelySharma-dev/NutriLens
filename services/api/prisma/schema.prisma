@@ -86,7 +86,7 @@ model Ingredient {
 model NutritionFact {
   id              String @id @default(uuid())
   labelDataId     String
-  nutritent       String
+  nutrient       String
   value           Float?
   unit            String?
   servingSize     String?

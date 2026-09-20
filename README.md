@@ -75,14 +75,107 @@ The backend should return a JSON response similar to:
   "service": "NutriTrust Backend"
 }
 ```
+## Foundations
+``` 
+Next.js
+   ↓
+Express API
+   ↓
+Routes
+   ↓
+Prisma 7
+   ↓
+PrismaPg
+   ↓
+PostgreSQL
+   ↓
+NutriLens DB 
+```
+## Backend Architecture
+```
+                    Next.js Frontend
+                           │
+                           ▼
+                    Express API
+                           │
+              ┌────────────┴────────────┐
+              ▼                         ▼
+        Controllers                 Middleware
+              │
+              ▼
+          Services
+              │
+      ┌───────┼────────┬──────────┐
+      ▼       ▼        ▼          ▼
+    Scan    Label    Evidence   Report
+   Service  Service   Service   Service
+      │       │        │          │
+      └───────┴────────┴──────────┘
+                    │
+                    ▼
+              Prisma Client
+                    │
+                    ▼
+               PostgreSQL
+
+Later-
+Express API
+     │
+     ├─ OCR Service->PythonML 
+     │
+     ├─ Verification Service
+     │
+     └─ Trust Score Service
+
+```
 
 ## Roadmap
 
-- [ ] Nutrition and food analysis.
-- [ ] Food recognition.
-- [ ] Nutritional information and insights.
-- [ ] User interface improvements.
-- [ ] Backend API integration.
+- Nutrition Normalization       ✅
+- Nutri-Score ML                 ✅
+- Ingredient Parser              ✅
+- Allergen Detection             ✅
+- Preservative Detection        ✅
+- Color Detection                ✅
+- Additive Detection             ✅
+- Sweetener Detection            ✅
+- Flavouring Detection           ✅
+- Raising Agent Detection        ✅
+- INS/E-number Detection         ✅
+- INS/E-number Mapping           ✅
+- Ingredient Analysis API        ✅
+- Database → Ingredient Analysis ✅
+
+```
+                   FOOD LABEL
+                        │
+                        ▼
+                       OCR
+                        │
+              ┌─────────┴─────────┐
+              ▼                   ▼
+         Nutrition            Ingredients
+              │                   │
+              ▼                   ▼
+       Normalize 100g      Ingredient Analysis
+              │             ├── Allergens
+              ▼             ├── Preservatives
+       Random Forest        ├── Colors
+              │             ├── Additives
+              ▼             └── Sweeteners
+        Nutri-Score
+              │                   │
+              └─────────┬─────────┘
+                        ▼
+                   Claims/Evidence
+                        │
+                        ▼
+                   Trust Analysis
+                        │
+                        ▼
+                     Report
+
+```
 
 ## License
 

@@ -1,12 +1,17 @@
 import { Router } from "express";
 
-const router = Router()
+import {
+  createReportController,
+  getReportController,
+} from "../controllers/report.controller.js";
 
-router.get("/", (_req, res) => {
-    res.json({
-        module: "reports",
-        message: "Reports module is ready for implemetation"
-    })
-})
+const router = Router();
 
-export default router
+router.post("/", createReportController);
+
+router.get(
+  "/scan/:scanId",
+  getReportController,
+);
+
+export default router;

@@ -1,12 +1,14 @@
 import { Router } from "express";
 
-const router = Router()
+import {
+  createLabelController,
+  getLabelController,
+} from "../controllers/label.controller.js";
 
-router.get("/", (_req, res) => {
-    res.json({
-        module: "labels",
-        message: "Label verification module is ready for implementation"
-    })
-})
+const router = Router();
 
-export default router
+router.post("/", createLabelController);
+
+router.get("/scan/:scanId", getLabelController);
+
+export default router;
