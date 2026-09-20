@@ -1,272 +1,217 @@
-# NutriLens
+<div align="center">
 
-**Label Samjhega India, Tabhi Sahi Chunega India.**
+<!-- Header Banner -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,24,30,42&height=220&section=header&text=NutriTrust&fontSize=65&fontColor=ffffff&animation=twinkling&desc=Label%20Samjhega%20India%2C%20Tabhi%20Sahi%20Chunega%20India%20🇮🇳&descSize=20&descAlignY=72" width="100%" alt="NutriTrust Header Banner"/>
 
-NutriLens is an evidence-grounded food-label analysis platform designed to help users understand packaged-food labels before making consumption decisions. It combines OCR, structured label parsing, nutrition normalization, machine-learning-based Nutri-Score prediction, rule-based health-risk screening, ingredient/allergen analysis, claim verification, trust scoring, and explainable recommendations.
+<!-- Typing Animation -->
+<a href="https://git.io/typing-svg">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=00F0FF&center=true&vCenter=true&width=700&lines=%F0%9F%9A%80+Welcome+to+NutriTrust+by+TeamRocket.exe;%F0%9F%A4%96+AI-Powered+Food+Label+Analysis+%26+Trust+Platform;%F0%9F%94%8D+EasyOCR+%2B+ML+Nutri-Score+(94.87%25+Acc)+%2B+Claim+Verification;%F0%9F%8D%8E+Empowering+Smarter+%26+Healthier+Dietary+Decisions" alt="Typing SVG" />
+</a>
 
-> **Project status:** Major-project / hackathon prototype. The current prototype supports English food-label OCR. Multilingual OCR and broader personalization are planned extensions.
+<br/>
+
+<!-- Status Badges -->
+<p align="center">
+  <img src="https://img.shields.io/badge/Team-TeamRocket.exe-FF0055?style=for-the-badge&logo=rocket&logoColor=white" alt="Team Name" />
+  <img src="https://img.shields.io/badge/Developer-Lovely%20Sharma%20(Solo)-00C853?style=for-the-badge&logo=github&logoColor=white" alt="Solo Developer" />
+  <img src="https://img.shields.io/badge/ML%20Accuracy-94.87%25-7C4DFF?style=for-the-badge&logo=scikitlearn&logoColor=white" alt="ML Accuracy" />
+  <img src="https://img.shields.io/badge/Status-Active%20Prototype-00E5FF?style=for-the-badge&logo=git&logoColor=white" alt="Project Status" />
+  <img src="https://img.shields.io/badge/License-MIT-FFD600?style=for-the-badge&logo=open-source-initiative&logoColor=black" alt="License" />
+</p>
+
+<div align="center">
+<img src="https://user-images.githubusercontent.com/74038190/212284158-e840e285-664b-44d7-b79b-e264b5e54825.gif" width="100%">
+</div>
+
+<!-- Web App Hero Showcase -->
+<p align="center">
+  <img src="docs/screenshots/hero-dashboard.png" width="95%" alt="NutriTrust Web App Dashboard Preview" />
+</p>
 
 ---
 
-## 1. Problem Statement
+</div>
 
-Packaged-food labels contain nutrition facts, ingredients, allergens, additives, and marketing claims, but this information can be difficult to interpret quickly. Users may miss important ingredients, misunderstand serving sizes, or rely on claims without checking supporting evidence.
+## 📌 Table of Contents
+- [📖 Project Overview](#-project-overview)
+- [⚠️ Problem Statement](#️-problem-statement)
+- [✨ Key Features](#-key-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [🧠 Machine Learning Model](#-machine-learning-model)
+- [🔄 System Architecture & Data Flow](#-system-architecture--data-flow)
+- [🚀 How to Run & Use the Project](#-how-to-run--use-the-project)
+- [📸 Screenshots & Demo Details](#-screenshots--demo-details)
+- [👥 Team Details](#-team-details)
+- [🔮 Future Roadmap](#-future-roadmap)
 
-NutriLens addresses this problem by turning a food-label image into structured, explainable information:
+---
+
+## 📖 Project Overview
+
+**NutriTrust** (also known as *NutriLens*) is an evidence-grounded food-label intelligence platform designed to decode packaged-food labels before consumers make purchasing or consumption decisions. 
+
+By combining **EasyOCR text extraction**, **spatial label parsing**, **nutrition normalization (per 100g)**, **Random Forest ML Nutri-Score prediction**, **rule-based health screening**, **allergen/additive detection**, and **claim verification**, NutriTrust translates complex, confusing labels into an instant, transparent **Trust Score** with explainable dietary recommendations.
+
+> 💡 *"Label Samjhega India, Tabhi Sahi Chunega India."* — Empowering users to make informed, healthy choices backed by machine learning and scientific evidence.
+
+---
+
+## ⚠️ Problem Statement
+
+<div align="center">
+
+| ❌ The Problem with Food Labels Today | ✅ The NutriTrust Solution |
+| :--- | :--- |
+| **Misleading Marketing Claims**: Products boast *"100% Natural"* or *"Zero Added Sugar"* while hiding harmful substitutes. | **Evidence-Based Claim Verification**: Cross-references label claims against actual parsed ingredients & nutrition stats. |
+| **Complex Serving Math**: Nutrition tables use arbitrary serving sizes (e.g., 15g) to artificially inflate healthiness. | **Per-100g Normalization**: Converts all serving sizes to a standardized 100g baseline for honest comparison. |
+| **Hidden Harmful Additives**: INS/E-numbers (preservatives, colors, artificial sweeteners) are obscured in tiny fine print. | **Instant Allergen & Additive Scanner**: Automatically flags E-numbers, synthetic colors, preservatives, and allergens. |
+| **Lack of Medical Context**: High sodium and saturated fats are presented as raw numbers without risk warnings. | **ML Nutri-Score & Health Screening**: Predicts standardized Nutri-Grades (A-E) & flags high-risk nutrients. |
+
+</div>
+
+---
+
+## ✨ Key Features
 
 ```text
-Food Label Image
-      ↓
-OCR
-      ↓
-Structured Label Data
-      ↓
-Ingredients / Nutrition / Claims
-      ↓
-Nutrition Normalization
-      ↓
-ML Nutri-Score Prediction
-      ↓
-Health-Risk Screening
-      ↓
-Ingredient & Allergen Analysis
-      ↓
-Evidence / Claim Verification
-      ↓
-Trust Score
-      ↓
-Explainable Recommendations
+📸 Image Upload ──► 🔍 EasyOCR ──► 📐 Normalizer ──► 🧠 ML Nutri-Score ──► 🛡️ Health Screening ──► ⭐ Trust Score & Advice
+```
+
+### 🔍 1. Smart OCR & Spatial Label Parsing
+- Upload food label photos directly or capture via camera.
+- Powered by **EasyOCR** & **OpenCV** with spatial bounding-box text localization.
+- Conservative & reliable extraction: ambiguous values are never fabricated.
+
+### 📊 2. ML Nutri-Score Prediction (94.87% Accuracy)
+- Machine Learning classification model predicting standard **Nutri-Score Grades (A, B, C, D, E)**.
+- Evaluates 8 core nutritional parameters: *Energy, Fat, Saturated Fat, Carbohydrates, Sugars, Fiber, Proteins, and Salt*.
+- Displays prediction probability breakdown.
+
+<p align="center">
+  <img src="docs/screenshots/nutri-score-analysis.png" width="90%" alt="ML Nutri-Score Feature Preview" />
+</p>
+
+### 🛡️ 3. Health-Risk Screening Engine
+- Transparent, rule-based screening thresholds to flag excessive nutrients:
+  - 🍬 **Sugars**: `≥ 22.5g` (HIGH Risk), `≥ 5.0g` (MEDIUM Risk)
+  - 🧈 **Saturated Fat**: `≥ 5.0g` (HIGH Risk), `≥ 1.5g` (MEDIUM Risk)
+  - 🧂 **Salt**: `≥ 1.5g` (HIGH Risk), `≥ 0.3g` (MEDIUM Risk)
+  - ⚡ **Energy**: `≥ 400 kcal` (HIGH Risk), `≥ 250 kcal` (MEDIUM Risk)
+
+<p align="center">
+  <img src="docs/screenshots/health-risk-screening.png" width="90%" alt="Health Screening Feature Preview" />
+</p>
+
+### 🧪 4. Ingredient & Allergen Intelligence
+- Automatic pattern matching for **INS / E-Numbers**.
+- Instant categorization of:
+  - 🚨 **Allergens** (Nuts, Soy, Dairy, Gluten, Gluten derivatives)
+  - 🧪 **Preservatives & Synthetic Colors**
+  - 🍬 **Artificial Sweeteners & Flavoring Agents**
+
+<p align="center">
+  <img src="docs/screenshots/ingredient-taxonomy.png" width="90%" alt="Ingredient Taxonomy Feature Preview" />
+</p>
+
+### ✅ 5. Claim Verification & Evidence Engine
+- Verifies package claims (e.g., *"High Protein"*, *"Low Fat"*, *"Sugar Free"*) against detected values.
+- Flags false or misleading claims that fail verification criteria.
+
+<p align="center">
+  <img src="docs/screenshots/claim-verification-graph.png" width="90%" alt="Claim Verification Feature Preview" />
+</p>
+
+### ⭐ 6. Trust Score & Explainable Recommendations
+- Generates a holistic **Trust Score (0–100%)** based on verification & data completeness.
+- Provides actionable recommendations with severity, rationale, and recommended consumer action.
+
+### 💻 7. Interactive 3D Web Dashboard
+- Sleek modern interface built with **Next.js 16**, **Three.js**, **GSAP**, and **Tailwind CSS**.
+- Interactive data visualizations with **Recharts** and **Framer Motion**.
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+### 🎨 Technologies Used
+
+<!-- Animated Tech Icons -->
+<a href="https://skillicons.dev">
+  <img src="https://skillicons.dev/icons?i=nextjs,react,ts,tailwind,nodejs,express,postgres,py,fastapi,sklearn,git" alt="Tech Stack Icons" />
+</a>
+
+<br/><br/>
+
+| Layer | Technologies & Tools |
+| :--- | :--- |
+| **Frontend UI** | Next.js 16, React 19, TypeScript, Tailwind CSS, Three.js, React Three Fiber, GSAP, Framer Motion, Recharts |
+| **Backend API** | Node.js, Express, TypeScript, Prisma ORM, PostgreSQL |
+| **AI / ML Service** | Python 3.11, FastAPI, Scikit-Learn (Random Forest), joblib, Uvicorn |
+| **OCR Service** | Python 3.11, EasyOCR, OpenCV, NumPy, Pillow, FastAPI |
+| **Database & Monorepo** | PostgreSQL 18, Turborepo, pnpm Workspaces |
+
+</div>
+
+---
+
+## 🧠 Machine Learning Model
+
+The core nutrition classifier was trained on the Kaggle / OpenFoodFacts global dataset (`openfoodfacts/world-food-facts`).
+
+```text
+Algorithm       : RandomForestClassifier (200 Estimators)
+Target Variable : nutrition_grade_fr (A, B, C, D, E)
+Key Inputs      : energy_100g, fat_100g, saturated-fat_100g, carbohydrates_100g, 
+                  sugars_100g, fiber_100g, proteins_100g, salt_100g
+```
+
+### 📈 Model Evaluation Metrics
+
+| Metric | Score | Metric | Score |
+| :--- | :---: | :--- | :---: |
+| **Accuracy** | `0.9487` (94.87%) | **ROC-AUC** | `0.9960` (99.60%) |
+| **Balanced Accuracy** | `0.9461` | **PR-AUC** | `0.9853` |
+| **Macro F1** | `0.9467` | **Weighted F1** | `0.9488` |
+
+---
+
+## 🔄 System Architecture & Data Flow
+
+```mermaid
+flowchart TD
+    A["📸 Food Label Image"] --> B["🔍 OCR Service (EasyOCR / FastAPI :8001)"]
+    B --> C["🧩 Label Parser (Bounding Boxes & Text)"]
+    C --> D["⚖️ Nutrition Normalizer (Per 100g Baseline)"]
+    
+    D --> E["🧠 ML Service (Random Forest / FastAPI :8000)"]
+    D --> F["🛡️ Health Screening Rule Engine"]
+    C --> G["🧪 Ingredient & Allergen Analyzer"]
+    
+    E --> H["📊 Nutri-Score Grade (A-E)"]
+    F --> I["⚠️ Risk Flags (Sugars, Fat, Salt)"]
+    G --> J["🚨 Allergen & Additive Report"]
+    
+    H & I & J --> K["✅ Claim Verification & Trust Score Engine"]
+    K --> L["💻 Next.js 3D Web Dashboard (:3000)"]
 ```
 
 ---
 
-## 2. Objectives
+## 🚀 How to Run & Use the Project
 
-- Extract useful information from food-label images.
-- Structure ingredients, nutrition facts, allergens, and claims.
-- Normalize nutrition values to a common per-100g basis when serving-size information is available.
-- Predict a nutrition grade using a Random Forest model trained on OpenFoodFacts data.
-- Screen nutrition values using transparent rule-based thresholds.
-- Detect potential allergens and additive categories.
-- Verify label claims against available evidence.
-- Produce a trust score and explainable recommendations.
-- Provide a clear web dashboard suitable for consumer understanding and project demonstration.
+### 📋 Prerequisites
 
----
-
-## 3. Key Features
-
-### OCR & Label Understanding
-- Image upload / camera-oriented workflow.
-- EasyOCR-based text recognition.
-- OCR confidence and bounding-box information.
-- Spatial nutrition-table parsing.
-- Structured label output.
-- Conservative extraction: ambiguous nutrition values are not treated as complete.
-
-### Nutrition Intelligence
-- Eight ML features:
-  - Energy
-  - Fat
-  - Saturated fat
-  - Carbohydrates
-  - Sugars
-  - Fiber
-  - Proteins
-  - Salt
-- Serving-size to per-100g normalization.
-- Random Forest nutrition-grade prediction.
-- Prediction probabilities.
-- Feature validation before ML execution.
-
-### Health Screening
-Current screening thresholds are implemented as project rules:
-- Sugars: >= 22.5 g HIGH, >= 5 g MEDIUM
-- Saturated fat: >= 5 g HIGH, >= 1.5 g MEDIUM
-- Salt: >= 1.5 g HIGH, >= 0.3 g MEDIUM
-- Energy: >= 400 kcal HIGH, >= 250 kcal MEDIUM
-
-The health-risk output is a **screening indicator, not a medical diagnosis**.
-
-### Ingredient Intelligence
-- Ingredient tokenization.
-- Potential allergen detection.
-- Preservative detection.
-- Color detection.
-- Additive detection.
-- Sweetener detection.
-- Flavouring / raising-agent categories.
-- INS/E-number pattern detection.
-
-Detected additives are reported as categories/findings; detection alone is not treated as proof that an ingredient is harmful.
-
-### Claim Verification
-- Claims can be stored against label data.
-- Evidence can be attached to claims.
-- Verification status and scores are supported.
-- Flagged claims can trigger recommendations.
-
-### Trust & Recommendations
-- Evidence-verification trust score.
-- Confidence and methodology information.
-- Structured recommendation engine with:
-  - Type
-  - Severity
-  - Title
-  - Message
-  - Reason
-  - Action
-
----
-
-## 4. ML Model
-
-### Dataset
-
-The nutrition model was trained using the Kaggle/OpenFoodFacts dataset:
-
-`openfoodfacts/world-food-facts`
-
-Source file:
-
-`en.openfoodfacts.org.products.tsv`
-
-### Input Features
-
-```text
-energy_100g
-fat_100g
-saturated-fat_100g
-carbohydrates_100g
-sugars_100g
-fiber_100g
-proteins_100g
-salt_100g
-```
-
-Target:
-
-```text
-nutrition_grade_fr
-```
-
-The existing nutrition-score field is not used as an input feature.
-
-### Model
-
-```text
-Algorithm: RandomForestClassifier
-Estimators: 200
-max_features: log2
-class_weight: balanced
-random_state: 42
-```
-
-### Reported evaluation
-
-| Metric | Value |
-|---|---:|
-| Accuracy | 0.9487 |
-| Balanced Accuracy | 0.9461 |
-| Macro Precision | 0.9474 |
-| Macro Recall | 0.9461 |
-| Macro F1 | 0.9467 |
-| Weighted F1 | 0.9488 |
-| ROC-AUC | 0.9960 |
-| PR-AUC | 0.9853 |
-
-These are evaluation results for the project's prepared train/test split and should not be interpreted as a guarantee of performance on every real-world label.
-
----
-
-## 5. Tech Stack
-
-### Frontend
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Three.js
-- React Three Fiber
-- Drei
-- GSAP
-- Framer Motion
-- Lucide React
-- Recharts
-
-### Backend
-- Node.js
-- Express
-- TypeScript
-- Prisma
-- PostgreSQL
-
-### AI / ML
-- Python
-- FastAPI
-- Uvicorn
-- scikit-learn
-- Random Forest
-- joblib
-
-### OCR
-- Python
-- EasyOCR
-- Pillow
-- OpenCV
-- NumPy
-- FastAPI
-
-### Data
-- PostgreSQL
-- OpenFoodFacts / Kaggle nutrition dataset
-
----
-
-## 6. Repository Structure
-
-```text
-NutriTrust/
-├── apps/
-├── packages/
-├── services/
-│   ├── api/                 # Express API + Prisma
-│   ├── ml/                  # Python ML service + trained model
-│   └── ocr/                 # Python EasyOCR service + parser
-├── web/                     # Next.js frontend
-├── prisma/                  # If used by root tooling
-├── README.md
-├── REQUIREMENTS.md
-├── package.json
-├── pnpm-workspace.yaml
-├── run-all.cmd
-├── run-api.cmd
-├── run-ml.cmd
-├── run-ocr.cmd
-├── run-web.cmd
-├── install-all.cmd
-├── health-check.cmd
-└── stop-all.cmd
-```
-
-The exact contents of `apps/` and `packages/` may evolve with the monorepo.
-
----
-
-## 7. Prerequisites
-
-Install:
-
-- Windows 10/11
-- Node.js 20+ recommended
-- pnpm
-- Python 3.11/3.12 recommended for ML/OCR compatibility
-- PostgreSQL 18 or compatible PostgreSQL version
-- Git
-
-Check:
+Ensure you have the following installed on your system:
+- **Node.js**: `v20.x` or higher
+- **pnpm**: `v9.x` or `v11.x` (`npm i -g pnpm`)
+- **Python**: `v3.11.x` or `v3.12.x`
+- **PostgreSQL**: `v16+` or `v18`
+- **Git**
 
 ```powershell
+# Verify installation versions
 node --version
 pnpm --version
 python --version
@@ -275,16 +220,47 @@ psql --version
 
 ---
 
-## 8. Environment Variables
+### ⚡ Quick Start (Windows Script Launchers)
 
-### API
+If you are on Windows, you can start all microservices simultaneously with a single command from the project root:
 
-Create:
+```cmd
+:: Launch all 4 services at once (Web, API, ML, OCR)
+run-all.cmd
+```
 
-`services/api/.env`
+Alternatively, you can launch individual services separately:
+```cmd
+run-web.cmd    :: Next.js Frontend (http://localhost:3000)
+run-api.cmd    :: Express API Service (http://localhost:4000)
+run-ml.cmd     :: Python ML Service (http://localhost:8000)
+run-ocr.cmd    :: Python OCR Service (http://localhost:8001)
+```
 
-Example:
+To stop all background services cleanly:
+```cmd
+stop-all.cmd
+```
 
+---
+
+### 🛠️ Manual Step-by-Step Installation
+
+<details>
+<summary><b>👉 Click to expand full step-by-step setup instructions</b></summary>
+
+<br/>
+
+#### Step 1: Clone Repository & Install Dependencies
+```powershell
+git clone https://github.com/YourRepo/NutriTrust.git
+cd NutriTrust
+pnpm install
+```
+
+#### Step 2: Configure Environment Variables
+
+Create `services/api/.env`:
 ```env
 DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/nutrilens
 OCR_SERVICE_URL=http://localhost:8001
@@ -292,426 +268,194 @@ ML_SERVICE_URL=http://localhost:8000
 PORT=4000
 ```
 
-Use your actual PostgreSQL credentials.
-
-### Frontend
-
-Create the web environment file expected by the frontend:
-
+Create `apps/web/.env`:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
 
-Never commit real passwords, API keys, or private credentials.
-
----
-
-## 9. Installation
-
-From the repository root:
-
-```powershell
-pnpm install
-```
-
-For the API:
-
+#### Step 3: Database Migration
+Ensure PostgreSQL is running, then migrate Prisma schemas:
 ```powershell
 cd services/api
 pnpm install
+npx prisma migrate dev
 ```
 
-For OCR:
+#### Step 4: Setup Python Virtual Environments & Services
 
+**OCR Service Setup (`:8001`)**:
 ```powershell
 cd services/ocr
 python -m venv .venv
 .\.venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-For ML:
-
-```powershell
-cd services/ml
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
-```
-
----
-
-## 10. Database Setup
-
-Make sure PostgreSQL is running and the `nutrilens` database exists.
-
-Then from:
-
-```text
-services/api
-```
-
-run the Prisma migration workflow configured for the project.
-
-For a development database, use the project's existing Prisma configuration and migrations.
-
-Do not run destructive database reset commands against a submission/demo database unless the team intentionally wants to erase its data.
-
----
-
-## 11. Running the Project
-
-The services use these ports:
-
-| Service | Port |
-|---|---:|
-| Next.js | 3000 |
-| Express API | 4000 |
-| ML FastAPI | 8000 |
-| OCR FastAPI | 8001 |
-| PostgreSQL | 5432 |
-
-### Option A — Run services individually
-
-API:
-
-```powershell
-cd services/api
-pnpm dev
-```
-
-ML:
-
-```powershell
-cd services/ml
-.\.venv\Scripts\activate
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-OCR:
-
-```powershell
-cd services/ocr
-.\.venv\Scripts\activate
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 ```
 
-Frontend:
-
+**ML Service Setup (`:8000`)**:
 ```powershell
-cd web
+cd services/ml
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+#### Step 5: Start Express API & Next.js Web App
+
+**Express Backend (`:4000`)**:
+```powershell
+cd services/api
 pnpm dev
 ```
 
-Open the frontend at:
-
-```text
-http://localhost:3000
-```
-
-### Option B — Windows CMD launchers
-
-From the repository root:
-
-```cmd
-run-api.cmd
-run-ml.cmd
-run-ocr.cmd
-run-web.cmd
-```
-
-Or launch the complete local stack:
-
-```cmd
-run-all.cmd
-```
-
----
-
-## 12. Health Checks
-
-API:
-
-```text
-http://localhost:4000/health
-```
-
-ML:
-
-```text
-http://localhost:8000/health
-```
-
-OCR:
-
-```text
-http://localhost:8001/health
-```
-
-Expected OCR health response:
-
-```json
-{
-  "status": "ok",
-  "service": "ocr",
-  "engine": "easyocr",
-  "modelLoaded": true
-}
-```
-
----
-
-## 13. OCR API
-
-The browser-facing API is:
-
-```http
-POST /api/v1/ocr/extract
-```
-
-Send:
-
-```text
-multipart/form-data
-file=<image>
-```
-
-Example:
-
+**Next.js Frontend (`:3000`)**:
 ```powershell
-curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" -F "file=@sample_food_label.jpg"
+cd apps/web
+pnpm dev
 ```
 
-The response contains:
+Now open **http://localhost:3000** in your browser! 🎉
 
-- Raw OCR text
-- OCR confidence
-- OCR detections
-- Bounding boxes
-- Parsed product name
-- Nutrition values
-- Nutrition quality
-- Ingredients
-- Allergens
-- Claims
-
-The parser intentionally reports incomplete nutrition when required fields cannot be extracted confidently.
+</details>
 
 ---
 
-## 14. Analysis API
+### 🏥 Microservice Port Map & Health Checks
 
-The existing analysis endpoint is:
+| Service | Port | Health Check Endpoint | Status Indicator |
+| :--- | :---: | :--- | :---: |
+| **Next.js Frontend** | `:3000` | `http://localhost:3000` | `🟢 Active` |
+| **Express API** | `:4000` | `http://localhost:4000/health` | `🟢 Active` |
+| **Python ML FastAPI** | `:8000` | `http://localhost:8000/health` | `🟢 Active` |
+| **Python OCR FastAPI** | `:8001` | `http://localhost:8001/health` | `🟢 Active` |
+| **PostgreSQL Database** | `:5432` | `localhost:5432/nutrilens` | `🟢 Active` |
 
-```http
-POST /api/v1/analysis/scan/:scanId
+---
+
+## 📸 Screenshots & Demo Details
+
+### 🖥️ Web Interface Gallery (11 Showcase Screens)
+
+<div align="center">
+
+#### 🌟 1. 3D Interactive Hero Landing Page
+<img src="docs/screenshots/hero-dashboard.png" width="95%" alt="NutriTrust Hero Landing Page" />
+
+<br/><br/>
+
+#### ⚠️ 2. Consumer Dilemma & Packaging Fine Print Analysis
+<img src="docs/screenshots/label-dilemma.png" width="95%" alt="NutriTrust Consumer Dilemma" />
+
+<br/><br/>
+
+#### 📸 3. Live Label Scan & Image Drop Portal
+<img src="docs/screenshots/scan-label-portal.png" width="95%" alt="NutriTrust Label Scan Portal" />
+
+<br/><br/>
+
+#### 🔄 4. End-to-End 9-Stage Data Processing Pipeline
+<img src="docs/screenshots/intelligence-pipeline.png" width="95%" alt="NutriTrust 9-Stage Processing Pipeline" />
+
+<br/><br/>
+
+#### 🔍 5. Interactive Feature Exploration Cards
+<img src="docs/screenshots/feature-cards.png" width="95%" alt="NutriTrust Feature Exploration Cards" />
+
+<br/><br/>
+
+#### 📊 6. Nutrition Normalization Engine & ML Nutri-Score Prediction
+<img src="docs/screenshots/nutri-score-analysis.png" width="95%" alt="NutriTrust ML Nutri-Score Analysis" />
+
+<br/><br/>
+
+#### 🛡️ 7. Targeted Nutrient Risk Analysis & Health Screening
+<img src="docs/screenshots/health-risk-screening.png" width="95%" alt="NutriTrust Health Risk Screening" />
+
+<br/><br/>
+
+#### 🧪 8. Ingredient Tokenization & Additive Functional Categories
+<img src="docs/screenshots/ingredient-taxonomy.png" width="95%" alt="NutriTrust Ingredient Taxonomy" />
+
+<br/><br/>
+
+#### ⚖️ 9. Evidence-Grounded Claim Audit Graph
+<img src="docs/screenshots/claim-verification-graph.png" width="95%" alt="NutriTrust Claim Audit Graph" />
+
+<br/><br/>
+
+#### 👤 10. Consumer Customization & Personalized Health Parameters
+<img src="docs/screenshots/consumer-customization.png" width="95%" alt="NutriTrust Consumer Customization" />
+
+<br/><br/>
+
+#### 🎯 11. Platform Footer & Public Trust Mission
+<img src="docs/screenshots/footer-cta.png" width="95%" alt="NutriTrust Platform Footer" />
+
+</div>
+
+<br/>
+
+### 🧪 Sample Food Label Test
+
+A sample test image is included in the repository for instant testing:
+📁 [`sampleData/sample_food_label.jpg`](sampleData/sample_food_label.jpg)
+
+<div align="center">
+
+| Sample Food Label Image | OCR & Analysis Endpoint |
+| :---: | :---: |
+| <img src="sampleData/sample_food_label.jpg" width="350" alt="Sample Food Label" /> | `POST /api/v1/ocr/extract` |
+
+</div>
+
+#### Test OCR API via cURL:
+```powershell
+curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
+  -F "file=@sampleData/sample_food_label.jpg"
 ```
 
-A known demo scan used during development is:
-
-```text
-25c77823-2897-4b31-b8a5-78d2766abe0e
-```
-
-The analysis pipeline combines:
-
-```text
-Label Data
-  ↓
-Ingredient Analysis
-  ↓
-Nutrition Mapping
-  ↓
-Normalization
-  ↓
-ML Prediction
-  ↓
-Health-Risk Screening
-  ↓
-Claim Verification
-  ↓
-Trust Score
-  ↓
-Recommendations
-```
+### 🎬 Recommended Demo Flow
+1. **Landing Page**: Introduce the core mission (*"Label Samjhega India, Tabhi Sahi Chunega India"*).
+2. **Label Capture/Upload**: Upload `sample_food_label.jpg` or capture a custom packaged food item.
+3. **OCR Processing**: View bounding boxes and spatial text recognition confidence.
+4. **Structured Nutrition & Normalization**: Observe automatic per-serving to per-100g conversion.
+5. **ML Nutri-Score & Health Screening**: Review predicted Nutri-Grade (A-E) and sugar/fat/salt risk badges.
+6. **Ingredient & Allergen Scan**: Inspect identified additives, INS/E-numbers, and potential allergens.
+7. **Trust Score & Recommendations**: Explain the final verified Trust Score and personalized advice.
 
 ---
 
-## 15. Important Safety / Interpretation Notes
+## 👥 Team Details
 
-NutriLens distinguishes several types of outputs:
+<div align="center">
 
-### ML Prediction
-The Random Forest model predicts a nutrition grade from the configured nutrition features.
+### 🚀 Team Name: `TeamRocket.exe`
 
-### Health-Risk Screening
-Rule-based thresholds identify nutrition values that cross configured screening thresholds. This is not medical advice or diagnosis.
+| Avatar | Team Member | Role | Socials / Contact |
+| :---: | :--- | :--- | :---: |
+| 🧑‍💻 | **Lovely Sharma**  | Full-Stack Developer, AI/ML Engineer, OCR Architect | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/LovelySharma-dev) |
 
-### Evidence Verification
-Claim verification reflects the available evidence and verification rules in the system.
+<br/>
 
-### Trust Score
-The trust score summarizes the configured evidence-verification results. It should not be interpreted as a universal product safety score.
+> 🏆 Built with passion 
 
-### OCR
-OCR is probabilistic. Low-confidence or ambiguous extraction should be reviewed rather than silently converted into facts.
+</div>
 
 ---
 
-## 16. Demo Flow
+## 🔮 Future Roadmap
 
-Recommended hackathon demonstration:
-
-1. Open NutriLens.
-2. Show the problem: food labels contain information that is difficult to interpret quickly.
-3. Upload/capture a food-label image.
-4. Show OCR processing.
-5. Show extracted ingredients, allergens, and claims.
-6. Show nutrition extraction and confidence/completeness.
-7. Show normalization to 100g when serving information is available.
-8. Show Random Forest nutrition-grade prediction.
-9. Show health-risk screening.
-10. Show ingredient/allergen findings.
-11. Show evidence verification and trust score.
-12. Show explainable recommendations.
-
-For a guaranteed demo, keep the existing known backend demo scan available in addition to live OCR.
+- [ ] **Multilingual OCR Engine**: Support for Hindi, regional Indian languages, French, and Spanish labels.
+- [ ] **Enhanced Table Reconstruction**: Graph-based deep learning algorithms for heavily distorted labels.
+- [ ] **Barcode Lookup Integration**: Fallback product database retrieval when labels are damaged.
+- [ ] **Personalized Health Profiles**: Custom dietary constraint warnings (e.g., Diabetic-friendly, Vegan, Keto, Hypertension).
+- [ ] **Mobile Native Application**: React Native / Flutter implementation with direct camera scanning.
 
 ---
 
-## 17. Current OCR Limitation
+<div align="center">
 
-The current OCR prototype is optimized for English labels.
+Made with ❤️ by **TeamRocket.exe** (Lovely Sharma)
 
-Consumer-captured labels can contain:
-
-- unusual layouts
-- rotated text
-- low resolution
-- glare
-- perspective distortion
-- OCR spelling errors
-- separated nutrition-table columns
-
-Therefore the parser uses conservative extraction and exposes confidence/completeness rather than guessing missing values.
-
-Future versions can add:
-
-- Hindi
-- French
-- Italian
-- automatic language detection
-- stronger table reconstruction
-- multilingual ingredient dictionaries
-
----
-
-## 18. Future Enhancements
-
-- Multilingual OCR.
-- Better nutrition-table reconstruction.
-- Automatic serving-size detection.
-- Barcode/product lookup.
-- Broader regulatory evidence sources.
-- Controlled personalized recommendations.
-- User preference profiles.
-- Offline model retraining pipeline with validation and model versioning.
-- Production object storage for uploaded images.
-- Authentication and authorization hardening.
-- Automated tests and CI/CD.
-
----
-
-## 19. Team
-
-### Team Rocket.exe
-
-| Member | Role |
-|---|---|
-| Member 1 | Add team member name and contribution |
-| Member 2 | Add team member name and contribution |
-| Member 3 | Add team member name and contribution |
-| Member 4 | Add team member name and contribution |
-
-> Replace the placeholders above with the final names and roles before submission.
-
----
-
-## 20. Screenshots / Demo
-
-Add final screenshots before submission.
-
-Recommended screenshots:
-
-```text
-docs/screenshots/
-├── home-dashboard.png
-├── label-upload.png
-├── ocr-result.png
-├── nutrition-analysis.png
-├── ingredient-analysis.png
-├── trust-score.png
-└── recommendations.png
-```
-
-Recommended demo evidence:
-
-- Landing page
-- Label upload/camera
-- OCR result
-- Nutrition intelligence
-- Health screening
-- Ingredient/allergen analysis
-- Claim verification
-- Trust score
-- Recommendations
-
----
-
-## 21. Development Notes
-
-The project is a monorepo using pnpm workspaces.
-
-Keep these services running together during development:
-
-```text
-Next.js       :3000
-Express       :4000
-ML service    :8000
-OCR service   :8001
-PostgreSQL    :5432
-```
-
-Do not commit:
-
-- `.env`
-- Python virtual environments
-- generated caches
-- large temporary OCR files
-- the ~509 MB Random Forest `.joblib` model through normal Git
-
-The trained model artifact should be handled through Git LFS, an artifact/model registry, or another appropriate large-file mechanism if it must be distributed with the project.
-
----
-
-## 22. License / Academic Use
-
-This repository is a college major-project / hackathon prototype. Add the team's final license, institutional information, and third-party dataset/model attribution required by the project submission rules.
-
----
-
-## 23. Final Submission Checklist
-
-- [ ] README updated
-- [ ] Team member names added
-- [ ] Roles/contributions added
-- [ ] Screenshots added
-- [ ] Demo flow tested
-- [ ] API health checked
-- [ ] OCR health checked
-- [ ] ML health checked
-- [ ] Database connected
-- [ ] `.env` excluded from Git
-- [ ] Large `.joblib` model excluded from normal Git
-- [ ] No hard-coded passwords/API keys
-- [ ] Final Git push completed
+</div>
