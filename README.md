@@ -131,11 +131,20 @@ Express API
 
 ## Roadmap
 
-- [ ] Nutrition and food analysis.
-- [ ] Food recognition.
-- [ ] Nutritional information and insights.
-- [ ] User interface improvements.
-- [ ] Backend API integration.
+- Nutrition Normalization       ✅
+- Nutri-Score ML                 ✅
+- Ingredient Parser              ✅
+- Allergen Detection             ✅
+- Preservative Detection        ✅
+- Color Detection                ✅
+- Additive Detection             ✅
+- Sweetener Detection            ✅
+- Flavouring Detection           ✅
+- Raising Agent Detection        ✅
+- INS/E-number Detection         ✅
+- INS/E-number Mapping           ✅
+- Ingredient Analysis API        ✅
+- Database → Ingredient Analysis ✅
 
 ```
                  FOOD LABEL
