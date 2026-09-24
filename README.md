@@ -425,16 +425,6 @@ curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
 
 ---
 
-## 👥 Team Details
-
-<div align="center">
-
-### 🚀 Team Name: `TeamRocket.exe`
-
-| Avatar | Team Member | Role | Socials / Contact |
-| :---: | :--- | :--- | :---: |
-| 🧑‍💻 | **Lovely Sharma**  | Full-Stack Developer, AI/ML Engineer, OCR Architect | [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/LovelySharma-dev) |
-
 <br/>
 
 > 🏆 Built with passion 
