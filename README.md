@@ -455,6 +455,6 @@ curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
 
 <div align="center">
 
-Made with ❤️ by **TeamRocket.exe** (Lovely Sharma)
+Made with ❤️ by **Lovely**
 
 </div>
