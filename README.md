@@ -12,8 +12,7 @@
 
 <!-- Status Badges -->
 <p align="center">
-  <img src="https://img.shields.io/badge/Team-TeamRocket.exe-FF0055?style=for-the-badge&logo=rocket&logoColor=white" alt="Team Name" />
-  <img src="https://img.shields.io/badge/Developer-Lovely%20Sharma%20(Solo)-00C853?style=for-the-badge&logo=github&logoColor=white" alt="Solo Developer" />
+
   <img src="https://img.shields.io/badge/ML%20Accuracy-94.87%25-7C4DFF?style=for-the-badge&logo=scikitlearn&logoColor=white" alt="ML Accuracy" />
   <img src="https://img.shields.io/badge/Status-Active%20Prototype-00E5FF?style=for-the-badge&logo=git&logoColor=white" alt="Project Status" />
   <img src="https://img.shields.io/badge/License-MIT-FFD600?style=for-the-badge&logo=open-source-initiative&logoColor=black" alt="License" />
