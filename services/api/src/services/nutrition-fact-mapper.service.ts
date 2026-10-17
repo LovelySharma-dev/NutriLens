@@ -99,7 +99,7 @@ export function mapNutritionFactsToInput(
       nutrition.sugars = value;
     } else if (name === "fiber" || name === "dietary fiber") {
       nutrition.fiber = value;
-    } else if (name === "protein") {
+    } else if (name === "protein" || name === "proteins") {
       nutrition.proteins = value;
     } else if (name === "salt") {
       nutrition.salt = value;

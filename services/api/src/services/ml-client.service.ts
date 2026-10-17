@@ -1,12 +1,12 @@
 export interface MlNutritionInput {
-  energy_100g: number;
-  fat_100g: number;
-  saturated_fat_100g: number;
-  carbohydrates_100g: number;
-  sugars_100g: number;
-  fiber_100g: number;
-  proteins_100g: number;
-  salt_100g: number;
+  energy_100g: number | null;
+  fat_100g: number | null;
+  saturated_fat_100g: number | null;
+  carbohydrates_100g: number | null;
+  sugars_100g: number | null;
+  fiber_100g: number | null;
+  proteins_100g: number | null;
+  salt_100g: number | null;
 }
 
 export interface MlPredictionResult {
@@ -15,6 +15,22 @@ export interface MlPredictionResult {
   model: {
     type: string;
     estimators: number;
+  };
+  imputedFeatures?: string[] | null;
+  explanation?: {
+    method: string;
+    grade: string;
+    note?: string;
+    features: Array<{
+      feature: string;
+      value: number;
+      baseline: number;
+      contribution: number;
+    }>;
+  } | null;
+  healthRisk?: {
+    level: string;
+    flags: Array<{ nutrient: string; value: number; level: string }>;
   };
 }
 

@@ -32,6 +32,10 @@ NUTRIENT_PATTERNS = {
     ],
     "salt": [
         r"\bsalt\b",
+        r"नमक",
+    ],
+    "sodium": [
+        r"\bsodium\b",
     ],
 }
 
@@ -104,6 +108,13 @@ def extract_allergens(text: str) -> list[str]:
         "celery",
         "sesame",
         "nuts",
+        "almond",
+        "cashew",
+        "egg",
+        "fish",
+        "lactose",
+        "shellfish",
+        "crustacean",
     ]
 
     lower_text = text.lower()
@@ -203,6 +214,21 @@ def extract_nutrition_lines(
             "sourceText": line,
         }
 
+    # Fallback: Look for energy/fat values in the entire text if not found
+    if "energy" not in nutrition:
+        # More lenient pattern for OCR errors (e.g., "2O00" instead of "2000")
+        energy_match = re.search(
+            r"(\d{3,4}[O0]\d{2})\s*[kK][cC][aA][lL]",
+            text,
+            flags=re.IGNORECASE,
+        )
+        if energy_match:
+            value_str = energy_match.group(1).replace('O', '0')
+            nutrition["energy"] = {
+                "value": float(value_str),
+                "unit": "kcal",
+                "sourceText": energy_match.group(0),
+            }
     return nutrition
 
 def _detection_center_y(detection: dict[str, Any]) -> float:
@@ -274,8 +300,32 @@ def _normalize_nutrient_label(text: str) -> str | None:
     if re.search(r"\bproteins?\b", normalized):
         return "proteins"
 
-    if re.search(r"\bsalt\b", normalized):
+    if re.search(r"\bsalt\b|\bnamak\b|नमक", normalized):
         return "salt"
+
+    if re.search(r"\bsodium\b", normalized):
+        return "sodium"
+
+    if re.search(r"ऊर्जा|calories?", normalized):
+        return "energy"
+
+    if re.search(r"संतृप्त|saturated", normalized):
+        return "saturatedFat"
+
+    if re.search(r"कार्बोहाइड्रेट|carbohyd", normalized):
+        return "carbohydrates"
+
+    if re.search(r"शर्करा|sugars?", normalized):
+        return "sugars"
+
+    if re.search(r"फाइबर|fib(?:re|er)", normalized):
+        return "fiber"
+
+    if re.search(r"प्रोटीन|proteins?", normalized):
+        return "proteins"
+
+    if re.search(r"वसा", normalized) and "संतृप्त" not in normalized:
+        return "fat"
 
     if re.fullmatch(r"fat", normalized):
         return "fat"
@@ -356,7 +406,6 @@ def extract_nutrition_from_detections(
         if (
          numeric_value
          and _is_horizontal_detection(detection)
-         and _detection_left_x(detection) < 720
         ):
             value, unit = numeric_value
 
@@ -439,6 +488,31 @@ def extract_nutrition_from_detections(
 
     return nutrition
 
+def _finalize_nutrition(
+    nutrition: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    energy = nutrition.get("energy")
+    if energy and str(energy.get("unit", "")).lower() == "kj":
+        energy["value"] = round(float(energy["value"]) / 4.184, 1)
+        energy["unit"] = "kcal"
+        energy["sourceText"] = f"{energy.get('sourceText', '')} (converted from kJ)"
+
+    sodium = nutrition.get("sodium")
+    if sodium and "salt" not in nutrition:
+        unit = str(sodium.get("unit", "")).lower()
+        amount = float(sodium["value"])
+        grams = amount / 1000 if unit == "mg" else amount
+        nutrition["salt"] = {
+            "value": round(grams * 2.5, 3),
+            "unit": "g",
+            "sourceText": f"estimated from sodium: {sodium.get('sourceText', '')}",
+            "confidence": sodium.get("confidence", 0.5),
+        }
+
+    nutrition.pop("sodium", None)
+    return nutrition
+
+
 def parse_label(
     text: str,
     detections: list[dict[str, Any]] | None = None,
@@ -458,6 +532,8 @@ def parse_label(
     else:
         nutrition = extract_nutrition_lines(normalized)
 
+    nutrition = _finalize_nutrition(nutrition)
+
     nutrition_quality = {
         "featuresDetected": len(nutrition),
         "requiredFeatures": 8,
@@ -474,14 +550,18 @@ def parse_label(
         "claims": extract_claims(normalized),
     }
 def extract_product_name(text: str) -> str | None:
-    lines = [
-        line.strip()
-        for line in text.splitlines()
-        if line.strip()
-    ]
+    skip = re.compile(
+        r"ingredient|nutrition|energy|serving|per\s+100|allergen|storage|kcal|protein|carbohydrate|sodium|salt|sugar|\bfat\b|fibre|fiber",
+        flags=re.IGNORECASE,
+    )
 
-    for line in lines:
-        if "crisps" in line.lower():
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if len(line) < 3 or len(line) > 80 or skip.search(line):
+            continue
+        if re.fullmatch(r"[\d\W_]+", line):
+            continue
+        if re.search(r"[A-Za-z\u0900-\u097F]{3}", line):
             return line
 
     return None

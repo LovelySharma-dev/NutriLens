@@ -35,6 +35,11 @@ export async function createScanFromOcrResult(ocrResult: OcrResult) {
     position: idx + 1,
   }));
 
+  // Normalize allergens from OCR result
+  const normalizedAllergens = (parsed.allergens || []).map((a: string) =>
+    a.toLowerCase().trim()
+  );
+
   const claimEntries = (parsed.claims || []).map((text) => ({
     text,
   }));

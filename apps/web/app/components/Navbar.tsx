@@ -3,17 +3,20 @@
 import React, { useEffect, useState } from 'react';
 import { Eye, Leaf, Scan } from 'lucide-react';
 import gsap from 'gsap';
+import { usePreferences } from './PreferencesProvider';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { t, reduceMotion } = usePreferences();
 
   useEffect(() => {
-    // GSAP entrance animation for navbar
-    gsap.fromTo(
-      '#main-nav',
-      { y: -50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.2 }
-    );
+    if (!reduceMotion) {
+      gsap.fromTo(
+        '#main-nav',
+        { y: -50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.2 }
+      );
+    }
 
     const handleScroll = () => {
       if (window.scrollY > 40) {
@@ -25,7 +28,7 @@ export default function Navbar() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [reduceMotion]);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -79,6 +82,12 @@ export default function Navbar() {
             How It Works
           </button>
           <button
+            onClick={() => scrollToSection('studio')}
+            className="hover:text-emerald-400 transition-colors"
+          >
+            {t('studio')}
+          </button>
+          <button
             onClick={() => scrollToSection('intelligence')}
             className="hover:text-emerald-400 transition-colors"
           >
@@ -94,11 +103,18 @@ export default function Navbar() {
 
         {/* CTA */}
         <button
+          type="button"
+          onClick={() => scrollToSection('studio')}
+          className="md:hidden rounded-full border border-white/15 px-3 py-2 text-xs font-semibold text-white"
+        >
+          {t('studio')}
+        </button>
+        <button
           onClick={() => scrollToSection('scan')}
           className="relative inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full text-xs font-semibold tracking-wide text-slate-950 bg-gradient-to-r from-emerald-400 to-lime-400 hover:from-emerald-300 hover:to-lime-300 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] active:scale-95"
         >
           <Scan className="w-4 h-4 text-slate-950" />
-          <span>Scan Label</span>
+          <span>{t('scan')}</span>
         </button>
       </nav>
     </header>

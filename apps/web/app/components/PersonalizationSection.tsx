@@ -28,7 +28,7 @@ export default function PersonalizationSection() {
           Your food choices are <span className="text-gradient-green">personal.</span>
         </h2>
         <p className="text-slate-400 text-lg">
-          Upcoming release features will allow tailored profile parameters for personal health conditions, dietary preferences, and fitness goals.
+          Save allergens and diet screens in Your kitchen. Scans and the reference shelf use that profile. The match is a preference check, not a medical clearance.
         </p>
       </div>
 

@@ -4,9 +4,38 @@ import { calculateTrustScore } from "./trust.service.js";
 import { analyzeIngredients } from "./ingredient-analysis.service.js";
 import { mapNutritionFactsToInput } from "./nutrition-fact-mapper.service.js";
 import { predictNutrition } from "./nutrition-prediction.service.js";
-import { generateRecommendations } from "./recommendation.service.js";
+import { generateRecommendations, applyProfile, type ConsumerProfile } from "./recommendation.service.js";
 
-export async function analyzeScan(scanId: string) {
+function extractAllergensFromText(text: string): string[] {
+  const knownTerms = [
+    "milk",
+    "soy",
+    "wheat",
+    "gluten",
+    "barley",
+    "peanut",
+    "mustard",
+    "celery",
+    "sesame",
+    "nuts",
+  ];
+
+  const lowerText = text.toLowerCase();
+  const detected: string[] = [];
+
+  for (const term of knownTerms) {
+    if (lowerText.includes(term)) {
+      detected.push(term);
+    }
+  }
+
+  return detected;
+}
+
+export async function analyzeScan(
+  scanId: string,
+  profile?: ConsumerProfile,
+) {
   const scan = await prisma.scan.findUnique({
     where: { id: scanId },
     include: {
@@ -40,8 +69,31 @@ export async function analyzeScan(scanId: string) {
     .map((ingredient) => ingredient.name)
     .join(", ");
 
-  const ingredientAnalysis =
-    ingredients.length > 0 ? analyzeIngredients(ingredientText) : null;
+  let ingredientAnalysis;
+
+  if (ingredients.length > 0) {
+    ingredientAnalysis = analyzeIngredients(ingredientText);
+
+    // Merge allergens from OCR result with detected allergens
+    if (scan.labelData.rawOcrText) {
+      const ocrAllergens = extractAllergensFromText(scan.labelData.rawOcrText);
+      if (ocrAllergens.length > 0) {
+        ingredientAnalysis.allergens = [
+          ...new Set([
+            ...ingredientAnalysis.allergens.map((a: any) => a.ingredient),
+            ...ocrAllergens,
+          ]),
+        ].map((allergen) => ({
+          ingredient: allergen,
+          category: "ALLERGEN" as const,
+          matchedTerm: allergen,
+          concern: "Potential allergen requiring consumer-specific attention.",
+        }));
+      }
+    }
+  } else {
+    ingredientAnalysis = null;
+  }
 
   const nutritionMapping = mapNutritionFactsToInput(
     scan.labelData.nutritionFacts,
@@ -56,14 +108,17 @@ export async function analyzeScan(scanId: string) {
 
   let nutritionPrediction = null;
 
-  if (
-    nutritionPredictionStatus === "READY" &&
-    nutritionMapping.servingSizeGrams !== undefined
-  ) {
-    nutritionPrediction = await predictNutrition({
-      servingSizeGrams: nutritionMapping.servingSizeGrams,
-      nutrition: nutritionMapping.nutrition,
-    });
+  // Always attempt ML prediction - service now handles partial data with imputation
+  if (nutritionMapping.servingSizeGrams !== undefined) {
+    try {
+      nutritionPrediction = await predictNutrition({
+        servingSizeGrams: nutritionMapping.servingSizeGrams,
+        nutrition: nutritionMapping.nutrition,
+      });
+    } catch (error) {
+      console.warn("ML prediction failed:", error);
+      nutritionPrediction = null;
+    }
   }
   const verificationScores = claims.flatMap((claim) =>
     claim.verifications.map(
@@ -104,19 +159,30 @@ export async function analyzeScan(scanId: string) {
   );
 
   const structuredRecommendations = generateRecommendations({
-    healthRisk: nutritionPrediction?.healthRisk ?? null,
-    ingredientAnalysis,
+    healthRisk: nutritionPrediction?.prediction?.healthRisk ?? nutritionPrediction?.healthRisk ?? null,
+    ingredientAnalysis: ingredientAnalysis ? {
+      ...ingredientAnalysis,
+      allergenFound: ingredientAnalysis.allergens.length > 0,
+      allergens: ingredientAnalysis.allergens.map((a: any) => a.ingredient),
+      additivesCount: ingredientAnalysis.additives.length,
+    } : null,
     flaggedClaims: flaggedClaims.length,
     claimsAnalyzed: claims.length,
     nutritionFactsAvailable: scan.labelData.nutritionFacts.length > 0,
   });
+
+  const personalized = applyProfile(
+    structuredRecommendations,
+    profile,
+    `${ingredientText} ${scan.labelData.rawOcrText ?? ""}`,
+  );
 
   const summary =
     claims.length > 0
       ? `Analyzed ${claims.length} label claim(s) using available evidence verification.`
       : "Label analysis completed, but no claims were available for verification.";
 
-  const reportRecommendations = structuredRecommendations.map(
+  const reportRecommendations = personalized.recommendations.map(
     (recommendation) => recommendation.message,
   );
 
@@ -158,10 +224,17 @@ export async function analyzeScan(scanId: string) {
       nutritionPrediction: {
         status: nutritionPredictionStatus,
         missingFeatures: missingNutritionFeatures,
-        result: nutritionPrediction,
+        result: nutritionPrediction ? {
+          predictedGrade: nutritionPrediction.prediction.predictedGrade,
+          probabilities: nutritionPrediction.prediction.probabilities,
+          healthRisk: nutritionPrediction.prediction.healthRisk,
+          explanation: nutritionPrediction.prediction.explanation ?? null,
+          imputedFeatures: nutritionPrediction.prediction.imputedFeatures ?? null,
+        } : null,
       },
 
-      recommendations: structuredRecommendations,
+      personalFit: personalized.personalFit,
+      recommendations: personalized.recommendations,
     },
   };
 }

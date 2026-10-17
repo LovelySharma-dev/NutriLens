@@ -224,22 +224,22 @@ psql --version
 
 If you are on Windows, you can start all microservices simultaneously with a single command from the project root:
 
-```cmd
-:: Launch all 4 services at once (Web, API, ML, OCR)
-run-all.cmd
+```powershell
+# Launch all 4 services at once (Web, API, ML, OCR)
+.\run-all.cmd
 ```
 
 Alternatively, you can launch individual services separately:
-```cmd
-run-web.cmd    :: Next.js Frontend (http://localhost:3000)
-run-api.cmd    :: Express API Service (http://localhost:4000)
-run-ml.cmd     :: Python ML Service (http://localhost:8000)
-run-ocr.cmd    :: Python OCR Service (http://localhost:8001)
+```powershell
+.\run-web.cmd    # Next.js Frontend (http://localhost:3000)
+.\run-api.cmd    # Express API Service (http://localhost:4000)
+.\run-ml.cmd     # Python ML Service (http://localhost:8000)
+.\run-ocr.cmd    # Python OCR Service (http://localhost:8001)
 ```
 
 To stop all background services cleanly:
-```cmd
-stop-all.cmd
+```powershell
+.\stop-all.cmd
 ```
 
 ---
@@ -446,11 +446,13 @@ curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
 
 ## 🔮 Future Roadmap
 
-- [ ] **Multilingual OCR Engine**: Support for Hindi, regional Indian languages, French, and Spanish labels.
-- [ ] **Enhanced Table Reconstruction**: Graph-based deep learning algorithms for heavily distorted labels.
-- [ ] **Barcode Lookup Integration**: Fallback product database retrieval when labels are damaged.
-- [ ] **Personalized Health Profiles**: Custom dietary constraint warnings (e.g., Diabetic-friendly, Vegan, Keto, Hypertension).
-- [ ] **Mobile Native Application**: React Native / Flutter implementation with direct camera scanning.
+- [x] **Multilingual label reading**: English plus Hindi, French, Spanish, German, Tamil, Bengali, and Marathi on the OCR service. The studio speaks English, Hindi, Spanish, and French.
+- [x] **Personalized health profiles**: Saved allergens and diet screens, with conflict notes on each scan.
+- [x] **Reference shelf and scan history**: Preference matches, side-by-side compare, and a local record of finished scans.
+- [x] **Barcode lookup**: Open Food Facts fallback when a barcode is entered.
+- [ ] **Enhanced table reconstruction**: Heavier geometry for curved or torn labels.
+- [ ] **Photographed-label benchmark**: Field-level precision and recall on real aisle photos.
+- [ ] **Mobile native application**: The web app is usable on a phone browser; a store app is still separate.
 
 ---
 

@@ -43,6 +43,7 @@ export async function extractLabelWithOcr(
   file: Buffer,
   filename: string,
   contentType: string,
+  languages = "en",
 ): Promise<OcrResult> {
   const formData = new FormData();
 
@@ -62,7 +63,7 @@ export async function extractLabelWithOcr(
   );
 
   const response = await fetch(
-    `${OCR_SERVICE_URL}/ocr`,
+    `${OCR_SERVICE_URL}/ocr?languages=${encodeURIComponent(languages)}`,
     {
       method: "POST",
       body: formData,

@@ -1,16 +1,18 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { usePreferences } from './PreferencesProvider';
 
 export default function CustomCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
   const targetPos = useRef({ x: -100, y: -100 });
   const currentPos = useRef({ x: -100, y: -100 });
   const isHovered = useRef(false);
+  const { plainCursor, reduceMotion } = usePreferences();
 
   useEffect(() => {
-    // Disable on touch devices
-    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.matchMedia('(pointer: coarse)').matches || reduce || reduceMotion || plainCursor) return;
 
     document.body.classList.add('custom-cursor-enabled');
 
@@ -71,7 +73,9 @@ export default function CustomCursor() {
       window.removeEventListener('mouseover', handleMouseOver);
       cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [plainCursor, reduceMotion]);
+
+  if (plainCursor || reduceMotion) return null;
 
   return (
     <div

@@ -1,0 +1,134 @@
+[
+  {
+    "id": "roasted-chana",
+    "name": "Roasted chana",
+    "brand": "Reference shelf",
+    "category": "Snack",
+    "per100g": { "energy": 360, "fat": 6, "saturatedFat": 0.6, "carbohydrates": 58, "sugars": 3, "fiber": 17, "proteins": 19, "salt": 0.15 },
+    "allergens": [],
+    "ingredients": ["chickpeas", "sunflower oil", "salt"],
+    "tags": ["vegan", "vegetarian", "jain", "high-protein"],
+    "additives": false
+  },
+  {
+    "id": "rolled-oats",
+    "name": "Plain rolled oats",
+    "brand": "Reference shelf",
+    "category": "Breakfast",
+    "per100g": { "energy": 379, "fat": 7, "saturatedFat": 1.2, "carbohydrates": 67, "sugars": 1, "fiber": 10, "proteins": 13, "salt": 0.01 },
+    "allergens": ["gluten"],
+    "ingredients": ["whole grain oats"],
+    "tags": ["vegan", "vegetarian", "high-protein"],
+    "additives": false
+  },
+  {
+    "id": "moong-dal",
+    "name": "Split moong dal",
+    "brand": "Reference shelf",
+    "category": "Pantry",
+    "per100g": { "energy": 347, "fat": 1.2, "saturatedFat": 0.3, "carbohydrates": 59, "sugars": 2, "fiber": 8, "proteins": 24, "salt": 0.02 },
+    "allergens": [],
+    "ingredients": ["split green gram"],
+    "tags": ["vegan", "vegetarian", "jain", "high-protein"],
+    "additives": false
+  },
+  {
+    "id": "brown-rice",
+    "name": "Brown rice",
+    "brand": "Reference shelf",
+    "category": "Pantry",
+    "per100g": { "energy": 362, "fat": 2.7, "saturatedFat": 0.5, "carbohydrates": 76, "sugars": 0.7, "fiber": 3.5, "proteins": 7.5, "salt": 0.01 },
+    "allergens": [],
+    "ingredients": ["brown rice"],
+    "tags": ["vegan", "vegetarian", "jain"],
+    "additives": false
+  },
+  {
+    "id": "unsweetened-curd",
+    "name": "Plain dahi",
+    "brand": "Reference shelf",
+    "category": "Dairy",
+    "per100g": { "energy": 98, "fat": 4.3, "saturatedFat": 2.8, "carbohydrates": 4.7, "sugars": 4.7, "fiber": 0, "proteins": 11, "salt": 0.12 },
+    "allergens": ["milk"],
+    "ingredients": ["pasteurised milk", "live cultures"],
+    "tags": ["vegetarian", "high-protein"],
+    "additives": false
+  },
+  {
+    "id": "toned-milk",
+    "name": "Toned milk",
+    "brand": "Reference shelf",
+    "category": "Dairy",
+    "per100g": { "energy": 58, "fat": 3, "saturatedFat": 1.9, "carbohydrates": 4.8, "sugars": 4.8, "fiber": 0, "proteins": 3.2, "salt": 0.1 },
+    "allergens": ["milk"],
+    "ingredients": ["toned milk"],
+    "tags": ["vegetarian"],
+    "additives": false
+  },
+  {
+    "id": "peanut-butter",
+    "name": "Peanut butter",
+    "brand": "Reference shelf",
+    "category": "Spread",
+    "per100g": { "energy": 588, "fat": 50, "saturatedFat": 9, "carbohydrates": 20, "sugars": 6, "fiber": 6, "proteins": 25, "salt": 0.4 },
+    "allergens": ["peanut"],
+    "ingredients": ["peanuts", "salt"],
+    "tags": ["vegan", "vegetarian", "high-protein"],
+    "additives": false
+  },
+  {
+    "id": "soy-chunks",
+    "name": "Soya chunks",
+    "brand": "Reference shelf",
+    "category": "Pantry",
+    "per100g": { "energy": 345, "fat": 1, "saturatedFat": 0.2, "carbohydrates": 33, "sugars": 7, "fiber": 13, "proteins": 52, "salt": 0.02 },
+    "allergens": ["soy"],
+    "ingredients": ["defatted soya flour"],
+    "tags": ["vegan", "vegetarian", "high-protein"],
+    "additives": false
+  },
+  {
+    "id": "almond-drink",
+    "name": "Unsweetened almond drink",
+    "brand": "Reference shelf",
+    "category": "Drink",
+    "per100g": { "energy": 24, "fat": 1.8, "saturatedFat": 0.2, "carbohydrates": 0.6, "sugars": 0.2, "fiber": 0.4, "proteins": 0.8, "salt": 0.1 },
+    "allergens": ["tree nuts"],
+    "ingredients": ["water", "almonds"],
+    "tags": ["vegan", "vegetarian"],
+    "additives": false
+  },
+  {
+    "id": "whole-wheat-bread",
+    "name": "Whole wheat bread",
+    "brand": "Reference shelf",
+    "category": "Bakery",
+    "per100g": { "energy": 247, "fat": 3.4, "saturatedFat": 0.7, "carbohydrates": 41, "sugars": 4, "fiber": 7, "proteins": 13, "salt": 1.0 },
+    "allergens": ["gluten", "wheat"],
+    "ingredients": ["whole wheat flour", "yeast", "salt"],
+    "tags": ["vegan", "vegetarian", "high-protein"],
+    "additives": false
+  },
+  {
+    "id": "masala-chips",
+    "name": "Masala potato chips",
+    "brand": "Reference shelf",
+    "category": "Snack",
+    "per100g": { "energy": 520, "fat": 32, "saturatedFat": 12, "carbohydrates": 52, "sugars": 3, "fiber": 4, "proteins": 6, "salt": 1.6 },
+    "allergens": [],
+    "ingredients": ["potato", "palm oil", "salt", "spices", "onion powder"],
+    "tags": ["vegetarian"],
+    "additives": true
+  },
+  {
+    "id": "jaggery-cookies",
+    "name": "Jaggery cookies",
+    "brand": "Reference shelf",
+    "category": "Bakery",
+    "per100g": { "energy": 460, "fat": 18, "saturatedFat": 9, "carbohydrates": 68, "sugars": 32, "fiber": 2, "proteins": 5, "salt": 0.5 },
+    "allergens": ["gluten", "wheat", "milk"],
+    "ingredients": ["wheat flour", "jaggery", "butter", "egg"],
+    "tags": [],
+    "additives": true
+  }
+]

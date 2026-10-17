@@ -22,6 +22,7 @@ export async function extractOcrController(
         req.file.buffer,
         req.file.originalname,
         req.file.mimetype,
+        String(req.body?.languages || req.query?.languages || "en"),
       );
     } catch (ocrErr) {
       console.warn("Python OCR service unavailable, generating dynamic OCR scan payload:", ocrErr);

@@ -21,13 +21,19 @@ export interface Recommendation {
 
 export interface RecommendationInput {
   healthRisk?: {
-    overallLevel: "LOW" | "MEDIUM" | "HIGH" | "UNKNOWN";
-    factors: Array<{
+    overallLevel?: "LOW" | "MEDIUM" | "HIGH" | "UNKNOWN";
+    level?: string;
+    factors?: Array<{
       nutrient: string;
       value: number;
       unit: string;
       level: "LOW" | "MEDIUM" | "HIGH";
       message: string;
+    }>;
+    flags?: Array<{
+      nutrient: string;
+      value: number;
+      level: "LOW" | "MEDIUM" | "HIGH" | string;
     }>;
   } | null;
 
@@ -37,6 +43,8 @@ export interface RecommendationInput {
     colors: Array<unknown>;
     additives: Array<unknown>;
     sweeteners: Array<unknown>;
+    allergenFound?: boolean;
+    additivesCount?: number;
   } | null;
 
   flaggedClaims: number;
@@ -79,27 +87,56 @@ export function generateRecommendations(
   }
 
   if (input.healthRisk) {
-    for (const factor of input.healthRisk.factors) {
-      if (factor.level === "HIGH") {
-        recommendations.push({
-          type: "HEALTH",
-          severity: "HIGH",
-          title: `High ${factor.nutrient.replace(/_/g, " ")} content`,
-          message: factor.message,
-          reason: `${factor.nutrient.replace(/_/g, " ")} is ${factor.value} ${factor.unit}.`,
-          action:
-            "Consider comparing this product with alternatives containing lower levels of this nutrient.",
-        });
-      } else if (factor.level === "MEDIUM") {
-        recommendations.push({
-          type: "NUTRITION",
-          severity: "MEDIUM",
-          title: `Moderate ${factor.nutrient.replace(/_/g, " ")} content`,
-          message: factor.message,
-          reason: `${factor.nutrient.replace(/_/g, " ")} is ${factor.value} ${factor.unit}.`,
-          action:
-            "Review the nutrition information and compare with similar products if this nutrient is a concern.",
-        });
+    // Handle new ML service format with flags
+    if (input.healthRisk.flags && input.healthRisk.flags.length > 0) {
+      for (const flag of input.healthRisk.flags) {
+        if (flag.level === "HIGH") {
+          recommendations.push({
+            type: "HEALTH",
+            severity: "HIGH",
+            title: `High ${flag.nutrient.replace(/_/g, " ")} content`,
+            message: `High ${flag.nutrient.replace(/_/g, " ")} content detected.`,
+            reason: `${flag.nutrient.replace(/_/g, " ")} is ${flag.value}.`,
+            action:
+              "Consider comparing this product with alternatives containing lower levels of this nutrient.",
+          });
+        } else if (flag.level === "MEDIUM") {
+          recommendations.push({
+            type: "NUTRITION",
+            severity: "MEDIUM",
+            title: `Moderate ${flag.nutrient.replace(/_/g, " ")} content`,
+            message: `Moderate ${flag.nutrient.replace(/_/g, " ")} content detected.`,
+            reason: `${flag.nutrient.replace(/_/g, " ")} is ${flag.value}.`,
+            action:
+              "Review the nutrition information and compare with similar products if this nutrient is a concern.",
+          });
+        }
+      }
+    }
+    // Handle legacy format with factors
+    else if (input.healthRisk.factors) {
+      for (const factor of input.healthRisk.factors) {
+        if (factor.level === "HIGH") {
+          recommendations.push({
+            type: "HEALTH",
+            severity: "HIGH",
+            title: `High ${factor.nutrient.replace(/_/g, " ")} content`,
+            message: factor.message,
+            reason: `${factor.nutrient.replace(/_/g, " ")} is ${factor.value} ${factor.unit}.`,
+            action:
+              "Consider comparing this product with alternatives containing lower levels of this nutrient.",
+          });
+        } else if (factor.level === "MEDIUM") {
+          recommendations.push({
+            type: "NUTRITION",
+            severity: "MEDIUM",
+            title: `Moderate ${factor.nutrient.replace(/_/g, " ")} content`,
+            message: factor.message,
+            reason: `${factor.nutrient.replace(/_/g, " ")} is ${factor.value} ${factor.unit}.`,
+            action:
+              "Review the nutrition information and compare with similar products if this nutrient is a concern.",
+          });
+        }
       }
     }
   }
@@ -172,4 +209,89 @@ export function generateRecommendations(
   }
 
   return recommendations;
+}
+
+export interface ConsumerProfile {
+  name?: string;
+  allergens?: string[];
+  diets?: string[];
+  avoidAdditives?: boolean;
+}
+
+const ANIMAL = ["chicken", "mutton", "beef", "pork", "fish", "gelatin", "meat", "prawn"];
+const DAIRY_EGG = ["milk", "butter", "ghee", "cheese", "lactose", "egg", "honey", "whey", "curd", "dahi"];
+const ROOTS = ["onion", "garlic", "potato", "carrot"];
+
+export function applyProfile(
+  recommendations: Recommendation[],
+  profile: ConsumerProfile | undefined,
+  ingredientText: string,
+): {
+  recommendations: Recommendation[];
+  personalFit: {
+    status: "CLEAR" | "CONFLICT" | "NO_PROFILE";
+    reasons: string[];
+  };
+} {
+  if (!profile || (!profile.allergens?.length && !profile.diets?.length && !profile.avoidAdditives)) {
+    return {
+      recommendations,
+      personalFit: { status: "NO_PROFILE", reasons: [] },
+    };
+  }
+
+  const text = ingredientText.toLowerCase();
+  const reasons: string[] = [];
+  const next = [...recommendations];
+
+  for (const allergen of profile.allergens ?? []) {
+    const needle = allergen.toLowerCase();
+    const nutHit = needle === "tree nuts" && /almond|cashew|walnut|pistachio|hazelnut/.test(text);
+    if (text.includes(needle) || nutHit) {
+      reasons.push(`Your profile avoids ${allergen}, and the label text mentions it.`);
+    }
+  }
+
+  if (profile.diets?.includes("vegan")) {
+    const hit = [...ANIMAL, ...DAIRY_EGG].find((term) => text.includes(term));
+    if (hit) reasons.push(`Vegan screen: the label mentions ${hit}.`);
+  } else if (profile.diets?.includes("vegetarian") || profile.diets?.includes("jain")) {
+    const hit = ANIMAL.find((term) => text.includes(term));
+    if (hit) reasons.push(`Vegetarian screen: the label mentions ${hit}.`);
+  }
+
+  if (profile.diets?.includes("jain")) {
+    const hit = ROOTS.find((term) => text.includes(term));
+    if (hit) reasons.push(`Jain screen: the label mentions ${hit}.`);
+  }
+
+  if (reasons.length === 0 && (profile.allergens?.length ?? 0) > 0) {
+    next.unshift({
+      type: "ALLERGEN",
+      severity: "INFO",
+      title: "No overlap with your allergen list",
+      message: "None of the allergens saved on your profile were found in this label text.",
+      reason: "The match is only as complete as the text OCR extracted.",
+      action: "Still read the printed allergen statement if the photo missed a panel.",
+    });
+  }
+
+  for (const reason of reasons) {
+    next.unshift({
+      type: "ALLERGEN",
+      severity: "HIGH",
+      title: "Conflicts with your profile",
+      message: reason,
+      reason: "The saved profile was compared with the extracted ingredient and allergen text.",
+      action: "Choose another product from the safe shelf, or rescan a clearer ingredients panel.",
+    });
+  }
+
+  return {
+    recommendations: next,
+    personalFit: {
+      status: reasons.length > 0 ? "CONFLICT" : "CLEAR",
+      reasons,
+    },
+  };
 }

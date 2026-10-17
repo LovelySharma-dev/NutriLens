@@ -59,23 +59,17 @@ export async function predictNutrition(
       normalizedNutrition[feature] === undefined,
   );
 
-  if (missingFeatures.length > 0) {
-    throw new Error(
-      `Missing required nutrition features: ${missingFeatures.join(", ")}`,
-    );
-  }
-
   const prediction = await predictNutriScore({
-    energy_100g: normalizedNutrition.energy_100g!,
-    fat_100g: normalizedNutrition.fat_100g!,
+    energy_100g: normalizedNutrition.energy_100g ?? null,
+    fat_100g: normalizedNutrition.fat_100g ?? null,
     saturated_fat_100g:
-      normalizedNutrition.saturated_fat_100g!,
+      normalizedNutrition.saturated_fat_100g ?? null,
     carbohydrates_100g:
-      normalizedNutrition.carbohydrates_100g!,
-    sugars_100g: normalizedNutrition.sugars_100g!,
-    fiber_100g: normalizedNutrition.fiber_100g!,
-    proteins_100g: normalizedNutrition.proteins_100g!,
-    salt_100g: normalizedNutrition.salt_100g!,
+      normalizedNutrition.carbohydrates_100g ?? null,
+    sugars_100g: normalizedNutrition.sugars_100g ?? null,
+    fiber_100g: normalizedNutrition.fiber_100g ?? null,
+    proteins_100g: normalizedNutrition.proteins_100g ?? null,
+    salt_100g: normalizedNutrition.salt_100g ?? null,
   });
 
   const healthRisk = calculateHealthRisk({
