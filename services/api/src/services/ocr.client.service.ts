@@ -23,7 +23,11 @@ export interface OcrResult {
         value: number;
         unit: string;
         sourceText: string;
-        confidence: number;
+        confidence?: number;
+        basis?: string;
+        assumedColumnOrder?: boolean;
+        perPortion?: { value: number; unit: string } | null;
+        per100g?: { value: number; unit: string } | null;
       }
     >;
 
@@ -36,6 +40,18 @@ export interface OcrResult {
     ingredients: string[];
     allergens: string[];
     claims: string[];
+    columnOrder?: string;
+    readersDisagree?: string[];
+    reading?: {
+      disposition: string;
+      reasons: string[];
+      readersDisagree?: string[];
+      confidence?: {
+        value: number | null;
+        source: string;
+        calibrated: boolean;
+      };
+    };
   };
 }
 
@@ -43,6 +59,7 @@ export async function extractLabelWithOcr(
   file: Buffer,
   filename: string,
   contentType: string,
+  languages = "en",
 ): Promise<OcrResult> {
   const formData = new FormData();
 
@@ -62,7 +79,7 @@ export async function extractLabelWithOcr(
   );
 
   const response = await fetch(
-    `${OCR_SERVICE_URL}/ocr`,
+    `${OCR_SERVICE_URL}/ocr?languages=${encodeURIComponent(languages)}`,
     {
       method: "POST",
       body: formData,

@@ -35,7 +35,7 @@ export default function TrustScoreSection() {
     <section
       id="trust"
       ref={sectionRef}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
         {/* Badge */}
@@ -44,12 +44,12 @@ export default function TrustScoreSection() {
           <span>Evidence Verification Engine</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-12">
+        <h2 className="mb-10 text-3xl font-bold tracking-tight text-white sm:mb-12 sm:text-5xl lg:text-6xl">
           Evidence Verification Score
         </h2>
 
         {/* Circular Radar Graphic Centerpiece */}
-        <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center mb-10">
+        <div className="relative mb-10 flex aspect-square w-full max-w-72 items-center justify-center sm:h-80 sm:w-80 sm:max-w-none">
           {/* Animated SVG Ring */}
           <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
             {/* Background Track */}
@@ -91,7 +91,7 @@ export default function TrustScoreSection() {
 
         {/* Details Card */}
         <div className="w-full max-w-2xl p-6 rounded-2xl glass-panel border-emerald-500/30 bg-slate-950/90 text-left space-y-4">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="flex flex-col items-start gap-2 border-b border-white/10 pb-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono text-slate-400">DATA CONFIDENCE</span>
               <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 text-xs font-mono font-bold border border-emerald-500/30">

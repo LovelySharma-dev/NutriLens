@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Activity, ShieldCheck, ChevronDown, ChevronUp, AlertOctagon, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Activity, ShieldCheck, ChevronDown, ChevronUp, AlertOctagon, CheckCircle2, ShieldAlert, AlertCircle, Volume2 } from 'lucide-react';
+import { usePreferences } from './PreferencesProvider';
 
 export interface AnalysisData {
   scanId: string;
@@ -32,9 +33,52 @@ export interface AnalysisData {
         carbohydrates?: number;
         fiber?: number;
         protein?: number;
+        proteins?: number;
         salt?: number;
       };
       servingSizeGrams?: number;
+      table?: Array<{
+        nutrient: string;
+        unit: string | null;
+        per100g: number | null;
+        perPortion: number | null;
+      }>;
+    };
+    nutritionPrediction?: {
+      status: string;
+      missingFeatures?: string[];
+      message?: string | null;
+      healthRisk?: {
+        level: string;
+        flags: Array<{ nutrient: string; value: number; level: string }>;
+      } | null;
+      result?: {
+        predictedGrade: string;
+        probabilities: Record<string, number>;
+        healthRisk?: {
+          level: string;
+          flags: Array<{
+            nutrient: string;
+            value: number;
+            level: string;
+          }>;
+        };
+        explanation?: {
+          method: string;
+          note?: string;
+          features: Array<{
+            feature: string;
+            value: number;
+            baseline: number;
+            contribution: number;
+          }>;
+        } | null;
+        imputedFeatures?: string[] | null;
+      };
+    };
+    personalFit?: {
+      status: 'CLEAR' | 'CONFLICT' | 'NO_PROFILE';
+      reasons: string[];
     };
     recommendations: Array<{
       type: string;
@@ -53,16 +97,26 @@ interface DashboardSectionProps {
 
 export default function DashboardSection({ data }: DashboardSectionProps) {
   const [expandedCard, setExpandedCard] = useState<number | null>(0);
+  const { speak, t } = usePreferences();
 
   if (!data) return null;
 
   const { analysis, trustScore } = data;
+  const gradeStatus = analysis.nutritionPrediction?.status;
+  const gradeWithheld = gradeStatus === 'WITHHELD';
+  const gradeUnavailable = gradeStatus === 'UNAVAILABLE';
   const nutrition = analysis.nutrition.mappedInput;
+  const protein = nutrition.protein ?? nutrition.proteins;
+  const nutritionPrediction = analysis.nutritionPrediction?.result;
+  const predictedGrade = nutritionPrediction?.predictedGrade ?? null;
+  const gradeLabel = predictedGrade ?? (gradeWithheld ? '—' : '…');
+  const healthRiskLevel = nutritionPrediction?.healthRisk?.level || analysis.nutritionPrediction?.healthRisk?.level || analysis.riskLevel;
+  const healthRiskFlags = nutritionPrediction?.healthRisk?.flags || analysis.nutritionPrediction?.healthRisk?.flags || [];
 
   return (
     <section
       id="dashboard"
-      className="relative py-20 px-6 max-w-7xl mx-auto border-t border-emerald-500/20 scroll-mt-20"
+      className="relative mx-auto max-w-7xl scroll-mt-28 border-t border-emerald-500/20 px-4 py-16 sm:px-6 sm:py-20"
     >
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-white/10">
@@ -71,10 +125,10 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             <Activity className="w-3.5 h-3.5" />
             <span>LIVE ANALYSIS DASHBOARD</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
             Product Analysis Report
           </h2>
-          <span className="text-xs font-mono text-slate-400">
+          <span className="break-all font-mono text-xs text-slate-400">
             Scan ID: {data.scanId}
           </span>
         </div>
@@ -85,36 +139,131 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
         </div>
       </div>
 
+      {/* Data Incomplete Warning */}
+      {(gradeWithheld || gradeUnavailable) && (
+        <div className="mb-8 p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-sm flex items-start gap-3">
+          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <p>
+            {analysis.nutritionPrediction?.message
+              ?? (gradeWithheld
+                ? 'Grade withheld. A required nutrient is missing or impossible, so no median was used.'
+                : 'Grade unavailable.')}
+          </p>
+        </div>
+      )}
+
+      {analysis.personalFit && analysis.personalFit.status !== 'NO_PROFILE' && (
+        <div className={`mb-8 p-4 rounded-xl border text-sm ${analysis.personalFit.status === 'CONFLICT' ? 'bg-red-950/40 border-red-500/40 text-red-100' : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-100'}`}>
+          <p className="font-semibold">{analysis.personalFit.status === 'CONFLICT' ? t('fitConflict') : t('fitClear')}</p>
+          <ul className="mt-2 space-y-1">
+            {analysis.personalFit.reasons.map((reason) => <li key={reason}>{reason}</li>)}
+            {analysis.personalFit.reasons.length === 0 && <li>{t('fitClearDetail')}</li>}
+          </ul>
+        </div>
+      )}
+
+      {nutritionPrediction?.explanation && nutritionPrediction.explanation.features.length > 0 && (
+        <div className="mb-8 rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-white">{t('whyGrade')}</h3>
+              <p className="text-sm text-slate-400">{nutritionPrediction.explanation.note}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => speak(`${t('whyGrade')}. ${nutritionPrediction.explanation?.features.slice(0, 3).map((row) => `${row.feature} ${row.contribution}`).join('. ')}`)}
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 px-4 py-2 text-sm text-emerald-200"
+            >
+              <Volume2 className="w-4 h-4" aria-hidden="true" />
+              {t('readAloud')}
+            </button>
+          </div>
+          <ul className="space-y-3">
+            {nutritionPrediction.explanation.features.map((row) => {
+              const width = Math.min(100, Math.abs(row.contribution) * 100);
+              return (
+                <li key={row.feature}>
+                  <div className="flex justify-between text-sm text-slate-300 mb-1">
+                    <span>{row.feature.replaceAll('_', ' ').replace('-', ' ')}</span>
+                    <span className="font-mono">{row.contribution > 0 ? '+' : ''}{row.contribution.toFixed(3)}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/10">
+                    <div className={`h-2 rounded-full ${row.contribution >= 0 ? 'bg-emerald-400' : 'bg-amber-400'}`} style={{ width: `${Math.max(width, 4)}%` }} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
       {/* Top 4 KPI Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="mb-12 grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 sm:gap-6 lg:grid-cols-4">
         {/* Nutri-Score */}
-        <div className="p-6 rounded-2xl glass-panel border-white/10 flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border-white/10 glass-panel p-4 sm:p-6">
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">NUTRI-SCORE</span>
-            <span className="text-4xl font-black text-amber-400">C</span>
-            <span className="text-[10px] font-mono text-slate-500 block mt-1">Grade Prediction</span>
+            <span className={`text-3xl font-black sm:text-4xl ${
+              predictedGrade === 'A' ? 'text-emerald-400' :
+              predictedGrade === 'B' ? 'text-lime-400' :
+              predictedGrade === 'C' ? 'text-amber-400' :
+              predictedGrade === 'D' ? 'text-orange-400' :
+              predictedGrade === 'E' ? 'text-red-400' :
+              'text-slate-400'
+            }`}>
+              {gradeLabel}
+            </span>
+            <span className="text-[10px] font-mono text-slate-500 block mt-1">
+              {gradeWithheld ? 'Grade withheld' : gradeUnavailable ? 'Grade unavailable' : 'Grade prediction'}
+            </span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-amber-950/60 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xl">
-            C
+          <div className={`w-12 h-12 rounded-xl border flex items-center justify-center font-bold text-xl ${
+            predictedGrade === 'A' ? 'bg-emerald-950/60 border-emerald-500/30 text-emerald-400' :
+            predictedGrade === 'B' ? 'bg-lime-950/60 border-lime-500/30 text-lime-400' :
+            predictedGrade === 'C' ? 'bg-amber-950/60 border-amber-500/30 text-amber-400' :
+            predictedGrade === 'D' ? 'bg-orange-950/60 border-orange-500/30 text-orange-400' :
+            predictedGrade === 'E' ? 'bg-red-950/60 border-red-500/30 text-red-400' :
+            'bg-slate-900 border-white/10 text-slate-400'
+          }`}>
+            {gradeLabel}
           </div>
         </div>
 
         {/* Health Screening Risk */}
-        <div className="p-6 rounded-2xl glass-panel border-red-500/30 bg-slate-950/80 flex items-center justify-between">
+        <div className={`flex items-center justify-between gap-3 rounded-2xl glass-panel p-4 sm:p-6 ${
+          healthRiskLevel === 'HIGH' ? 'border-red-500/30 bg-slate-950/80' :
+          healthRiskLevel === 'MEDIUM' ? 'border-amber-500/30 bg-slate-950/60' :
+          healthRiskLevel === 'LOW' ? 'border-emerald-500/30 bg-slate-950/60' :
+          'border-white/10 bg-slate-950/40'
+        }`}>
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">HEALTH SCREENING</span>
-            <span className="text-2xl font-black text-red-400">HIGH</span>
+            <span className={`text-xl font-black sm:text-2xl ${
+              healthRiskLevel === 'HIGH' ? 'text-red-400' :
+              healthRiskLevel === 'MEDIUM' ? 'text-amber-400' :
+              healthRiskLevel === 'LOW' ? 'text-emerald-400' :
+              'text-slate-400'
+            }`}>
+              {healthRiskLevel}
+            </span>
             <span className="text-[10px] font-mono text-slate-500 block mt-1">Nutrient Alert</span>
           </div>
-          <ShieldAlert className="w-10 h-10 text-red-400" />
+          <ShieldAlert className={`w-10 h-10 ${
+            healthRiskLevel === 'HIGH' ? 'text-red-400' :
+            healthRiskLevel === 'MEDIUM' ? 'text-amber-400' :
+            healthRiskLevel === 'LOW' ? 'text-emerald-400' :
+            'text-slate-400'
+          }`} />
         </div>
 
         {/* Trust Score */}
-        <div className="p-6 rounded-2xl glass-panel border-emerald-500/30 flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border-emerald-500/30 glass-panel p-4 sm:p-6">
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">TRUST SCORE</span>
-            <span className="text-4xl font-black text-emerald-400 font-mono">
-              {(trustScore?.score ?? 0.92).toFixed(2)}
+            <span className="font-mono text-3xl font-black text-emerald-400 sm:text-4xl">
+              {trustScore?.score !== null && trustScore?.score !== undefined
+                ? trustScore.score.toFixed(2)
+                : 'N/A'}
             </span>
             <span className="text-[10px] font-mono text-slate-500 block mt-1">Claim Verification</span>
           </div>
@@ -122,10 +271,10 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
         </div>
 
         {/* Confidence */}
-        <div className="p-6 rounded-2xl glass-panel border-white/10 flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border-white/10 glass-panel p-4 sm:p-6">
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">CONFIDENCE</span>
-            <span className="text-4xl font-black text-white font-mono">
+            <span className="font-mono text-3xl font-black text-white sm:text-4xl">
               {Math.round((trustScore?.confidence ?? 0.2) * 100)}%
             </span>
             <span className="text-[10px] font-mono text-slate-500 block mt-1">Available Evidence</span>
@@ -148,27 +297,39 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             <div className="grid grid-cols-2 gap-4 font-mono text-sm">
               <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5">
                 <span className="text-slate-400 text-xs block">Energy</span>
-                <span className="text-white font-bold">{nutrition.energy ?? 440} kcal</span>
+                <span className="text-white font-bold">
+                  {nutrition.energy !== undefined ? `${nutrition.energy} kcal` : 'N/A'}
+                </span>
               </div>
               <div className="p-3.5 rounded-xl bg-slate-950 border border-red-500/20">
                 <span className="text-red-400 text-xs block">Sugar</span>
-                <span className="text-red-400 font-bold">{nutrition.sugars ?? 24} g</span>
+                <span className="text-red-400 font-bold">
+                  {nutrition.sugars !== undefined ? `${nutrition.sugars} g` : 'N/A'}
+                </span>
               </div>
               <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5">
                 <span className="text-slate-400 text-xs block">Protein</span>
-                <span className="text-emerald-400 font-bold">{nutrition.protein ?? 16} g</span>
+                <span className="text-emerald-400 font-bold">
+                  {protein !== undefined ? `${protein} g` : 'N/A'}
+                </span>
               </div>
               <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5">
                 <span className="text-slate-400 text-xs block">Fat</span>
-                <span className="text-white font-bold">{nutrition.fat ?? 6} g</span>
+                <span className="text-white font-bold">
+                  {nutrition.fat !== undefined ? `${nutrition.fat} g` : 'N/A'}
+                </span>
               </div>
               <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5">
                 <span className="text-slate-400 text-xs block">Saturated Fat</span>
-                <span className="text-amber-400 font-bold">{nutrition.saturatedFat ?? 2} g</span>
+                <span className="text-amber-400 font-bold">
+                  {nutrition.saturatedFat !== undefined ? `${nutrition.saturatedFat} g` : 'N/A'}
+                </span>
               </div>
               <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5">
                 <span className="text-slate-400 text-xs block">Salt</span>
-                <span className="text-amber-400 font-bold">{nutrition.salt ?? 0.6} g</span>
+                <span className="text-amber-400 font-bold">
+                  {nutrition.salt !== undefined ? `${nutrition.salt} g` : 'N/A'}
+                </span>
               </div>
             </div>
           </div>
@@ -180,45 +341,60 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             </h3>
 
             <div className="space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300">
-                <span className="font-bold flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-[10px]">HIGH</span>
-                  High Sugar Density (24 g/100g)
-                </span>
-                <AlertOctagon className="w-4 h-4 text-red-400" />
-              </div>
+              {healthRiskFlags.length > 0 ? (
+                healthRiskFlags.map((flag, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex items-center justify-between gap-3 rounded-xl p-3 ${
+                      flag.level === 'HIGH'
+                        ? 'bg-red-950/40 border border-red-500/30 text-red-300'
+                        : flag.level === 'MEDIUM'
+                        ? 'bg-amber-950/40 border border-amber-500/30 text-amber-300'
+                        : 'bg-emerald-950/40 border border-emerald-500/30 text-emerald-300'
+                    }`}
+                  >
+                    <span className="flex min-w-0 flex-wrap items-center gap-2 font-bold">
+                      <span
+                        className={`px-2 py-0.5 rounded border text-[10px] ${
+                          flag.level === 'HIGH'
+                            ? 'bg-red-500/20 border-red-500/40'
+                            : flag.level === 'MEDIUM'
+                            ? 'bg-amber-500/20 border-amber-500/40'
+                            : 'bg-emerald-500/20 border-emerald-500/40'
+                        }`}
+                      >
+                        {flag.level}
+                      </span>
+                      {flag.nutrient.charAt(0).toUpperCase() + flag.nutrient.slice(1)} ({flag.value})
+                    </span>
+                    <AlertOctagon
+                      className={`w-4 h-4 ${
+                        flag.level === 'HIGH'
+                          ? 'text-red-400'
+                          : flag.level === 'MEDIUM'
+                          ? 'text-amber-400'
+                          : 'text-emerald-400'
+                      }`}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="p-3 rounded-xl bg-slate-950/40 border border-white/10 text-slate-400">
+                  No health risk flags detected from available nutrition data.
+                </div>
+              )}
 
-              <div className="flex items-center justify-between p-3 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300">
-                <span className="font-bold flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-red-500/20 border border-red-500/40 text-[10px]">HIGH</span>
-                  High Energy Calorie Count (440 kcal)
-                </span>
-                <AlertOctagon className="w-4 h-4 text-red-400" />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300">
-                <span className="font-bold flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-[10px]">MED</span>
-                  Moderate Saturated Fat (2 g/100g)
-                </span>
-                <AlertOctagon className="w-4 h-4 text-amber-400" />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300">
-                <span className="font-bold flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-[10px]">MED</span>
-                  Moderate Salt Content (0.6 g/100g)
-                </span>
-                <AlertOctagon className="w-4 h-4 text-amber-400" />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300">
-                <span className="font-bold flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-[10px]">HIGH</span>
-                  Potential Allergen — Milk
-                </span>
-                <AlertOctagon className="w-4 h-4 text-amber-400" />
-              </div>
+              {analysis.ingredientAnalysis?.allergenFound && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-950/40 p-3 text-amber-300">
+                  <span className="flex min-w-0 flex-wrap items-center gap-2 font-bold">
+                    <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-[10px]">
+                      HIGH
+                    </span>
+                    Potential Allergen(s) — {analysis.ingredientAnalysis.allergens.join(', ')}
+                  </span>
+                  <AlertOctagon className="w-4 h-4 text-amber-400" />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -234,7 +410,7 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             return (
               <div
                 key={idx}
-                className={`p-6 rounded-2xl glass-panel border transition-all duration-300 ${
+                className={`rounded-2xl border p-4 transition-all duration-300 glass-panel sm:p-6 ${
                   rec.severity === 'HIGH'
                     ? 'border-red-500/30 bg-slate-950/80'
                     : 'border-amber-500/30 bg-slate-950/60'
@@ -242,9 +418,9 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
               >
                 <div
                   onClick={() => setExpandedCard(isExpanded ? null : idx)}
-                  className="flex items-center justify-between cursor-pointer"
+                  className="flex cursor-pointer items-start justify-between gap-3"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 flex-wrap items-center gap-3">
                     <span
                       className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase flex items-center gap-1.5 ${
                         rec.severity === 'HIGH'
@@ -255,12 +431,12 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
                       <span className="w-1.5 h-1.5 rounded-full bg-current animate-ping" />
                       {rec.severity}
                     </span>
-                    <h4 className="text-base font-bold text-white">{rec.title}</h4>
+                    <h4 className="min-w-0 text-base font-bold text-white">{rec.title}</h4>
                   </div>
                   {isExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                    <ChevronUp className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                    <ChevronDown className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" />
                   )}
                 </div>
 

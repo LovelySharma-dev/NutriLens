@@ -1,0 +1,12 @@
+{
+  "id": "bn-protein-columns",
+  "language": "bn",
+  "source": "constructed-lines",
+  "text": "per serving per 100 g\nপ্রোটিন\n9 g\n18 g\n",
+  "expected": {
+    "proteins": {
+      "perPortion": { "value": 9, "unit": "g" },
+      "per100g": { "value": 18, "unit": "g" }
+    }
+  }
+}

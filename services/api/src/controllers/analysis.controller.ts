@@ -6,7 +6,11 @@ export async function analyzeScanController(
   res: Response,
 ) {
   try {
-    const result = await analyzeScan(req.params.scanId);
+    const result = await analyzeScan(
+      req.params.scanId,
+      req.body?.profile,
+      req.body?.reading,
+    );
 
     res.json({
       status: "success",

@@ -19,21 +19,53 @@ export async function createScan(input: CreateScanInput) {
 export async function createScanFromOcrResult(ocrResult: OcrResult) {
   const parsed = ocrResult.parsedLabel;
 
-  const nutritionEntries = Object.entries(parsed.nutrition || {}).map(
-    ([nutrient, detail]) => ({
-      nutrient,
-      value: detail.value,
-      unit: detail.unit,
-      servingSize: parsed.servingSizeGrams
+  const nutritionEntries = Object.entries(parsed.nutrition || {}).flatMap(
+    ([nutrient, detail]) => {
+      const per100 = detail.per100g?.value;
+      const portion = detail.perPortion?.value;
+      const portionLabel = parsed.servingSizeGrams
         ? `${parsed.servingSizeGrams}g`
-        : undefined,
-    }),
+        : undefined;
+      const rows = [];
+
+      if (typeof per100 === "number") {
+        rows.push({
+          nutrient,
+          value: per100,
+          unit: detail.per100g?.unit || detail.unit,
+          servingSize: "100g",
+        });
+      } else {
+        rows.push({
+          nutrient,
+          value: detail.value,
+          unit: detail.unit,
+          servingSize: portionLabel,
+        });
+      }
+
+      if (typeof portion === "number") {
+        rows.push({
+          nutrient: `portion:${nutrient}`,
+          value: portion,
+          unit: detail.perPortion?.unit || detail.unit,
+          servingSize: portionLabel,
+        });
+      }
+
+      return rows;
+    },
   );
 
   const ingredientEntries = (parsed.ingredients || []).map((name, idx) => ({
     name,
     position: idx + 1,
   }));
+
+  // Normalize allergens from OCR result
+  const normalizedAllergens = (parsed.allergens || []).map((a: string) =>
+    a.toLowerCase().trim()
+  );
 
   const claimEntries = (parsed.claims || []).map((text) => ({
     text,

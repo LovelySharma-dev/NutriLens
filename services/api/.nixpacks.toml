@@ -1,0 +1,12 @@
+[phases.setup]
+nixPkgs = ["postgresql"]
+
+[phases.build]
+cmds = ["pnpm install", "pnpm build", "npx prisma generate"]
+
+[phases.start]
+cmds = ["node dist/server.js"]
+
+[variables]
+NODE_ENV = "production"
+PORT = "4000"

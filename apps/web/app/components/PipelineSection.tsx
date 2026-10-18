@@ -55,7 +55,7 @@ export default function PipelineSection() {
     <section
       id="how-it-works"
       ref={sectionRef}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
@@ -64,7 +64,7 @@ export default function PipelineSection() {
           <span>Intelligence Pipeline</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-6">
+        <h2 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
           So we built a lens for food labels.
         </h2>
         <p className="text-slate-400 text-lg sm:text-xl">
@@ -73,7 +73,7 @@ export default function PipelineSection() {
       </div>
 
       {/* Interactive Pipeline Node Grid */}
-      <div className="pipeline-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-3 mb-10">
+      <div className="pipeline-grid mb-10 grid grid-cols-3 gap-2 sm:gap-3 md:grid-cols-5 lg:grid-cols-9">
         {PIPELINE_NODES.map((node, index) => {
           const isSelected = activeNode.id === node.id;
           return (
@@ -81,14 +81,14 @@ export default function PipelineSection() {
               <button
                 onMouseEnter={() => setActiveNode(node)}
                 onClick={() => setActiveNode(node)}
-                className={`pipeline-step w-full flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 ${
+                className={`pipeline-step flex min-h-16 w-full flex-col items-center justify-center rounded-xl border p-2 text-center transition-all duration-300 sm:min-h-0 sm:p-3 ${
                   isSelected
-                    ? 'bg-emerald-950/80 border-emerald-400 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.3)] scale-105'
-                    : 'bg-slate-900/40 border-white/10 text-slate-400 hover:border-emerald-500/40 hover:text-slate-200'
+                    ? 'border-emerald-400 bg-emerald-950/80 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.3)] lg:scale-105'
+                    : 'border-white/10 bg-slate-900/40 text-slate-400 hover:border-emerald-500/40 hover:text-slate-200'
                 }`}
               >
-                <span className="text-[10px] font-mono text-slate-500 mb-1">0{index + 1}</span>
-                <span className="text-xs font-bold font-mono tracking-wider">{node.name}</span>
+                <span className="mb-1 font-mono text-[10px] text-slate-500">0{index + 1}</span>
+                <span className="font-mono text-[10px] font-bold leading-tight tracking-wide sm:text-xs sm:tracking-wider">{node.name}</span>
                 {isSelected && (
                   <CheckCircle2 className="w-3 h-3 text-emerald-400 mt-1" />
                 )}

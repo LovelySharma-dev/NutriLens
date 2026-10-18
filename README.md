@@ -12,8 +12,7 @@
 
 <!-- Status Badges -->
 <p align="center">
-
-  <img src="https://img.shields.io/badge/ML%20Accuracy-94.87%25-7C4DFF?style=for-the-badge&logo=scikitlearn&logoColor=white" alt="ML Accuracy" />
+  <img src="https://img.shields.io/badge/Table%20score-94.87%25-7C4DFF?style=for-the-badge&logo=scikitlearn&logoColor=white" alt="Held-out table score 94.87 percent" />
   <img src="https://img.shields.io/badge/Status-Active%20Prototype-00E5FF?style=for-the-badge&logo=git&logoColor=white" alt="Project Status" />
   <img src="https://img.shields.io/badge/License-MIT-FFD600?style=for-the-badge&logo=open-source-initiative&logoColor=black" alt="License" />
 </p>
@@ -124,9 +123,30 @@ By combining **EasyOCR text extraction**, **spatial label parsing**, **nutrition
 - Generates a holistic **Trust Score (0–100%)** based on verification & data completeness.
 - Provides actionable recommendations with severity, rationale, and recommended consumer action.
 
-### 💻 7. Interactive 3D Web Dashboard
-- Sleek modern interface built with **Next.js 16**, **Three.js**, **GSAP**, and **Tailwind CSS**.
-- Interactive data visualizations with **Recharts** and **Framer Motion**.
+### 💻 7. A short landing page and a working dashboard
+- The landing page is the introduction: what the lens does, and links to sign in.
+- The dashboard is where a scan, the portion table, the report, and the kitchen live.
+
+### 📏 8. Portion next to per 100 g
+- A packet that prints both columns keeps them apart. `9 g` on its own line, `9 gm`, and a split `9` plus `g` are read as grams.
+- The heading `per 100 g` is not stored as a nutrient. If the headings are missing, the left number is shown as the portion and the screen says so.
+- The grade uses the per 100 g figure. A printed zero stays zero.
+
+### 🔐 9. Email sign-in
+- Sign in and create an account with email and a password.
+- Forgot-password answers the same way whether or not that email is registered. Without a mail server, the reset code is shown on the reset page for this machine.
+
+### 🧺 10. Kitchen, languages, and access
+- Save allergens and diet screens. A shelf row is a preference match, not a medical clearance.
+- Finished scans, a side-by-side compare, and an Open Food Facts barcode lookup sit on the same dashboard.
+- Studio copy is in English, Hindi, Spanish, and French. Label reading also accepts German, Tamil, Bengali, and Marathi.
+- High contrast, larger text, reduced motion, a system cursor, spoken summaries, and on-screen captions.
+
+### 📄 11. Terms and copyright
+- `/terms` states the limits of a reading. `/copyright` names what belongs to this prototype and what stays with Open Food Facts and Nutri-Score.
+
+### 🔎 12. A reason for this packet
+- The report explains the grade for this label. TreeSHAP is used when that library is installed. Otherwise the same panel shows an occlusion against the training median, and it says which method ran.
 
 ---
 
@@ -170,9 +190,11 @@ Key Inputs      : energy_100g, fat_100g, saturated-fat_100g, carbohydrates_100g,
 
 | Metric | Score | Metric | Score |
 | :--- | :---: | :--- | :---: |
-| **Accuracy** | `0.9487` (94.87%) | **ROC-AUC** | `0.9960` (99.60%) |
+| **Accuracy** | `0.9487` (94.87%) on the held-out table | **ROC-AUC** | `0.9960` (99.60%) |
 | **Balanced Accuracy** | `0.9461` | **PR-AUC** | `0.9853` |
 | **Macro F1** | `0.9467` | **Weighted F1** | `0.9488` |
+
+These numbers describe the nutrition-table task from training. They are not an end-to-end score for phone photographs. The working paper is `docs/research/NUTRILENS_PAPER.md`.
 
 ---
 
@@ -219,27 +241,27 @@ psql --version
 
 ---
 
-### ⚡ Quick Start (Windows Script Launchers)
+### ⚡ Quick Start
 
-If you are on Windows, you can start all microservices simultaneously with a single command from the project root:
+The commands live in [`run/`](run/README.md). From the repository root:
 
-```cmd
-:: Launch all 4 services at once (Web, API, ML, OCR)
-run-all.cmd
+```powershell
+.\run\all.cmd
+.\run\status.cmd
 ```
 
-Alternatively, you can launch individual services separately:
-```cmd
-run-web.cmd    :: Next.js Frontend (http://localhost:3000)
-run-api.cmd    :: Express API Service (http://localhost:4000)
-run-ml.cmd     :: Python ML Service (http://localhost:8000)
-run-ocr.cmd    :: Python OCR Service (http://localhost:8001)
-```
+| Command | Service | Address |
+| --- | --- | --- |
+| `.\run\web.cmd` | Next.js | http://localhost:3000 |
+| `.\run\api.cmd` | Express API | http://localhost:4000 |
+| `.\run\ml.cmd` | Grade model | http://localhost:8000 |
+| `.\run\ocr.cmd` | Label reader | http://localhost:8001 |
+| `.\run\stop.cmd` | Stops ports 3000, 4000, 8000, and 8001 | |
+| `.\run\test-ocr.cmd "path\to\label.jpg"` | One image through the API | |
 
-To stop all background services cleanly:
-```cmd
-stop-all.cmd
-```
+`run-all.cmd`, `run-web.cmd`, `run-api.cmd`, `run-ml.cmd`, `run-ocr.cmd`, `stop-all.cmd`, and `test-ocr.cmd` at the repository root call the same scripts. A window that finds its port already open leaves that process running.
+
+Open http://localhost:3000, sign in, and use the dashboard. Email sign-in works without PostgreSQL. Saving a scan needs the database. A grade needs the ML service. A photograph needs the OCR service.
 
 ---
 
@@ -415,13 +437,12 @@ curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
 ```
 
 ### 🎬 Recommended Demo Flow
-1. **Landing Page**: Introduce the core mission (*"Label Samjhega India, Tabhi Sahi Chunega India"*).
-2. **Label Capture/Upload**: Upload `sample_food_label.jpg` or capture a custom packaged food item.
-3. **OCR Processing**: View bounding boxes and spatial text recognition confidence.
-4. **Structured Nutrition & Normalization**: Observe automatic per-serving to per-100g conversion.
-5. **ML Nutri-Score & Health Screening**: Review predicted Nutri-Grade (A-E) and sugar/fat/salt risk badges.
-6. **Ingredient & Allergen Scan**: Inspect identified additives, INS/E-numbers, and potential allergens.
-7. **Trust Score & Recommendations**: Explain the final verified Trust Score and personalized advice.
+1. **Landing page**: A short introduction, then Terms and Copyright in the footer.
+2. **Sign in**: Email and password at `/login`. Reset from `/forgot`.
+3. **Dashboard**: Upload a label, or run the demo scan.
+4. **Portion table**: Portion beside per 100 g, including a line such as `9 g`.
+5. **Report**: Grade, the local explanation, and nutrient screens. A shelf match is a preference, not a clearance.
+6. **Kitchen**: Allergens, diet screens, history, compare, and a barcode lookup.
 
 ---
 
@@ -435,11 +456,21 @@ curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
 
 ## 🔮 Future Roadmap
 
-- [ ] **Multilingual OCR Engine**: Support for Hindi, regional Indian languages, French, and Spanish labels.
-- [ ] **Enhanced Table Reconstruction**: Graph-based deep learning algorithms for heavily distorted labels.
-- [ ] **Barcode Lookup Integration**: Fallback product database retrieval when labels are damaged.
-- [ ] **Personalized Health Profiles**: Custom dietary constraint warnings (e.g., Diabetic-friendly, Vegan, Keto, Hypertension).
-- [ ] **Mobile Native Application**: React Native / Flutter implementation with direct camera scanning.
+- [x] **Multilingual label reading**: English plus Hindi, French, Spanish, German, Tamil, Bengali, and Marathi on the OCR service. The studio speaks English, Hindi, Spanish, and French.
+- [x] **Personalized health profiles**: Saved allergens and diet screens, with conflict notes on each scan.
+- [x] **Reference shelf and scan history**: Preference matches, side-by-side compare, and a local record of finished scans.
+- [x] **Barcode lookup**: Open Food Facts fallback when a barcode is entered.
+- [x] **Portion and per 100 g**: Spaced amounts such as `9 g` stay in the portion column when the packet prints one.
+- [x] **Email sign-in and password reset**: Same reset reply for unknown emails. Local code when no mail server is set.
+- [x] **Terms and copyright pages**.
+- [x] **Field-level score**: Each nutrient is counted as correct, missed, swapped, wrong unit, invented, or a plain wrong value. The checked files are constructed lines, not photographs.
+- [x] **Abstain on an uncertain table**: Missing column headings, mean box confidence under 0.55, or a disagreement between the two readers withholds the grade and still shows the reading. The 0.55 cutoff is not a calibrated probability.
+- [x] **One-cell correction**: The report can compare the model letter on the raw read with the letter after one edited cell.
+- [x] **Household shelf**: Confirmed scans are stored on this device, and a week later the studio asks whether the preference check still agrees.
+- [x] **Barcode check digit**: An 8, 12, 13, or 14 digit code is rejected when the GS1 check digit fails.
+- [ ] **Photographed-label set**: The scorer is ready. No photographed packets have been scored, so end-to-end precision and recall are still unknown.
+- [ ] **Enhanced table reconstruction**: Heavier geometry for curved or torn labels.
+- [ ] **Mobile native application**: The web app is usable on a phone browser; a store app is still separate.
 
 ---
 

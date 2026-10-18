@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { predictNutrition } from "../services/nutrition-prediction.service.js";
+import { compareNutritionReads, predictNutrition } from "../services/nutrition-prediction.service.js";
 
 export async function predictNutritionController(
   req: Request,
@@ -63,5 +63,43 @@ export async function predictNutritionController(
       status: "error",
       message: "Nutrition ML prediction service unavailable",
     });
+  }
+}
+
+export async function compareNutritionController(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { servingSizeGrams, raw, corrected } = req.body ?? {};
+    if (
+      typeof servingSizeGrams !== "number" ||
+      !Number.isFinite(servingSizeGrams) ||
+      servingSizeGrams <= 0
+    ) {
+      res.status(400).json({
+        status: "error",
+        message: "servingSizeGrams must be a positive number",
+      });
+      return;
+    }
+    if (!raw || typeof raw !== "object" || !corrected || typeof corrected !== "object") {
+      res.status(400).json({
+        status: "error",
+        message: "raw and corrected nutrition objects are required",
+      });
+      return;
+    }
+
+    const result = await compareNutritionReads({
+      servingSizeGrams,
+      raw,
+      corrected,
+    });
+    res.json({ status: "success", data: result });
+  } catch (error) {
+    console.error("Nutrition comparison error:", error);
+    const message = error instanceof Error ? error.message : "Failed to compare reads";
+    res.status(502).json({ status: "error", message });
   }
 }

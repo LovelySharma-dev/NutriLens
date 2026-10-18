@@ -28,7 +28,7 @@ export default function IngredientSection() {
   return (
     <section
       ref={null}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       {/* Section Header */}
       <div className="max-w-3xl mb-16">
@@ -37,7 +37,7 @@ export default function IngredientSection() {
           <span>Ingredient Parsing & Taxonomy</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-6">
+        <h2 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
           Ingredients tell a story.
           <span className="block text-gradient-green">We help you read it.</span>
         </h2>
@@ -48,7 +48,7 @@ export default function IngredientSection() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Left Column — Ingredient Tokens & Allergen Flow */}
-        <div className="lg:col-span-6 p-8 rounded-3xl glass-panel border-white/10 flex flex-col justify-between">
+        <div className="flex flex-col justify-between rounded-3xl border-white/10 glass-panel p-4 sm:p-8 lg:col-span-6">
           <div>
             <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <Layers className="w-5 h-5 text-emerald-400" />
@@ -111,14 +111,14 @@ export default function IngredientSection() {
         </div>
 
         {/* Right Column — Additive Categories */}
-        <div className="lg:col-span-6 p-8 rounded-3xl glass-panel border-white/10 flex flex-col justify-between">
+        <div className="flex flex-col justify-between rounded-3xl border-white/10 glass-panel p-4 sm:p-8 lg:col-span-6">
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Filter className="w-5 h-5 text-lime-400" />
+            <div className="mb-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-white sm:text-xl">
+                <Filter className="h-5 w-5 shrink-0 text-lime-400" />
                 <span>Additive Functional Categories</span>
               </h3>
-              <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-slate-900 text-slate-300 border border-white/10">
+              <span className="shrink-0 rounded border border-white/10 bg-slate-900 px-2.5 py-1 font-mono text-[10px] text-slate-300">
                 FSSAI / INS MAPPED
               </span>
             </div>

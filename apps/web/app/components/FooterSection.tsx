@@ -12,14 +12,14 @@ export default function FooterSection() {
   };
 
   return (
-    <footer className="relative bg-[#050609] pt-24 pb-12 border-t border-emerald-500/20 text-white overflow-hidden">
+    <footer className="safe-bottom relative overflow-hidden border-t border-emerald-500/20 bg-[#050609] pb-10 pt-16 text-white sm:pb-12 sm:pt-24">
       {/* Background ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-emerald-500/5 blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
         {/* Emotional Closing Banner */}
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center mb-20">
-          <h2 className="text-4xl sm:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+          <h2 className="mb-6 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-7xl">
             Know what's inside.
             <span className="block text-gradient-green">Choose with confidence.</span>
           </h2>
@@ -30,10 +30,10 @@ export default function FooterSection() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
             <button
               onClick={() => scrollToSection('scan')}
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-lime-400 hover:from-emerald-300 hover:to-lime-300 transition-all shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:scale-105 active:scale-95"
+              className="inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-emerald-400 to-lime-400 px-6 py-4 font-bold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all active:scale-95 sm:px-8 sm:hover:scale-105"
             >
               <span>Scan a Label</span>
               <ArrowRight className="w-5 h-5 text-slate-950" />
@@ -41,7 +41,7 @@ export default function FooterSection() {
 
             <button
               onClick={() => scrollToSection('how-it-works')}
-              className="inline-flex items-center gap-2 px-7 py-4 rounded-full font-semibold text-slate-300 bg-slate-900 hover:bg-slate-800 border border-white/10 transition-all"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-slate-900 px-6 py-4 font-semibold text-slate-300 transition-all hover:bg-slate-800 sm:px-7"
             >
               <span>Explore the Technology</span>
             </button>
@@ -49,7 +49,7 @@ export default function FooterSection() {
         </div>
 
         {/* Footer Navigation Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pt-12 border-t border-white/10 text-slate-400 text-sm">
+        <div className="grid grid-cols-1 gap-8 border-t border-white/10 pt-10 text-sm text-slate-400 sm:grid-cols-2 md:grid-cols-12 md:gap-10">
           {/* Brand Info */}
           <div className="md:col-span-6 space-y-4">
             <div className="flex items-center gap-3">
@@ -85,6 +85,21 @@ export default function FooterSection() {
                 <button onClick={() => scrollToSection('trust')} className="hover:text-emerald-400 transition-colors">
                   Claim Verification
                 </button>
+              </li>
+              <li>
+                <a href="/login" className="hover:text-emerald-400 transition-colors">
+                  Sign in
+                </a>
+              </li>
+              <li>
+                <a href="/terms" className="hover:text-emerald-400 transition-colors">
+                  Terms
+                </a>
+              </li>
+              <li>
+                <a href="/copyright" className="hover:text-emerald-400 transition-colors">
+                  Copyright
+                </a>
               </li>
             </ul>
           </div>

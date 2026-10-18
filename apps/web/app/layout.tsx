@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "./components/CustomCursor";
+import { PreferencesProvider } from "./components/PreferencesProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,6 +13,13 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#07080d",
+};
 
 export const metadata: Metadata = {
   title: "NutriLens — Food Label Intelligence Platform",
@@ -36,8 +44,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col bg-[#07080d] text-slate-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-300">
-        <CustomCursor />
-        {children}
+        <PreferencesProvider>
+          <CustomCursor />
+          {children}
+        </PreferencesProvider>
       </body>
     </html>
   );

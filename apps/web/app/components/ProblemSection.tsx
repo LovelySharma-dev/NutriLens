@@ -74,7 +74,7 @@ export default function ProblemSection() {
     <section
       id="problem"
       ref={sectionRef}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       {/* Section Header */}
       <div className="problem-headline max-w-3xl mb-16">
@@ -83,7 +83,7 @@ export default function ProblemSection() {
           <span>The Consumer Dilemma</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
+        <h2 className="mb-6 text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
           We read the brand.
           <span className="block text-gradient-green">We rarely read the label.</span>
         </h2>
@@ -122,21 +122,21 @@ export default function ProblemSection() {
             {/* Background noise tint */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-              <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-amber-400" />
-                <span className="font-mono text-xs uppercase tracking-widest text-slate-300">
+            <div className="mb-6 flex flex-col items-start gap-3 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
+                <FileText className="h-5 w-5 shrink-0 text-amber-400" />
+                <span className="font-mono text-xs uppercase tracking-wide text-slate-300 sm:tracking-widest">
                   Standard Packaging Label (Back Print)
                 </span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-500/40">
+              <span className="shrink-0 rounded border border-amber-500/40 bg-amber-950/80 px-2 py-0.5 font-mono text-[10px] text-amber-300">
                 HIGH DENSITY DATA
               </span>
             </div>
 
             {/* Confusing Label Grid */}
             <div className="space-y-4">
-              <div className="label-item-highlight grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-lg bg-slate-950/70 border border-white/5">
+              <div className="label-item-highlight grid grid-cols-2 gap-3 rounded-lg border border-white/5 bg-slate-950/70 p-3 sm:grid-cols-4">
                 <div>
                   <span className="text-[10px] text-slate-500 block">Serving Size</span>
                   <span className="text-xs font-mono text-slate-300">30g (approx 2 tbsp)</span>

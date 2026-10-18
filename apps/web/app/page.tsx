@@ -14,7 +14,9 @@ import TrustScoreSection from './components/TrustScoreSection';
 import PersonalizationSection from './components/PersonalizationSection';
 import ScanSection from './components/ScanSection';
 import DashboardSection, { AnalysisData } from './components/DashboardSection';
+import StudioSection from './components/StudioSection';
 import FooterSection from './components/FooterSection';
+import { usePreferences } from './components/PreferencesProvider';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -57,6 +59,28 @@ const FALLBACK_ANALYSIS_DATA: AnalysisData = {
         salt: 0.6,
       },
       servingSizeGrams: 50,
+    },
+    nutritionPrediction: {
+      status: 'READY',
+      result: {
+        predictedGrade: 'C',
+        probabilities: {
+          A: 0.05,
+          B: 0.15,
+          C: 0.55,
+          D: 0.20,
+          E: 0.05,
+        },
+        healthRisk: {
+          level: 'HIGH',
+          flags: [
+            { nutrient: 'sugars', value: 24, level: 'HIGH' },
+            { nutrient: 'energy', value: 440, level: 'HIGH' },
+            { nutrient: 'saturatedFat', value: 2, level: 'MEDIUM' },
+            { nutrient: 'salt', value: 0.6, level: 'MEDIUM' },
+          ],
+        },
+      },
     },
     recommendations: [
       {
@@ -109,9 +133,11 @@ export default function Home() {
   const [loadingStep, setLoadingStep] = useState('Reading food label...');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const { ocrLanguage, profile, rememberScan, reduceMotion, speak } = usePreferences();
 
   const handleAnalyze = async (scanId: string, file?: File | null) => {
     let analysisScanId = scanId;
+    let productName = 'Scanned label';
     try {
       setIsLoading(true);
       setError(null);
@@ -123,6 +149,7 @@ export default function Home() {
       if (file) {
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('languages', ocrLanguage);
 
         setLoadingStep('Running OCR...');
         setLoadingProgress(35);
@@ -150,6 +177,10 @@ export default function Home() {
           analysisScanId = ocrResult.data.scanId;
         }
 
+        if (ocrResult.data?.parsedLabel?.productName) {
+          productName = ocrResult.data.parsedLabel.productName;
+        }
+
         console.log('Parsed label & dynamic scanId:', ocrResult.data?.parsedLabel, analysisScanId);
       }
 
@@ -163,6 +194,7 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({ profile }),
         }
       );
 
@@ -179,23 +211,28 @@ export default function Home() {
 
       if (analysisResult.status === 'success' && analysisResult.data) {
         setAnalysisData(analysisResult.data);
-      } else {
-        setAnalysisData({
-          ...FALLBACK_ANALYSIS_DATA,
-          scanId: analysisScanId || crypto.randomUUID(),
+        const data = analysisResult.data as AnalysisData;
+        rememberScan({
+          id: data.scanId,
+          productName,
+          grade: data.analysis.nutritionPrediction?.result?.predictedGrade ?? null,
+          riskLevel: data.analysis.riskLevel,
+          allergens: (data.analysis.ingredientAnalysis?.allergens ?? []).map((item) =>
+            typeof item === 'string' ? item : String((item as { ingredient?: string }).ingredient ?? ''),
+          ).filter(Boolean),
+          summary: data.report?.summary ?? '',
+          personalStatus: data.analysis.personalFit?.status ?? 'NO_PROFILE',
+          trustScore: data.trustScore?.score ?? null,
         });
+        speak(`${productName}. Grade ${data.analysis.nutritionPrediction?.result?.predictedGrade ?? 'unavailable'}. ${data.analysis.personalFit?.reasons?.[0] ?? data.report?.summary ?? ''}`);
+      } else {
+        throw new Error(analysisResult.message ?? 'Analysis failed');
       }
 
       setLoadingProgress(100);
       setLoadingStep('Analysis complete');
     } catch (err) {
       console.error(err);
-
-      // Graceful fallback to dynamic scan payload so UX remains seamless
-      setAnalysisData({
-        ...FALLBACK_ANALYSIS_DATA,
-        scanId: analysisScanId || crypto.randomUUID(),
-      });
 
       setError(
         err instanceof Error
@@ -208,7 +245,7 @@ export default function Home() {
         setIsLoading(false);
         const dashEl = document.getElementById('dashboard');
         if (dashEl) {
-          dashEl.scrollIntoView({ behavior: 'smooth' });
+          dashEl.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
         }
       }, 500);
     }
@@ -227,6 +264,7 @@ export default function Home() {
       <ClaimVerificationSection />
       <TrustScoreSection />
       <PersonalizationSection />
+      <StudioSection />
       <ScanSection
         onAnalyze={handleAnalyze}
         isLoading={isLoading}

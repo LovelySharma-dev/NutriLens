@@ -90,7 +90,7 @@ export default function HeroSection() {
   return (
     <section
       ref={heroRef}
-      className="relative w-full h-screen min-h-[700px] flex items-center justify-center overflow-hidden bg-radial-gradient bg-grid-pattern pt-16"
+      className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-radial-gradient bg-grid-pattern px-4 pb-16 pt-28 sm:px-6 sm:pt-24"
     >
       {/* Background 3D Scene Container */}
       <div id="hero-3d-scene" className="absolute inset-0 z-0 pointer-events-auto transition-transform duration-75">
@@ -98,12 +98,12 @@ export default function HeroSection() {
       </div>
 
       {/* Hero Content Overlay */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center flex flex-col items-center pointer-events-none">
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-1 text-center pointer-events-none sm:px-2">
         
         {/* Badge */}
-        <div className="hero-badge pointer-events-auto inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-semibold tracking-wider text-emerald-300 uppercase">
+        <div className="hero-badge pointer-events-auto mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3 py-1.5 shadow-[0_0_15px_rgba(16,185,129,0.2)] backdrop-blur-md sm:px-4">
+          <Sparkles className="h-4 w-4 shrink-0 text-emerald-400" />
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-300 sm:text-xs sm:tracking-wider">
             Food Label Intelligence Engine
           </span>
         </div>
@@ -111,25 +111,25 @@ export default function HeroSection() {
         {/* Editorial Hero Headline */}
         <h1
           ref={headlineRef}
-          className="text-5xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-white mb-6 leading-[1.05]"
+          className="mb-6 text-[2.15rem] font-extrabold leading-[1.08] tracking-tight text-white min-[380px]:text-5xl sm:text-7xl sm:leading-[1.05] lg:text-8xl"
         >
           <span className="block text-gradient-silver">You eat it.</span>
           <span className="block text-gradient-green">But do you know it?</span>
         </h1>
 
         {/* Subhead */}
-        <p className="hero-subtext max-w-2xl text-lg sm:text-xl text-slate-300 font-normal mb-8 leading-relaxed">
+        <p className="hero-subtext mb-8 max-w-2xl text-base font-normal leading-relaxed text-slate-300 sm:text-xl">
           NutriLens turns confusing food labels into information you can actually understand.
         </p>
 
         {/* CTAs */}
         <div
           ref={ctaRef}
-          className="hero-cta pointer-events-auto flex flex-wrap items-center justify-center gap-4 mb-10"
+          className="hero-cta pointer-events-auto mb-10 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
         >
           <button
             onClick={() => scrollToSection('scan')}
-            className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-slate-950 bg-gradient-to-r from-emerald-400 via-lime-400 to-emerald-400 bg-[length:200%_auto] hover:bg-[position:right_center] transition-all duration-500 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:scale-105 active:scale-95"
+            className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-emerald-400 via-lime-400 to-emerald-400 bg-[length:200%_auto] px-6 py-4 font-bold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all duration-500 hover:bg-[position:right_center] active:scale-95 sm:px-8 sm:hover:scale-105"
           >
             <span className="text-base">Scan a Label</span>
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -137,7 +137,7 @@ export default function HeroSection() {
 
           <button
             onClick={() => scrollToSection('problem')}
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-full font-semibold text-slate-300 bg-slate-900/60 hover:bg-slate-800/80 border border-white/10 hover:border-emerald-500/40 backdrop-blur-md transition-all hover:text-white"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-slate-900/60 px-6 py-4 font-semibold text-slate-300 backdrop-blur-md transition-all hover:border-emerald-500/40 hover:bg-slate-800/80 hover:text-white sm:px-7"
           >
             <span>See How It Works</span>
             <ChevronDown className="w-4 h-4 text-emerald-400 animate-bounce" />
@@ -145,8 +145,16 @@ export default function HeroSection() {
         </div>
 
         {/* Supporting Line */}
-        <div className="hero-supporting text-xs sm:text-sm font-mono tracking-widest text-slate-400 uppercase">
-          Ingredients • Nutrition • Claims • Evidence • One Intelligent Lens
+        <div className="hero-supporting flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 px-1 text-[11px] font-mono uppercase tracking-wide text-slate-400 sm:text-sm sm:tracking-widest">
+          <span>Ingredients</span>
+          <span aria-hidden="true">•</span>
+          <span>Nutrition</span>
+          <span aria-hidden="true">•</span>
+          <span>Claims</span>
+          <span aria-hidden="true">•</span>
+          <span>Evidence</span>
+          <span aria-hidden="true">•</span>
+          <span>One Intelligent Lens</span>
         </div>
       </div>
     </section>
