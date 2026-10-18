@@ -33,13 +33,25 @@ export interface AnalysisData {
         carbohydrates?: number;
         fiber?: number;
         protein?: number;
+        proteins?: number;
         salt?: number;
       };
       servingSizeGrams?: number;
+      table?: Array<{
+        nutrient: string;
+        unit: string | null;
+        per100g: number | null;
+        perPortion: number | null;
+      }>;
     };
     nutritionPrediction?: {
       status: string;
       missingFeatures?: string[];
+      message?: string | null;
+      healthRisk?: {
+        level: string;
+        flags: Array<{ nutrient: string; value: number; level: string }>;
+      } | null;
       result?: {
         predictedGrade: string;
         probabilities: Record<string, number>;
@@ -90,17 +102,21 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
   if (!data) return null;
 
   const { analysis, trustScore } = data;
-  const isDataIncomplete = analysis.nutritionPrediction?.status === 'INCOMPLETE';
+  const gradeStatus = analysis.nutritionPrediction?.status;
+  const gradeWithheld = gradeStatus === 'WITHHELD';
+  const gradeUnavailable = gradeStatus === 'UNAVAILABLE';
   const nutrition = analysis.nutrition.mappedInput;
+  const protein = nutrition.protein ?? nutrition.proteins;
   const nutritionPrediction = analysis.nutritionPrediction?.result;
-  const predictedGrade = nutritionPrediction?.predictedGrade || 'N/A';
-  const healthRiskLevel = nutritionPrediction?.healthRisk?.level || analysis.riskLevel;
-  const healthRiskFlags = nutritionPrediction?.healthRisk?.flags || [];
+  const predictedGrade = nutritionPrediction?.predictedGrade ?? null;
+  const gradeLabel = predictedGrade ?? (gradeWithheld ? '—' : '…');
+  const healthRiskLevel = nutritionPrediction?.healthRisk?.level || analysis.nutritionPrediction?.healthRisk?.level || analysis.riskLevel;
+  const healthRiskFlags = nutritionPrediction?.healthRisk?.flags || analysis.nutritionPrediction?.healthRisk?.flags || [];
 
   return (
     <section
       id="dashboard"
-      className="relative py-20 px-6 max-w-7xl mx-auto border-t border-emerald-500/20 scroll-mt-20"
+      className="relative mx-auto max-w-7xl scroll-mt-28 border-t border-emerald-500/20 px-4 py-16 sm:px-6 sm:py-20"
     >
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-white/10">
@@ -109,10 +125,10 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             <Activity className="w-3.5 h-3.5" />
             <span>LIVE ANALYSIS DASHBOARD</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
             Product Analysis Report
           </h2>
-          <span className="text-xs font-mono text-slate-400">
+          <span className="break-all font-mono text-xs text-slate-400">
             Scan ID: {data.scanId}
           </span>
         </div>
@@ -124,12 +140,15 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
       </div>
 
       {/* Data Incomplete Warning */}
-      {isDataIncomplete && (
-        <div className="mb-8 p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-sm flex items-center gap-3">
-          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-          <div>
-            <span className="font-bold">Partial data:</span> Some nutrition features were not on the label. Only those missing fields use a dataset median, and a printed zero is kept as zero.
-          </div>
+      {(gradeWithheld || gradeUnavailable) && (
+        <div className="mb-8 p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-sm flex items-start gap-3">
+          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <p>
+            {analysis.nutritionPrediction?.message
+              ?? (gradeWithheld
+                ? 'Grade withheld. A required nutrient is missing or impossible, so no median was used.'
+                : 'Grade unavailable.')}
+          </p>
         </div>
       )}
 
@@ -179,12 +198,12 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
       )}
 
       {/* Top 4 KPI Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="mb-12 grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 sm:gap-6 lg:grid-cols-4">
         {/* Nutri-Score */}
-        <div className="p-6 rounded-2xl glass-panel border-white/10 flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border-white/10 glass-panel p-4 sm:p-6">
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">NUTRI-SCORE</span>
-            <span className={`text-4xl font-black ${
+            <span className={`text-3xl font-black sm:text-4xl ${
               predictedGrade === 'A' ? 'text-emerald-400' :
               predictedGrade === 'B' ? 'text-lime-400' :
               predictedGrade === 'C' ? 'text-amber-400' :
@@ -192,10 +211,10 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
               predictedGrade === 'E' ? 'text-red-400' :
               'text-slate-400'
             }`}>
-              {predictedGrade}
+              {gradeLabel}
             </span>
             <span className="text-[10px] font-mono text-slate-500 block mt-1">
-              {analysis.nutritionPrediction?.status === 'INCOMPLETE' ? 'Incomplete Data' : 'Grade Prediction'}
+              {gradeWithheld ? 'Grade withheld' : gradeUnavailable ? 'Grade unavailable' : 'Grade prediction'}
             </span>
           </div>
           <div className={`w-12 h-12 rounded-xl border flex items-center justify-center font-bold text-xl ${
@@ -206,12 +225,12 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             predictedGrade === 'E' ? 'bg-red-950/60 border-red-500/30 text-red-400' :
             'bg-slate-900 border-white/10 text-slate-400'
           }`}>
-            {predictedGrade}
+            {gradeLabel}
           </div>
         </div>
 
         {/* Health Screening Risk */}
-        <div className={`p-6 rounded-2xl glass-panel flex items-center justify-between ${
+        <div className={`flex items-center justify-between gap-3 rounded-2xl glass-panel p-4 sm:p-6 ${
           healthRiskLevel === 'HIGH' ? 'border-red-500/30 bg-slate-950/80' :
           healthRiskLevel === 'MEDIUM' ? 'border-amber-500/30 bg-slate-950/60' :
           healthRiskLevel === 'LOW' ? 'border-emerald-500/30 bg-slate-950/60' :
@@ -219,7 +238,7 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
         }`}>
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">HEALTH SCREENING</span>
-            <span className={`text-2xl font-black ${
+            <span className={`text-xl font-black sm:text-2xl ${
               healthRiskLevel === 'HIGH' ? 'text-red-400' :
               healthRiskLevel === 'MEDIUM' ? 'text-amber-400' :
               healthRiskLevel === 'LOW' ? 'text-emerald-400' :
@@ -238,10 +257,10 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
         </div>
 
         {/* Trust Score */}
-        <div className="p-6 rounded-2xl glass-panel border-emerald-500/30 flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border-emerald-500/30 glass-panel p-4 sm:p-6">
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">TRUST SCORE</span>
-            <span className="text-4xl font-black text-emerald-400 font-mono">
+            <span className="font-mono text-3xl font-black text-emerald-400 sm:text-4xl">
               {trustScore?.score !== null && trustScore?.score !== undefined
                 ? trustScore.score.toFixed(2)
                 : 'N/A'}
@@ -252,10 +271,10 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
         </div>
 
         {/* Confidence */}
-        <div className="p-6 rounded-2xl glass-panel border-white/10 flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border-white/10 glass-panel p-4 sm:p-6">
           <div>
             <span className="text-xs font-mono text-slate-400 block mb-1">CONFIDENCE</span>
-            <span className="text-4xl font-black text-white font-mono">
+            <span className="font-mono text-3xl font-black text-white sm:text-4xl">
               {Math.round((trustScore?.confidence ?? 0.2) * 100)}%
             </span>
             <span className="text-[10px] font-mono text-slate-500 block mt-1">Available Evidence</span>
@@ -291,7 +310,7 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
               <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5">
                 <span className="text-slate-400 text-xs block">Protein</span>
                 <span className="text-emerald-400 font-bold">
-                  {nutrition.protein !== undefined ? `${nutrition.protein} g` : 'N/A'}
+                  {protein !== undefined ? `${protein} g` : 'N/A'}
                 </span>
               </div>
               <div className="p-3.5 rounded-xl bg-slate-950 border border-white/5">
@@ -326,7 +345,7 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
                 healthRiskFlags.map((flag, idx) => (
                   <div
                     key={idx}
-                    className={`flex items-center justify-between p-3 rounded-xl ${
+                    className={`flex items-center justify-between gap-3 rounded-xl p-3 ${
                       flag.level === 'HIGH'
                         ? 'bg-red-950/40 border border-red-500/30 text-red-300'
                         : flag.level === 'MEDIUM'
@@ -334,7 +353,7 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
                         : 'bg-emerald-950/40 border border-emerald-500/30 text-emerald-300'
                     }`}
                   >
-                    <span className="font-bold flex items-center gap-2">
+                    <span className="flex min-w-0 flex-wrap items-center gap-2 font-bold">
                       <span
                         className={`px-2 py-0.5 rounded border text-[10px] ${
                           flag.level === 'HIGH'
@@ -366,8 +385,8 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
               )}
 
               {analysis.ingredientAnalysis?.allergenFound && (
-                <div className="flex items-center justify-between p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300">
-                  <span className="font-bold flex items-center gap-2">
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-950/40 p-3 text-amber-300">
+                  <span className="flex min-w-0 flex-wrap items-center gap-2 font-bold">
                     <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-[10px]">
                       HIGH
                     </span>
@@ -391,7 +410,7 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             return (
               <div
                 key={idx}
-                className={`p-6 rounded-2xl glass-panel border transition-all duration-300 ${
+                className={`rounded-2xl border p-4 transition-all duration-300 glass-panel sm:p-6 ${
                   rec.severity === 'HIGH'
                     ? 'border-red-500/30 bg-slate-950/80'
                     : 'border-amber-500/30 bg-slate-950/60'
@@ -399,9 +418,9 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
               >
                 <div
                   onClick={() => setExpandedCard(isExpanded ? null : idx)}
-                  className="flex items-center justify-between cursor-pointer"
+                  className="flex cursor-pointer items-start justify-between gap-3"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 flex-wrap items-center gap-3">
                     <span
                       className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase flex items-center gap-1.5 ${
                         rec.severity === 'HIGH'
@@ -412,12 +431,12 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
                       <span className="w-1.5 h-1.5 rounded-full bg-current animate-ping" />
                       {rec.severity}
                     </span>
-                    <h4 className="text-base font-bold text-white">{rec.title}</h4>
+                    <h4 className="min-w-0 text-base font-bold text-white">{rec.title}</h4>
                   </div>
                   {isExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400" />
+                    <ChevronUp className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                    <ChevronDown className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" />
                   )}
                 </div>
 

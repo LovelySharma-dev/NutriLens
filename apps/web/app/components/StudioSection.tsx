@@ -4,6 +4,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { BarChart3, History, ScanBarcode, ShieldCheck, UserRound, Volume2 } from 'lucide-react';
 import { usePreferences } from './PreferencesProvider';
 import { ALLERGEN_OPTIONS, CATALOG, assessFit, safeShelf, type CatalogProduct, type DietId, type Nutrients } from '../lib/safety';
+import { checkBarcode } from '../lib/barcode';
+import { agreementSummary } from '../lib/household';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -56,6 +58,8 @@ export default function StudioSection() {
   const [lookupBusy, setLookupBusy] = useState(false);
 
   const shelf = useMemo(() => safeShelf(prefs.profile), [prefs.profile]);
+  const household = prefs.household ?? [];
+  const agreement = useMemo(() => agreementSummary(household), [household]);
   const conflicts = prefs.history.filter((item) => item.personalStatus === 'CONFLICT').length;
 
   const toggleAllergen = (allergen: string) => {
@@ -89,11 +93,20 @@ export default function StudioSection() {
     setLookupError('');
     setLookup(null);
     const code = barcode.replace(/\D/g, '');
+    const checked = checkBarcode(code);
+    if (!checked.ok) {
+      setLookupError(checked.reason ?? 'That barcode did not pass the check digit.');
+      setLookupBusy(false);
+      return;
+    }
     try {
       let product: LookupProduct | null = null;
-      const api = await fetch(`${API_URL}/api/v1/studio/barcode/${code}`);
+      const api = await fetch(`${API_URL}/api/v1/studio/barcode/${checked.digits}`);
       if (api.ok) {
         product = (await api.json()).data as LookupProduct;
+      } else if (api.status === 400) {
+        const body = await api.json();
+        throw new Error(body.message ?? 'That barcode did not pass the check digit.');
       } else {
         const direct = await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json`);
         const payload = await direct.json();
@@ -143,8 +156,8 @@ export default function StudioSection() {
       <div className="mx-auto max-w-6xl rounded-3xl border border-emerald-400/20 bg-[#0c1220] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.35)] sm:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">NutriLens</p>
-            <h2 className="mt-2 text-3xl font-bold text-white sm:text-4xl">{prefs.t('studio')}</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-300 sm:tracking-[0.2em]">NutriLens</p>
+            <h2 className="mt-2 text-2xl font-bold text-white sm:text-4xl">{prefs.t('studio')}</h2>
             <p className="mt-2 max-w-2xl text-base text-slate-300">{prefs.t('shelfNote')}</p>
           </div>
           <p className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-slate-200">
@@ -178,7 +191,7 @@ export default function StudioSection() {
           </div>
         </div>
 
-        <div role="tablist" aria-label={prefs.t('studio')} className="mt-6 flex gap-2 overflow-x-auto pb-1">
+        <div role="tablist" aria-label={prefs.t('studio')} className="mt-6 -mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
           {tabs.map((item) => (
             <button
               key={item.id}
@@ -186,7 +199,7 @@ export default function StudioSection() {
               role="tab"
               aria-selected={tab === item.id}
               onClick={() => setTab(item.id)}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${tab === item.id ? 'bg-emerald-400 text-slate-950' : 'border border-white/15 text-white'}`}
+              className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold ${tab === item.id ? 'bg-emerald-400 text-slate-950' : 'border border-white/15 text-white'}`}
             >
               {item.icon}
               {item.label}
@@ -224,18 +237,60 @@ export default function StudioSection() {
           )}
 
           {tab === 'shelf' && (
-            <div>
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <p className="text-sm text-slate-300">{shelf.length} matches</p>
-                <button type="button" onClick={readShelf} className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm">
-                  <Volume2 className="w-4 h-4" aria-hidden="true" /> {prefs.t('readAloud')}
-                </button>
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-semibold text-white">{prefs.t('household')}</h3>
+                <p className="mt-1 text-sm text-slate-300">{prefs.t('householdNote')}</p>
+                <p className="mt-2 text-sm text-slate-400">
+                  {agreement.measured
+                    ? `${agreement.agrees} of ${agreement.answered} week-later answers still agreed. ${agreement.due - agreement.answered} due answers are still open.`
+                    : prefs.t('weekEmpty')}
+                </p>
+                {household.length === 0 ? <p className="mt-3 text-slate-200">Confirm a finished scan to start this shelf.</p> : (
+                  <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {household.map((item) => {
+                      const due = Date.parse(item.followUpAt) <= Date.now();
+                      return (
+                        <li key={item.id} className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                          <h4 className="font-semibold text-white">{item.productName}</h4>
+                          <p className="mt-1 text-sm text-slate-300">
+                            {item.fitAtConfirm.safe ? 'At confirmation, the preference check found no conflict.' : item.fitAtConfirm.reasons[0]}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-500">Ask again {new Date(item.followUpAt).toLocaleDateString()}</p>
+                          {due && item.weekLaterAgrees === null && (
+                            <div className="mt-3">
+                              <p className="text-sm text-slate-200">{prefs.t('weekLater')}</p>
+                              <div className="mt-2 flex gap-2">
+                                <button type="button" onClick={() => prefs.answerWeekLater(item.id, true)} className="rounded-full bg-emerald-400 px-3 py-1 text-sm font-semibold text-slate-950">{prefs.t('weekYes')}</button>
+                                <button type="button" onClick={() => prefs.answerWeekLater(item.id, false)} className="rounded-full border border-white/20 px-3 py-1 text-sm">{prefs.t('weekNo')}</button>
+                              </div>
+                            </div>
+                          )}
+                          {item.weekLaterAgrees !== null && (
+                            <p className="mt-2 text-sm text-emerald-200">{item.weekLaterAgrees ? prefs.t('weekYes') : prefs.t('weekNo')}</p>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
-              {shelf.length === 0 ? <p className="text-slate-200">{prefs.t('emptyShelf')}</p> : (
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  {shelf.map(({ product, fit }) => <ProductCard key={product.id} product={product} grade={fit.grade} />)}
-                </ul>
-              )}
+              <div>
+                <div className="mb-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{prefs.t('referenceShelf')}</h3>
+                    <p className="text-sm text-slate-300">{shelf.length} matches. These twelve foods are a demonstration.</p>
+                  </div>
+                  <button type="button" onClick={readShelf} className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm">
+                    <Volume2 className="w-4 h-4" aria-hidden="true" /> {prefs.t('readAloud')}
+                  </button>
+                </div>
+                {shelf.length === 0 ? <p className="text-slate-200">{prefs.t('emptyShelf')}</p> : (
+                  <ul className="grid gap-3 sm:grid-cols-2">
+                    {shelf.map(({ product, fit }) => <ProductCard key={product.id} product={product} grade={fit.grade} />)}
+                  </ul>
+                )}
+              </div>
             </div>
           )}
 
@@ -250,6 +305,30 @@ export default function StudioSection() {
                     </div>
                     <p className="mt-2 text-sm text-slate-300">{item.summary}</p>
                     <p className="mt-1 text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()} {item.allergens.length ? `· ${item.allergens.join(', ')}` : ''}</p>
+                    {item.per100g && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const fit = assessFit({
+                            per100g: item.per100g!,
+                            allergens: item.allergens,
+                            ingredients: item.ingredients ?? [],
+                            additives: false,
+                          }, prefs.profile);
+                          prefs.confirmHousehold({
+                            id: item.id,
+                            productName: item.productName,
+                            per100g: item.per100g!,
+                            allergens: item.allergens,
+                            ingredients: item.ingredients ?? [],
+                            fitAtConfirm: { safe: fit.safe, reasons: fit.reasons },
+                          });
+                        }}
+                        className="mt-3 rounded-full border border-emerald-400/40 px-4 py-2 text-sm text-emerald-200"
+                      >
+                        {prefs.t('confirmScan')}
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

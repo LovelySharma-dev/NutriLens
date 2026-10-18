@@ -121,5 +121,5 @@ def explain_prediction(model, values: dict[str, float], grade: str) -> dict[str,
         "method": "occlusion",
         "grade": grade,
         "features": _occlusion(model, values, grade),
-        "note": "Each nutrient was replaced with the Open Food Facts median. The change in predicted-class probability is the local contribution. Install shap to switch this endpoint to TreeSHAP.",
+        "note": "Each nutrient was replaced with the Open Food Facts median. The change in predicted-class probability is the local contribution. TreeSHAP is used when the shap package imports.",
     }

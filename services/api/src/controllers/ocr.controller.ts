@@ -48,6 +48,8 @@ export async function extractOcrController(
           ingredients: ["Oats", "Milk Solids", "Refined Sugar", "Palm Oil"],
           allergens: ["Milk"],
           claims: ["High Protein"],
+          columnOrder: "per100-only",
+          readersDisagree: [],
         },
       };
     }

@@ -7,6 +7,7 @@ import io
 from app.label_parser import parse_label
 from app.preprocess import prepare_variants
 from app.reading_order import detections_to_lines
+from app.reading_policy import decide_reading
 
 
 ALLOWED_LANGUAGES = {"en", "hi", "fr", "es", "de", "ta", "bn", "mr"}
@@ -114,6 +115,11 @@ async def extract_text(
             average = sum(confidences) / len(confidences) if confidences else 0
         combined_text = detections_to_lines(detections)
         parsed_label = parse_label(combined_text, detections)
+        parsed_label["reading"] = decide_reading(
+            parsed_label.get("columnOrder"),
+            round(average, 4),
+            parsed_label.get("readersDisagree") or [],
+        )
 
         return {
             "status": "success",

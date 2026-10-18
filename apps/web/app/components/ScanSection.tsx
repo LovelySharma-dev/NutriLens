@@ -78,7 +78,7 @@ export default function ScanSection({
         setDragActive(false);
       }}
       onDrop={handleDrop}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5 scroll-mt-20"
+      className="relative mx-auto max-w-7xl scroll-mt-28 border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       <input
         ref={fileInputRef}
@@ -99,7 +99,7 @@ export default function ScanSection({
           <span>Live Analysis Portal</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6">
+        <h2 className="mb-6 text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
           Scan Your Food Label
         </h2>
         <p className="text-slate-300 text-lg">
@@ -110,7 +110,7 @@ export default function ScanSection({
       <div className="max-w-3xl mx-auto">
         {/* Loading State Animation */}
         {isLoading ? (
-          <div className="p-10 rounded-3xl glass-panel border-emerald-500/40 bg-slate-950/90 text-center space-y-8 animate-pulse shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+          <div className="space-y-8 rounded-3xl border-emerald-500/40 bg-slate-950/90 p-6 text-center shadow-[0_0_40px_rgba(16,185,129,0.2)] animate-pulse glass-panel sm:p-10">
             <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border-2 border-emerald-400/60 flex items-center justify-center text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)]">
               <RefreshCw className="w-8 h-8 animate-spin" />
             </div>
@@ -138,17 +138,17 @@ export default function ScanSection({
         ) : (
           /* Main Dropzone & Controls */
           <div
-            className={`relative p-8 sm:p-12 rounded-3xl glass-panel border-2 border-dashed transition-all duration-300 text-center flex flex-col items-center justify-center ${
+            className={`relative flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-5 text-center transition-all duration-300 glass-panel sm:p-12 ${
               dragActive
                 ? 'border-emerald-400 bg-emerald-950/30 scale-102 shadow-[0_0_30px_rgba(16,185,129,0.3)]'
                 : 'border-white/15 hover:border-emerald-500/40 bg-slate-950/70'
             }`}
           >
             {error && (
-              <div className="w-full mb-6 p-4 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs font-mono flex items-center justify-between">
+              <div className="mb-6 flex w-full flex-col items-start gap-3 rounded-xl border border-red-500/40 bg-red-950/80 p-4 font-mono text-xs text-red-200 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>{error}</span>
+                  <span className="break-words text-left">{error}</span>
                 </div>
                 <button
                   type="button"
@@ -173,20 +173,20 @@ export default function ScanSection({
             </p>
 
             {selectedFile && (
-              <div className="mb-6 px-4 py-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-xs font-mono text-emerald-300 flex items-center gap-2 shadow-md">
-                <FileImage className="w-4 h-4 text-emerald-400" />
-                <span>
+              <div className="mb-6 flex max-w-full items-center gap-2 rounded-xl border border-emerald-500/50 bg-emerald-950/80 px-4 py-2.5 font-mono text-xs text-emerald-300 shadow-md">
+                <FileImage className="h-4 w-4 shrink-0 text-emerald-400" />
+                <span className="break-all text-left">
                   <strong>{selectedFile.name}</strong> ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                 </span>
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <button
                 type="button"
                 disabled={isLoading}
                 onClick={() => fileInputRef.current?.click()}
-                className="cursor-pointer inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 border border-white/20 transition-all disabled:opacity-50"
+                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-white/20 bg-slate-900 px-6 py-3.5 text-xs font-bold text-white transition-all hover:bg-slate-800 disabled:opacity-50"
               >
                 <Upload className="w-4 h-4 text-emerald-400" />
                 <span>{selectedFile ? 'Change Label Image' : 'Upload Label'}</span>
@@ -196,7 +196,7 @@ export default function ScanSection({
                 type="button"
                 disabled={isLoading || !selectedFile}
                 onClick={handleAnalyze}
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-xs font-extrabold tracking-wide text-slate-950 bg-gradient-to-r from-emerald-400 to-lime-400 hover:from-emerald-300 hover:to-lime-300 transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100"
+                className="inline-flex items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-400 to-lime-400 px-6 py-3.5 text-xs font-extrabold tracking-wide text-slate-950 shadow-[0_0_25px_rgba(16,185,129,0.4)] transition-all active:scale-95 disabled:opacity-40 sm:px-8 sm:hover:scale-105"
               >
                 <Sparkles className="w-4 h-4 text-slate-950" />
                 <span>Analyze Label</span>
@@ -209,7 +209,7 @@ export default function ScanSection({
                 type="button"
                 disabled={isLoading}
                 onClick={handleDemo}
-                className="text-xs font-mono text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center gap-1.5"
+                className="inline-flex max-w-full items-center justify-center gap-1.5 text-center font-mono text-xs text-slate-400 transition-colors hover:text-emerald-400"
               >
                 <Sparkles className="w-3.5 h-3.5 text-lime-400" />
                 <span>Try Demo Scan (Instant Pre-configured Analysis)</span>

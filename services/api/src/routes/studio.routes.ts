@@ -37,7 +37,8 @@ router.get("/barcode/:code", async (req, res) => {
     res.json({ status: "success", data: product });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Lookup failed";
-    res.status(404).json({ status: "error", message });
+    const status = message.startsWith("Check digit") || message.startsWith("Enter a barcode") ? 400 : 404;
+    res.status(status).json({ status: "error", message });
   }
 });
 

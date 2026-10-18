@@ -23,6 +23,7 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
     color-scheme: dark;
   }
 
@@ -38,14 +39,15 @@
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
   background: #07080d;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
+  background: #334155;
+  border: 2px solid #07080d;
+  border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #10b981;
@@ -163,6 +165,23 @@ html[data-cursor="system"] .cursor-ring {
   border: 0;
 }
 
+.legal-copy h2 {
+  margin-top: 2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+}
+.legal-copy p,
+.legal-copy li {
+  margin-top: 0.75rem;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+.legal-copy ul {
+  margin-top: 0.5rem;
+  padding-left: 1.2rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
@@ -170,4 +189,29 @@ html[data-cursor="system"] .cursor-ring {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Phones: keep the custom ring off touch screens and stop iOS zooming focused fields. */
+.cursor-ring {
+  display: none;
+}
+@media (pointer: fine) {
+  .cursor-ring {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+.safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }

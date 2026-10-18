@@ -34,10 +34,40 @@ function normalizeNutrientName(
 ): string {
   return nutrient
     .trim()
+    .replace(/([a-z\d])([A-Z])/g, "$1 $2")
     .toLowerCase()
     .replace(/[_-]/g, " ")
+    .replace(/\./g, "")
     .replace(/\s+/g, " ");
 }
+
+const NUTRIENT_ALIASES: Record<string, keyof NutritionInput> = {
+  calories: "energy",
+  calorie: "energy",
+  energy: "energy",
+  kcal: "energy",
+  fat: "fat",
+  "total fat": "fat",
+  "saturated fat": "saturatedFat",
+  saturatedfat: "saturatedFat",
+  "sat fat": "saturatedFat",
+  saturates: "saturatedFat",
+  carbohydrates: "carbohydrates",
+  carbohydrate: "carbohydrates",
+  "total carbohydrates": "carbohydrates",
+  carbs: "carbohydrates",
+  sugars: "sugars",
+  sugar: "sugars",
+  "total sugars": "sugars",
+  "of which sugars": "sugars",
+  fiber: "fiber",
+  fibre: "fiber",
+  "dietary fiber": "fiber",
+  "dietary fibre": "fiber",
+  protein: "proteins",
+  proteins: "proteins",
+  salt: "salt",
+};
 
 export function mapNutritionFactsToInput(
   facts: NutritionFactRecord[],
@@ -61,6 +91,10 @@ export function mapNutritionFactsToInput(
 
     const name = normalizeNutrientName(fact.nutrient);
 
+    if (name.startsWith("portion:")) {
+      continue;
+    }
+
     const parsedServingSize =
       parseServingSizeGrams(fact.servingSize);
 
@@ -71,38 +105,14 @@ export function mapNutritionFactsToInput(
       servingSizeGrams = parsedServingSize;
     }
 
-    if (
-      name === "calories" ||
-      name === "energy"
-    ) {
-      nutrition.energy = value;
-    } else if (
-      name === "fat" ||
-      name === "total fat"
-    ) {
-      nutrition.fat = value;
-    } else if (
-      name === "saturated fat" ||
-      name === "saturated-fat"
-    ) {
-      nutrition.saturatedFat = value;
-    } else if (
-      name === "carbohydrates" ||
-      name === "total carbohydrates" ||
-      name === "carbohydrate"
-    ) {
-      nutrition.carbohydrates = value;
-    } else if (
-      name === "sugars" ||
-      name === "total sugars"
-    ) {
-      nutrition.sugars = value;
-    } else if (name === "fiber" || name === "dietary fiber") {
-      nutrition.fiber = value;
-    } else if (name === "protein" || name === "proteins") {
-      nutrition.proteins = value;
-    } else if (name === "salt") {
-      nutrition.salt = value;
+    const field = NUTRIENT_ALIASES[name];
+    if (!field) {
+      continue;
+    }
+
+    const alreadyPer100g = fact.servingSize === "100g";
+    if (nutrition[field] === undefined || alreadyPer100g) {
+      nutrition[field] = value;
     }
   }
 

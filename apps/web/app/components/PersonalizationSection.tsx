@@ -16,7 +16,7 @@ export default function PersonalizationSection() {
   return (
     <section
       ref={null}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       <div className="max-w-3xl mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-lime-950/50 border border-lime-500/30 text-lime-400 text-xs font-mono mb-4">
@@ -24,7 +24,7 @@ export default function PersonalizationSection() {
           <span>Consumer Customization</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-6">
+        <h2 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
           Your food choices are <span className="text-gradient-green">personal.</span>
         </h2>
         <p className="text-slate-400 text-lg">

@@ -55,7 +55,7 @@ export default function NutritionSection() {
     <section
       id="intelligence"
       ref={sectionRef}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       {/* Header */}
       <div className="max-w-3xl mb-16">
@@ -64,7 +64,7 @@ export default function NutritionSection() {
           <span>Nutrition Normalization Engine</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-6">
+        <h2 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
           Nutrition, without the <span className="text-gradient-green">nutrition-science degree.</span>
         </h2>
         <p className="text-slate-400 text-lg">
@@ -75,12 +75,12 @@ export default function NutritionSection() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Left Column — 100g Nutrition Metrics Grid */}
         <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl glass-panel border-white/10">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-emerald-400" />
+          <div className="mb-6 flex flex-col items-start gap-3 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="flex items-center gap-2 text-lg font-bold text-white sm:text-xl">
+              <BarChart3 className="h-5 w-5 shrink-0 text-emerald-400" />
               <span>Normalized Nutritional Breakdown</span>
             </h3>
-            <span className="text-xs font-mono px-3 py-1 rounded bg-slate-900 text-emerald-400 border border-emerald-500/30">
+            <span className="shrink-0 rounded border border-emerald-500/30 bg-slate-900 px-3 py-1 font-mono text-xs text-emerald-400">
               PER 100g BASIS
             </span>
           </div>
@@ -119,7 +119,7 @@ export default function NutritionSection() {
         {/* Right Column — Nutri-Score & Random Forest Model Probability */}
         <div className="lg:col-span-5 space-y-6">
           {/* Nutri-Score Grade Card */}
-          <div className="p-8 rounded-3xl glass-panel border-emerald-500/30 bg-slate-900/80 flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4 rounded-3xl border-emerald-500/30 bg-slate-900/80 glass-panel p-5 sm:p-8">
             <div>
               <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block mb-1">
                 PREDICTED GRADE
@@ -130,18 +130,18 @@ export default function NutritionSection() {
               </p>
             </div>
 
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 text-6xl font-black shadow-[0_0_30px_rgba(245,158,11,0.4)] border-2 border-white/20">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border-2 border-white/20 bg-gradient-to-br from-amber-400 to-amber-600 text-4xl font-black text-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.4)] sm:h-24 sm:w-24 sm:text-6xl">
               C
             </div>
           </div>
 
           {/* Model Probability Distribution */}
           <div className="p-6 rounded-3xl glass-panel border-white/10">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+            <div className="mb-4 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
                 Model Probability Distribution
               </span>
-              <span className="text-[10px] font-mono text-slate-400">Random Forest (200 trees)</span>
+              <span className="font-mono text-[10px] text-slate-400">Random Forest (200 trees)</span>
             </div>
 
             <div className="space-y-3">

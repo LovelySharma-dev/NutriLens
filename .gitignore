@@ -47,3 +47,19 @@ __pycache__/
 # Trained ML artifacts
 services/ml/*.joblib
 services/api/data/store.json
+services/api/data/users.json
+
+# InsForge & AI agent skills
+.insforge
+.agent
+.agents
+.augment
+.claude
+.cline
+.github/copilot*
+.kilocode
+.qoder
+.qwen
+.roo
+.trae
+.windsurf

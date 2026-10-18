@@ -5,6 +5,7 @@ import { analyzeIngredients } from "./ingredient-analysis.service.js";
 import { mapNutritionFactsToInput } from "./nutrition-fact-mapper.service.js";
 import { predictNutrition } from "./nutrition-prediction.service.js";
 import { generateRecommendations, applyProfile, type ConsumerProfile } from "./recommendation.service.js";
+import { describeAbstain, type ReadingSignal } from "./reading-policy.js";
 
 function extractAllergensFromText(text: string): string[] {
   const knownTerms = [
@@ -32,9 +33,31 @@ function extractAllergensFromText(text: string): string[] {
   return detected;
 }
 
+function nutritionTable(
+  facts: Array<{ nutrient: string; value: number | null; unit: string | null; servingSize: string | null }>,
+) {
+  const portions = new Map(
+    facts
+      .filter((fact) => fact.nutrient.startsWith("portion:"))
+      .map((fact) => [fact.nutrient.slice("portion:".length), fact]),
+  );
+
+  return facts
+    .filter((fact) => !fact.nutrient.startsWith("portion:"))
+    .map((fact) => ({
+      nutrient: fact.nutrient,
+      unit: fact.unit,
+      per100g: fact.servingSize === "100g" ? fact.value : null,
+      perPortion:
+        portions.get(fact.nutrient)?.value ??
+        (fact.servingSize !== "100g" ? fact.value : null),
+    }));
+}
+
 export async function analyzeScan(
   scanId: string,
   profile?: ConsumerProfile,
+  reading?: ReadingSignal | null,
 ) {
   const scan = await prisma.scan.findUnique({
     where: { id: scanId },
@@ -103,23 +126,49 @@ export async function analyzeScan(
     nutritionMapping.nutrition,
   );
 
-  const nutritionPredictionStatus =
-    missingNutritionFeatures.length === 0 ? "READY" : "INCOMPLETE";
-
+  let nutritionPredictionStatus =
+    missingNutritionFeatures.length === 0 ? "READY" : "WITHHELD";
   let nutritionPrediction = null;
+  let gradeMessage: string | null = null;
 
-  // Always attempt ML prediction - service now handles partial data with imputation
-  if (nutritionMapping.servingSizeGrams !== undefined) {
+  if (nutritionMapping.servingSizeGrams === undefined) {
+    nutritionPredictionStatus = "WITHHELD";
+    gradeMessage = missingNutritionFeatures.length
+      ? `Grade withheld. Missing ${missingNutritionFeatures.join(", ")}. The serving size was not read, so nothing was scaled or filled from a median.`
+      : "Grade withheld. The serving size was not read, so the table was not scaled and no median was used.";
+  } else {
     try {
       nutritionPrediction = await predictNutrition({
         servingSizeGrams: nutritionMapping.servingSizeGrams,
         nutrition: nutritionMapping.nutrition,
       });
+      if (nutritionPrediction.withheld) {
+        nutritionPredictionStatus = "WITHHELD";
+        gradeMessage = nutritionPrediction.withheld.message;
+      }
     } catch (error) {
       console.warn("ML prediction failed:", error);
       nutritionPrediction = null;
+      const message = error instanceof Error ? error.message : "";
+      if (message.startsWith("Invalid nutrition data")) {
+        nutritionPredictionStatus = "WITHHELD";
+        gradeMessage = message;
+      } else {
+        nutritionPredictionStatus = "UNAVAILABLE";
+        gradeMessage = "Grade unavailable. The model did not return a score.";
+      }
     }
   }
+
+  const abstainMessage = describeAbstain(reading);
+  if (abstainMessage) {
+    nutritionPredictionStatus = "WITHHELD";
+    gradeMessage = gradeMessage ? `${abstainMessage} ${gradeMessage}` : abstainMessage;
+    if (nutritionPrediction?.prediction) {
+      nutritionPrediction = { ...nutritionPrediction, prediction: null };
+    }
+  }
+
   const verificationScores = claims.flatMap((claim) =>
     claim.verifications.map(
       (verification) =>
@@ -177,10 +226,11 @@ export async function analyzeScan(
     `${ingredientText} ${scan.labelData.rawOcrText ?? ""}`,
   );
 
-  const summary =
+  const claimSummary =
     claims.length > 0
       ? `Analyzed ${claims.length} label claim(s) using available evidence verification.`
-      : "Label analysis completed, but no claims were available for verification.";
+      : "No claims were available for verification.";
+  const summary = gradeMessage ? `${gradeMessage} ${claimSummary}` : claimSummary;
 
   const reportRecommendations = personalized.recommendations.map(
     (recommendation) => recommendation.message,
@@ -220,17 +270,32 @@ export async function analyzeScan(
         factsAnalyzed: scan.labelData.nutritionFacts.length,
         mappedInput: nutritionMapping.nutrition,
         servingSizeGrams: nutritionMapping.servingSizeGrams,
+        table: nutritionTable(scan.labelData.nutritionFacts),
       },
       nutritionPrediction: {
         status: nutritionPredictionStatus,
-        missingFeatures: missingNutritionFeatures,
-        result: nutritionPrediction ? {
-          predictedGrade: nutritionPrediction.prediction.predictedGrade,
-          probabilities: nutritionPrediction.prediction.probabilities,
-          healthRisk: nutritionPrediction.prediction.healthRisk,
-          explanation: nutritionPrediction.prediction.explanation ?? null,
-          imputedFeatures: nutritionPrediction.prediction.imputedFeatures ?? null,
-        } : null,
+        missingFeatures: nutritionPrediction?.withheld?.missingFeatures ?? missingNutritionFeatures,
+        implausible: nutritionPrediction?.withheld?.implausible ?? [],
+        message: gradeMessage,
+        healthRisk: nutritionPrediction
+          ? {
+              level: nutritionPrediction.healthRisk.overallLevel,
+              flags: nutritionPrediction.healthRisk.factors.map((factor) => ({
+                nutrient: factor.nutrient,
+                value: factor.value,
+                level: factor.level,
+              })),
+            }
+          : null,
+        result: nutritionPrediction?.prediction
+          ? {
+              predictedGrade: nutritionPrediction.prediction.predictedGrade,
+              probabilities: nutritionPrediction.prediction.probabilities,
+              healthRisk: nutritionPrediction.prediction.healthRisk,
+              explanation: nutritionPrediction.prediction.explanation ?? null,
+              imputedFeatures: null,
+            }
+          : null,
       },
 
       personalFit: personalized.personalFit,

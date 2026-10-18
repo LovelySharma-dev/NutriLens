@@ -41,7 +41,7 @@ export default function HealthScreeningSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column — Text & Disclaimer */}
@@ -51,7 +51,7 @@ export default function HealthScreeningSection() {
             <span>Targeted Nutrient Risk Analysis</span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-6">
+          <h2 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-5xl">
             Know what deserves your <span className="text-gradient-green">attention.</span>
           </h2>
 
@@ -72,11 +72,11 @@ export default function HealthScreeningSection() {
         {/* Right Column — Risk Visualization Meters */}
         <div className="lg:col-span-7">
           <div className="p-6 sm:p-8 rounded-3xl glass-panel border-red-500/20 bg-slate-950/80">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-              <h3 className="text-lg font-bold font-mono text-white tracking-wide uppercase">
+            <div className="mb-6 flex flex-col items-start gap-3 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-mono text-base font-bold uppercase tracking-wide text-white sm:text-lg">
                 NUTRITION SCREENING
               </h3>
-              <span className="text-xs font-mono px-3 py-1 rounded bg-red-950 text-red-400 border border-red-500/30">
+              <span className="shrink-0 rounded border border-red-500/30 bg-red-950 px-3 py-1 font-mono text-xs text-red-400">
                 OVERALL RISK: HIGH
               </span>
             </div>
@@ -84,8 +84,8 @@ export default function HealthScreeningSection() {
             <div className="risk-meters-container space-y-6">
               {SCREENING_ITEMS.map((item, idx) => (
                 <div key={idx} className="space-y-2">
-                  <div className="flex justify-between items-center text-sm font-mono">
-                    <span className="text-slate-200 font-semibold">{item.nutrient}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-sm">
+                    <span className="font-semibold text-slate-200">{item.nutrient}</span>
                     <div className="flex items-center gap-3">
                       <span className="text-slate-400 text-xs">{item.value}</span>
                       <span className={`px-2.5 py-0.5 rounded text-xs font-bold border ${item.badge}`}>

@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Language, translate, type CopyKey } from '../lib/i18n';
-import type { ConsumerProfile, DietId } from '../lib/safety';
+import { WEEK_MS, type HouseholdItem } from '../lib/household';
+import type { ConsumerProfile, DietId, Nutrients } from '../lib/safety';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 const STORAGE_KEY = 'nutrilens-preferences-v1';
@@ -17,6 +18,8 @@ export type ScanMemory = {
   summary: string;
   personalStatus: string;
   trustScore: number | null;
+  per100g?: Nutrients | null;
+  ingredients?: string[];
 };
 
 type Preferences = {
@@ -30,6 +33,7 @@ type Preferences = {
   plainCursor: boolean;
   profile: ConsumerProfile;
   history: ScanMemory[];
+  household: HouseholdItem[];
 };
 
 const defaultPreferences: Preferences = {
@@ -43,6 +47,7 @@ const defaultPreferences: Preferences = {
   plainCursor: false,
   profile: { name: '', allergens: [], diets: [], avoidAdditives: false },
   history: [],
+  household: [],
 };
 
 type PreferencesContextValue = Preferences & {
@@ -53,6 +58,8 @@ type PreferencesContextValue = Preferences & {
   update: (patch: Partial<Preferences>) => void;
   saveProfile: (profile: ConsumerProfile) => void;
   rememberScan: (entry: Omit<ScanMemory, 'id' | 'createdAt'> & { id?: string }) => void;
+  confirmHousehold: (item: Omit<HouseholdItem, 'confirmedAt' | 'followUpAt' | 'weekLaterAgrees'>) => void;
+  answerWeekLater: (id: string, agrees: boolean) => void;
 };
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
@@ -77,7 +84,13 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
     }
     try {
       const parsed = JSON.parse(raw) as Preferences;
-      setPrefs({ ...defaultPreferences, ...parsed, reduceMotion: parsed.reduceMotion || reduce });
+      setPrefs({
+        ...defaultPreferences,
+        ...parsed,
+        history: parsed.history ?? [],
+        household: parsed.household ?? [],
+        reduceMotion: parsed.reduceMotion || reduce,
+      });
     } catch {
       setPrefs(defaultPreferences);
     }
@@ -130,6 +143,8 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
       summary: entry.summary,
       personalStatus: entry.personalStatus,
       trustScore: entry.trustScore,
+      per100g: entry.per100g ?? null,
+      ingredients: entry.ingredients ?? [],
     };
     setPrefs((current) => ({ ...current, history: [saved, ...current.history].slice(0, 40) }));
     void fetch(`${API_URL}/api/v1/studio/history`, {
@@ -137,6 +152,28 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(saved),
     }).catch(() => undefined);
+  };
+
+  const confirmHousehold = (item: Omit<HouseholdItem, 'confirmedAt' | 'followUpAt' | 'weekLaterAgrees'>) => {
+    const confirmedAt = new Date().toISOString();
+    const saved: HouseholdItem = {
+      ...item,
+      confirmedAt,
+      followUpAt: new Date(Date.now() + WEEK_MS).toISOString(),
+      weekLaterAgrees: null,
+    };
+    setPrefs((current) => ({
+      ...current,
+      household: [saved, ...current.household.filter((row) => row.id !== saved.id)].slice(0, 40),
+    }));
+    setCaptionState(`${item.productName} is on the household shelf.`);
+  };
+
+  const answerWeekLater = (id: string, agrees: boolean) => {
+    setPrefs((current) => ({
+      ...current,
+      household: current.household.map((item) => item.id === id ? { ...item, weekLaterAgrees: agrees } : item),
+    }));
   };
 
   const value = useMemo<PreferencesContextValue>(() => ({
@@ -147,6 +184,8 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
     update,
     saveProfile,
     rememberScan,
+    confirmHousehold,
+    answerWeekLater,
     t: (key) => translate(prefs.language, key),
   }), [prefs, caption]);
 
@@ -156,7 +195,7 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
       {children}
       <div className="sr-only" role="status" aria-live="polite">{caption}</div>
       {(prefs.hearingCaptions || prefs.readAloud) && caption && (
-        <div className="fixed bottom-4 inset-x-4 z-50 mx-auto max-w-3xl rounded-2xl border border-white bg-black px-4 py-3 text-base text-white shadow-2xl" role="status">
+        <div className="safe-bottom fixed bottom-4 inset-x-3 z-50 mx-auto max-w-3xl rounded-2xl border border-white bg-black px-4 py-3 text-base text-white shadow-2xl sm:inset-x-4" role="status">
           {caption}
         </div>
       )}

@@ -53,7 +53,7 @@ export default function ClaimVerificationSection() {
   return (
     <section
       ref={null}
-      className="relative py-28 px-6 max-w-7xl mx-auto border-t border-white/5"
+      className="relative mx-auto max-w-7xl border-t border-white/5 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       {/* Section Header */}
       <div className="max-w-3xl mb-16">
@@ -62,7 +62,7 @@ export default function ClaimVerificationSection() {
           <span>Evidence-Grounded Claim Audit</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-6">
+        <h2 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
           A claim is <span className="text-gradient-green">not evidence.</span>
         </h2>
         <p className="text-slate-400 text-lg">
@@ -71,14 +71,14 @@ export default function ClaimVerificationSection() {
       </div>
 
       {/* Interactive Evidence Graph Container */}
-      <div className="p-6 sm:p-10 rounded-3xl glass-panel border-blue-500/30 bg-slate-950/90 shadow-2xl">
-        <div className="text-xs font-mono uppercase tracking-widest text-blue-400 mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="rounded-3xl border-blue-500/30 bg-slate-950/90 p-4 shadow-2xl glass-panel sm:p-10">
+        <div className="mb-6 flex flex-col gap-2 border-b border-white/10 pb-4 font-mono text-xs uppercase tracking-wide text-blue-400 sm:flex-row sm:items-center sm:justify-between sm:tracking-widest">
           <span>Claim & Evidence Grounding Graph</span>
-          <span className="text-slate-400">SELECT A CLAIM BUBBLE TO INSPECT EVIDENCE</span>
+          <span className="normal-case tracking-normal text-slate-400 sm:uppercase sm:tracking-widest">Tap a claim to inspect evidence</span>
         </div>
 
         {/* Claim Bubbles Selector */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+        <div className="mb-10 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-4 sm:gap-4">
           {CLAIMS.map((c) => {
             const isSelected = selectedClaim.id === c.id;
             return (
@@ -87,7 +87,7 @@ export default function ClaimVerificationSection() {
                 onClick={() => setSelectedClaim(c)}
                 className={`p-4 rounded-2xl border text-left transition-all duration-300 flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-blue-950/80 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)] scale-105'
+                    ? 'bg-blue-950/80 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)] sm:scale-105'
                     : 'bg-slate-900/50 border-white/10 text-slate-400 hover:border-blue-500/40'
                 }`}
               >

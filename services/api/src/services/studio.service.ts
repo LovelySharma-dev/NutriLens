@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkBarcode } from "./barcode.js";
 
 export interface StoredProfile {
   name: string;
@@ -103,10 +104,11 @@ function asStringList(value: unknown) {
 }
 
 export async function lookupBarcode(code: string) {
-  const cleaned = code.replace(/\D/g, "");
-  if (cleaned.length < 8 || cleaned.length > 14) {
-    throw new Error("Enter a barcode of 8 to 14 digits.");
+  const checked = checkBarcode(code);
+  if (!checked.ok) {
+    throw new Error(checked.reason);
   }
+  const cleaned = checked.digits;
 
   const response = await fetch(
     `https://world.openfoodfacts.org/api/v2/product/${cleaned}.json`,

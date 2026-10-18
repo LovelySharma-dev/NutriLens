@@ -80,14 +80,14 @@ export default function HorizontalScrollSection() {
   };
 
   return (
-    <div className="relative w-full py-24 overflow-hidden bg-[#07080d] flex flex-col justify-center border-t border-white/5">
+    <div className="relative flex w-full flex-col justify-center overflow-hidden border-t border-white/5 bg-[#07080d] py-16 sm:py-24">
       {/* Title Header */}
-      <div className="px-6 max-w-7xl mx-auto w-full mb-12">
+      <div className="mx-auto mb-8 w-full max-w-7xl px-4 sm:mb-12 sm:px-6">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/50 border border-blue-500/30 text-blue-400 text-xs font-mono mb-4">
           <HelpCircle className="w-3.5 h-3.5" />
           <span>Infinite Loop Exploration</span>
         </div>
-        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight text-white">
+        <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
           One label. <span className="text-gradient-green">Many questions.</span>
         </h2>
       </div>
@@ -105,7 +105,7 @@ export default function HorizontalScrollSection() {
             return (
               <div
                 key={idx}
-                className="w-[300px] sm:w-[380px] h-[360px] p-7 rounded-3xl glass-panel border-white/10 glass-panel-hover flex flex-col justify-between shrink-0 relative overflow-hidden group"
+                className="relative flex h-[340px] w-[min(300px,82vw)] shrink-0 flex-col justify-between overflow-hidden rounded-3xl border-white/10 glass-panel p-5 glass-panel-hover sm:h-[360px] sm:w-[380px] sm:p-7"
               >
                 {/* Background ambient lens circle inside card */}
                 <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-emerald-500/10 blur-2xl group-hover:bg-emerald-500/20 transition-all duration-500" />
