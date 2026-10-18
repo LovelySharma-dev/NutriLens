@@ -1,0 +1,461 @@
+{
+  "ranOn": "2026-10-18",
+  "model": "services/ml/nutritrust_random_forest.joblib",
+  "publishedForestRetrained": false,
+  "task": "complete per 100 g tables, not photographs",
+  "grid": [
+    0.5,
+    0.8,
+    0.9,
+    1.1,
+    1.2,
+    1.5
+  ],
+  "marginBuckets": {
+    "close": "margin < 0.15",
+    "mid": "0.15 <= margin < 0.40",
+    "wide": "margin >= 0.40"
+  },
+  "note": "Exact letter agreement compares the random-forest letter with the screening letter. A flip is an accepted one-cell probe whose letter differs from the unperturbed table. Rejected probes break a ceiling and are left out of the flip share. These counts are not an OCR accuracy and not a clearance.",
+  "corpora": {
+    "reference-shelf": {
+      "kind": "twelve authored foods in apps/web/app/lib/catalog.json",
+      "rows": [
+        {
+          "id": "roasted-chana",
+          "forest": "a",
+          "screening": "A",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.985,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "rolled-oats",
+          "forest": "a",
+          "screening": "A",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.98,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 47,
+          "rejected": 1,
+          "flips": 0,
+          "stable": 47
+        },
+        {
+          "id": "moong-dal",
+          "forest": "a",
+          "screening": "A",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.99,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "brown-rice",
+          "forest": "a",
+          "screening": "B",
+          "agree": false,
+          "steps": 1,
+          "margin": 1.0,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 47,
+          "rejected": 1,
+          "flips": 0,
+          "stable": 47
+        },
+        {
+          "id": "unsweetened-curd",
+          "forest": "a",
+          "screening": "B",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.505,
+          "marginBucket": "wide",
+          "nearestFlip": {
+            "feature": "saturated-fat_100g",
+            "factor": 1.5,
+            "fromValue": 2.8,
+            "toValue": 4.2,
+            "grade": "b"
+          },
+          "accepted": 43,
+          "rejected": 5,
+          "flips": 1,
+          "stable": 42
+        },
+        {
+          "id": "toned-milk",
+          "forest": "b",
+          "screening": "B",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.765,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 44,
+          "rejected": 4,
+          "flips": 0,
+          "stable": 44
+        },
+        {
+          "id": "peanut-butter",
+          "forest": "c",
+          "screening": "D",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.17,
+          "marginBucket": "mid",
+          "nearestFlip": {
+            "feature": "saturated-fat_100g",
+            "factor": 0.5,
+            "fromValue": 9.0,
+            "toValue": 4.5,
+            "grade": "a"
+          },
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 1,
+          "stable": 47
+        },
+        {
+          "id": "soy-chunks",
+          "forest": "a",
+          "screening": "A",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.965,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "almond-drink",
+          "forest": "b",
+          "screening": "A",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.535,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "whole-wheat-bread",
+          "forest": "a",
+          "screening": "A",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.98,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "masala-chips",
+          "forest": "d",
+          "screening": "E",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.58,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "jaggery-cookies",
+          "forest": "d",
+          "screening": "E",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.275,
+          "marginBucket": "mid",
+          "nearestFlip": {
+            "feature": "saturated-fat_100g",
+            "factor": 1.1,
+            "fromValue": 9.0,
+            "toValue": 9.9,
+            "grade": "e"
+          },
+          "accepted": 47,
+          "rejected": 1,
+          "flips": 4,
+          "stable": 43
+        }
+      ],
+      "summary": {
+        "tables": 12,
+        "exactLetterAgreement": 6,
+        "meanAbsoluteLetterSteps": 0.5,
+        "forestLetters": {
+          "a": 7,
+          "b": 2,
+          "c": 1,
+          "d": 2
+        },
+        "screeningLetters": {
+          "A": 6,
+          "B": 3,
+          "D": 1,
+          "E": 2
+        },
+        "accepted": 564,
+        "rejected": 12,
+        "flips": 6,
+        "stable": 558,
+        "flipShareOfAccepted": 0.0106,
+        "tablesWithAFlip": 3,
+        "nearestFlipByFeature": {
+          "saturated-fat_100g": 3
+        },
+        "byMarginBucket": {
+          "close": {
+            "tables": 0,
+            "tablesWithAFlip": 0,
+            "accepted": 0,
+            "rejected": 0,
+            "flips": 0,
+            "stable": 0,
+            "flipShareOfAccepted": null
+          },
+          "mid": {
+            "tables": 2,
+            "tablesWithAFlip": 2,
+            "accepted": 95,
+            "rejected": 1,
+            "flips": 5,
+            "stable": 90,
+            "flipShareOfAccepted": 0.0526
+          },
+          "wide": {
+            "tables": 10,
+            "tablesWithAFlip": 1,
+            "accepted": 469,
+            "rejected": 11,
+            "flips": 1,
+            "stable": 468,
+            "flipShareOfAccepted": 0.0021
+          }
+        }
+      }
+    },
+    "constructed-bands": {
+      "kind": "eight constructed complete tables, not products and not photographs",
+      "rows": [
+        {
+          "id": "low-staple",
+          "forest": "a",
+          "screening": "A",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.97,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "one-medium-sugar",
+          "forest": "a",
+          "screening": "B",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.55,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "two-medium",
+          "forest": "b",
+          "screening": "C",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.085,
+          "marginBucket": "close",
+          "nearestFlip": {
+            "feature": "fiber_100g",
+            "factor": 1.1,
+            "fromValue": 2.0,
+            "toValue": 2.2,
+            "grade": "a"
+          },
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 7,
+          "stable": 41
+        },
+        {
+          "id": "high-sugar-and-salt",
+          "forest": "c",
+          "screening": "D",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.515,
+          "marginBucket": "wide",
+          "nearestFlip": {
+            "feature": "sugars_100g",
+            "factor": 0.5,
+            "fromValue": 24.0,
+            "toValue": 12.0,
+            "grade": "b"
+          },
+          "accepted": 47,
+          "rejected": 1,
+          "flips": 1,
+          "stable": 46
+        },
+        {
+          "id": "dense-snack",
+          "forest": "e",
+          "screening": "E",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.24,
+          "marginBucket": "mid",
+          "nearestFlip": {
+            "feature": "saturated-fat_100g",
+            "factor": 0.8,
+            "fromValue": 10.0,
+            "toValue": 8.0,
+            "grade": "d"
+          },
+          "accepted": 47,
+          "rejected": 1,
+          "flips": 3,
+          "stable": 44
+        },
+        {
+          "id": "printed-zero-fiber",
+          "forest": "a",
+          "screening": "A",
+          "agree": true,
+          "steps": 0,
+          "margin": 0.52,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "protein-offset",
+          "forest": "a",
+          "screening": "D",
+          "agree": false,
+          "steps": 3,
+          "margin": 0.82,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        },
+        {
+          "id": "salt-at-medium-line",
+          "forest": "a",
+          "screening": "B",
+          "agree": false,
+          "steps": 1,
+          "margin": 0.95,
+          "marginBucket": "wide",
+          "nearestFlip": null,
+          "accepted": 48,
+          "rejected": 0,
+          "flips": 0,
+          "stable": 48
+        }
+      ],
+      "summary": {
+        "tables": 8,
+        "exactLetterAgreement": 3,
+        "meanAbsoluteLetterSteps": 0.875,
+        "forestLetters": {
+          "a": 5,
+          "b": 1,
+          "c": 1,
+          "e": 1
+        },
+        "screeningLetters": {
+          "A": 2,
+          "B": 2,
+          "C": 1,
+          "D": 2,
+          "E": 1
+        },
+        "accepted": 382,
+        "rejected": 2,
+        "flips": 11,
+        "stable": 371,
+        "flipShareOfAccepted": 0.0288,
+        "tablesWithAFlip": 3,
+        "nearestFlipByFeature": {
+          "fiber_100g": 1,
+          "sugars_100g": 1,
+          "saturated-fat_100g": 1
+        },
+        "byMarginBucket": {
+          "close": {
+            "tables": 1,
+            "tablesWithAFlip": 1,
+            "accepted": 48,
+            "rejected": 0,
+            "flips": 7,
+            "stable": 41,
+            "flipShareOfAccepted": 0.1458
+          },
+          "mid": {
+            "tables": 1,
+            "tablesWithAFlip": 1,
+            "accepted": 47,
+            "rejected": 1,
+            "flips": 3,
+            "stable": 44,
+            "flipShareOfAccepted": 0.0638
+          },
+          "wide": {
+            "tables": 6,
+            "tablesWithAFlip": 1,
+            "accepted": 287,
+            "rejected": 1,
+            "flips": 1,
+            "stable": 286,
+            "flipShareOfAccepted": 0.0035
+          }
+        }
+      }
+    }
+  }
+}

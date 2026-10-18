@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from app.explain import FEATURES, explain_prediction
+from app.sensitivity import implausible_issues, probe_one_cell, sensitivity_public
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -101,36 +102,7 @@ def predict_nutri_score(data: NutritionInput):
             },
         )
 
-    ceilings = {
-        "energy_100g": 900.0,
-        "fat_100g": 100.0,
-        "saturated-fat_100g": 100.0,
-        "carbohydrates_100g": 100.0,
-        "sugars_100g": 100.0,
-        "fiber_100g": 100.0,
-        "proteins_100g": 100.0,
-        "salt_100g": 15.0,
-    }
-    implausible = []
-    for feature, ceiling in ceilings.items():
-        if values[feature] > ceiling:
-            implausible.append({
-                "feature": feature,
-                "value": values[feature],
-                "ceiling": ceiling,
-            })
-    if values["saturated-fat_100g"] > values["fat_100g"] + 0.5:
-        implausible.append({
-            "feature": "saturated-fat_100g",
-            "value": values["saturated-fat_100g"],
-            "ceiling": values["fat_100g"],
-        })
-    if values["sugars_100g"] > values["carbohydrates_100g"] + 0.5:
-        implausible.append({
-            "feature": "sugars_100g",
-            "value": values["sugars_100g"],
-            "ceiling": values["carbohydrates_100g"],
-        })
+    implausible = implausible_issues(values)
     if implausible:
         raise HTTPException(
             status_code=422,
@@ -230,6 +202,21 @@ def predict_nutri_score(data: NutritionInput):
             "note": f"Explanation failed: {error}",
         }
 
+    sensitivity = None
+    try:
+        sensitivity = sensitivity_public(probe_one_cell(model, values, str(prediction), probability_map))
+    except Exception as error:
+        sensitivity = {
+            "margin": None,
+            "marginBucket": None,
+            "nearestFlip": None,
+            "accepted": 0,
+            "rejected": 0,
+            "flips": 0,
+            "stable": 0,
+            "note": f"Letter stability failed: {error}",
+        }
+
     return {
         "predictedGrade": str(prediction),
         "probabilities": probability_map,
@@ -239,6 +226,7 @@ def predict_nutri_score(data: NutritionInput):
         },
         "imputedFeatures": None,
         "explanation": explanation,
+        "sensitivity": sensitivity,
         "model": {
             "type": "RandomForestClassifier",
             "estimators": len(model.estimators_),
