@@ -1,0 +1,302 @@
+{
+  "ranOn": "2026-10-18",
+  "model": "services/ml/nutritrust_random_forest.joblib",
+  "scikitLearn": "1.6.1",
+  "publishedForestRetrained": false,
+  "task": "declared factorial grid of complete per 100 g tables, not photographs and not a food sample",
+  "design": {
+    "sugarsG": [
+      2,
+      8,
+      24
+    ],
+    "saturatedFatG": [
+      0.5,
+      2.5,
+      8
+    ],
+    "saltG": [
+      0.1,
+      0.6,
+      1.8
+    ],
+    "fiberG": [
+      1,
+      7
+    ],
+    "proteinsG": [
+      4,
+      14
+    ],
+    "fatPadsG": [
+      4,
+      10
+    ],
+    "carbohydratePadsG": [
+      12,
+      35
+    ],
+    "fatRule": "saturated fat + fat pad",
+    "carbohydrateRule": "sugars + carbohydrate pad",
+    "energyRule": "4*protein + 4*carbohydrate + 9*fat + 2*fiber",
+    "tables": 432
+  },
+  "letters": {
+    "forest": {
+      "a": 111,
+      "b": 45,
+      "c": 169,
+      "d": 105,
+      "e": 2
+    },
+    "screening": {
+      "A": 51,
+      "B": 63,
+      "C": 85,
+      "D": 160,
+      "E": 73
+    },
+    "formula": {
+      "A": 88,
+      "B": 57,
+      "C": 146,
+      "D": 130,
+      "E": 11
+    }
+  },
+  "energyCheckFlagged": 0,
+  "threeWayAgreement": {
+    "k": 141,
+    "n": 432,
+    "p": 0.3264,
+    "low": 0.2839,
+    "high": 0.372,
+    "kappaNotDefined": "Kappa is reported on pairs. Three-way agreement is a count."
+  },
+  "pairs": {
+    "forestScreen": {
+      "agreed": 145,
+      "n": 432,
+      "observed": 0.3356,
+      "chance": 0.2133,
+      "kappa": 0.1555,
+      "wilson": {
+        "k": 145,
+        "n": 432,
+        "p": 0.3356,
+        "low": 0.2927,
+        "high": 0.3815
+      },
+      "meanAbsoluteLetterSteps": 0.7755,
+      "withinOneLetter": {
+        "k": 386,
+        "n": 432,
+        "p": 0.8935,
+        "low": 0.8609,
+        "high": 0.9192
+      },
+      "linearWeightedKappa": 0.4617,
+      "rightHarsherByTwoOrMore": 45,
+      "rightMilderByTwoOrMore": 1
+    },
+    "forestFormula": {
+      "agreed": 335,
+      "n": 432,
+      "observed": 0.7755,
+      "chance": 0.2716,
+      "kappa": 0.6918,
+      "wilson": {
+        "k": 335,
+        "n": 432,
+        "p": 0.7755,
+        "low": 0.7338,
+        "high": 0.8123
+      },
+      "meanAbsoluteLetterSteps": 0.2292,
+      "withinOneLetter": {
+        "k": 430,
+        "n": 432,
+        "p": 0.9954,
+        "low": 0.9833,
+        "high": 0.9987
+      },
+      "linearWeightedKappa": 0.817,
+      "rightHarsherByTwoOrMore": 1,
+      "rightMilderByTwoOrMore": 1
+    },
+    "screenFormula": {
+      "agreed": 198,
+      "n": 432,
+      "observed": 0.4583,
+      "chance": 0.2255,
+      "kappa": 0.3006,
+      "wilson": {
+        "k": 198,
+        "n": 432,
+        "p": 0.4583,
+        "low": 0.4119,
+        "high": 0.5055
+      },
+      "meanAbsoluteLetterSteps": 0.5648,
+      "withinOneLetter": {
+        "k": 422,
+        "n": 432,
+        "p": 0.9769,
+        "low": 0.9579,
+        "high": 0.9874
+      },
+      "linearWeightedKappa": 0.5953,
+      "rightHarsherByTwoOrMore": 0,
+      "rightMilderByTwoOrMore": 10
+    }
+  },
+  "probes": {
+    "accepted": 20592,
+    "rejected": 144,
+    "flips": 1332,
+    "tablesWithAFlip": 318,
+    "tablesWithAFlipWilson": {
+      "k": 318,
+      "n": 432,
+      "p": 0.7361,
+      "low": 0.6926,
+      "high": 0.7755
+    },
+    "nearestFlipByFeature": {
+      "proteins_100g": 8,
+      "fiber_100g": 6,
+      "salt_100g": 90,
+      "fat_100g": 14,
+      "saturated-fat_100g": 113,
+      "energy_100g": 5,
+      "sugars_100g": 78,
+      "carbohydrates_100g": 4
+    },
+    "byMarginBucket": {
+      "close": {
+        "tables": 94,
+        "tablesWithAFlip": 93,
+        "accepted": 4486,
+        "flips": 896,
+        "flipShareOfAccepted": 0.1997,
+        "tablesWithAFlipWilson": {
+          "k": 93,
+          "n": 94,
+          "p": 0.9894,
+          "low": 0.9422,
+          "high": 0.9981
+        }
+      },
+      "mid": {
+        "tables": 113,
+        "tablesWithAFlip": 101,
+        "accepted": 5374,
+        "flips": 252,
+        "flipShareOfAccepted": 0.0469,
+        "tablesWithAFlipWilson": {
+          "k": 101,
+          "n": 113,
+          "p": 0.8938,
+          "low": 0.8235,
+          "high": 0.9382
+        }
+      },
+      "wide": {
+        "tables": 225,
+        "tablesWithAFlip": 124,
+        "accepted": 10732,
+        "flips": 184,
+        "flipShareOfAccepted": 0.0171,
+        "tablesWithAFlipWilson": {
+          "k": 124,
+          "n": 225,
+          "p": 0.5511,
+          "low": 0.4858,
+          "high": 0.6147
+        }
+      }
+    }
+  },
+  "anatomy": {
+    "oddReader": {
+      "allThree": 141,
+      "formulaOdd": 4,
+      "screeningOdd": 194,
+      "forestOdd": 57,
+      "allDiffer": 36,
+      "n": 432
+    },
+    "forestScreenOffDiagonal": [
+      {
+        "forest": "C",
+        "screening": "D",
+        "n": 104,
+        "steps": 1
+      },
+      {
+        "forest": "D",
+        "screening": "E",
+        "n": 63,
+        "steps": 1
+      },
+      {
+        "forest": "A",
+        "screening": "B",
+        "n": 38,
+        "steps": 1
+      },
+      {
+        "forest": "A",
+        "screening": "C",
+        "n": 22,
+        "steps": 2
+      },
+      {
+        "forest": "B",
+        "screening": "C",
+        "n": 20,
+        "steps": 1
+      }
+    ],
+    "forestScreenPermutation": {
+      "draws": 1000,
+      "seed": 18,
+      "observedKappa": 0.1555,
+      "nullMedian": -0.0004,
+      "nullPercentile95": 0.0408,
+      "nullsAtOrAboveObserved": 0,
+      "note": "The shuffle keeps each reader's letter counts and breaks the pairing. It is a check that the observed kappa is not a frequency accident."
+    },
+    "weightNote": "Linear weighted kappa gives a one-letter miss one quarter of the weight of an A-versus-E miss. Unweighted kappa treats those misses as equal."
+  },
+  "shelf": {
+    "n": 12,
+    "forestScreen": {
+      "agreed": 6,
+      "n": 12,
+      "observed": 0.5,
+      "chance": 0.3472,
+      "kappa": 0.234,
+      "wilson": {
+        "k": 6,
+        "n": 12,
+        "p": 0.5,
+        "low": 0.2538,
+        "high": 0.7462
+      },
+      "meanAbsoluteLetterSteps": 0.5,
+      "withinOneLetter": {
+        "k": 12,
+        "n": 12,
+        "p": 1.0,
+        "low": 0.7575,
+        "high": 1.0
+      },
+      "linearWeightedKappa": 0.6364,
+      "rightHarsherByTwoOrMore": 0,
+      "rightMilderByTwoOrMore": 0
+    },
+    "note": "Twelve authored foods. The Wilson interval on this n is wide. It is not the cited grid."
+  },
+  "note": "Observed agreement is the share of tables with the same letter. Chance agreement is what the two letter frequencies would produce if the letters were paired at random. Kappa subtracts that chance. Wilson intervals use z = 1.96. Landis and Koch bands are a label, not a cutoff. This grid is not an OCR accuracy and not a clearance."
+}

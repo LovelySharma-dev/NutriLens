@@ -1,0 +1,18 @@
+{
+  "id": "mr-sugars-columns",
+  "language": "mr",
+  "source": "constructed-lines",
+  "text": "per serving per 100 g\nसाखर\n4 g\n9 g\n",
+  "expected": {
+    "sugars": {
+      "perPortion": {
+        "value": 4,
+        "unit": "g"
+      },
+      "per100g": {
+        "value": 9,
+        "unit": "g"
+      }
+    }
+  }
+}

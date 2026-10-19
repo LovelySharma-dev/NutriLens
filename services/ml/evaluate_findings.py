@@ -126,6 +126,16 @@ def measure_row(model, row_id: str, nutrients: dict[str, float]) -> dict:
         "rejected": detail["rejected"],
         "flips": detail["flips"],
         "stable": detail["stable"],
+        "per100g": {
+            "energy": nutrients["energy"],
+            "fat": nutrients["fat"],
+            "saturatedFat": nutrients["saturatedFat"],
+            "carbohydrates": nutrients["carbohydrates"],
+            "sugars": nutrients["sugars"],
+            "fiber": nutrients["fiber"],
+            "proteins": nutrients["proteins"],
+            "salt": nutrients["salt"],
+        },
     }
 
 

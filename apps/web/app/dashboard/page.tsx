@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ScanSection from '../components/ScanSection';
 import DashboardSection, { AnalysisData } from '../components/DashboardSection';
+import ReadingAuditPanel from '../components/ReadingAuditPanel';
 import StudioSection from '../components/StudioSection';
+import { auditTable } from '../lib/readingAudit';
 import { usePreferences } from '../components/PreferencesProvider';
 import { authRequest, cachedUser, clearSession, type SessionUser } from '../lib/auth';
 
@@ -137,9 +139,11 @@ export default function DashboardPage() {
         trustScore: data.trustScore?.score ?? null,
       });
       const spokenGrade = data.analysis.nutritionPrediction?.status === 'WITHHELD'
-        ? 'Grade withheld.'
-        : `Grade ${data.analysis.nutritionPrediction?.result?.predictedGrade ?? 'unavailable'}.`;
-      speak(`${productName}. ${spokenGrade}`);
+        ? 'Model grade withheld.'
+        : `Model grade ${data.analysis.nutritionPrediction?.result?.predictedGrade ?? 'unavailable'}.`;
+      const spokenAudit = auditTable(toNutrients(displayed ?? []));
+      const spokenFormula = spokenAudit.status === 'ready' ? ` Formula letter ${spokenAudit.formula.letter}.` : '';
+      speak(`${productName}. ${spokenGrade}${spokenFormula}`);
       setLoadingProgress(100);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong while analyzing the label.');
@@ -281,10 +285,25 @@ export default function DashboardPage() {
         </section>
       )}
 
+      {columns.length > 0 && (
+        <ReadingAuditPanel
+          nutrients={toNutrients(columns)}
+          servingGrams={serving}
+          portionEnergy={energyKcal(columns.find((row) => row.nutrient === 'energy'))}
+          forestProbe={analysisData?.analysis.nutritionPrediction?.result?.sensitivity ?? null}
+        />
+      )}
+
       {analysisData && <DashboardSection data={analysisData} />}
       <StudioSection />
     </main>
   );
+}
+
+function energyKcal(row: ColumnRow | undefined) {
+  if (!row || row.perPortion == null || Number.isNaN(row.perPortion)) return null;
+  if (row.unit.toLowerCase() === 'kj') return row.perPortion / 4.184;
+  return row.perPortion;
 }
 
 function formatCell(value: number | null, unit: string) {

@@ -293,6 +293,7 @@ export async function analyzeScan(
               probabilities: nutritionPrediction.prediction.probabilities,
               healthRisk: nutritionPrediction.prediction.healthRisk,
               explanation: nutritionPrediction.prediction.explanation ?? null,
+              sensitivity: nutritionPrediction.prediction.sensitivity ?? null,
               imputedFeatures: null,
             }
           : null,

@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ArrowRight, ChevronDown, Sparkles } from 'lucide-react';
+import { cachedUser } from '../lib/auth';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -22,6 +23,11 @@ export default function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const [platformHref, setPlatformHref] = useState('/login');
+
+  useEffect(() => {
+    setPlatformHref(cachedUser() ? '/dashboard' : '/login');
+  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -119,7 +125,7 @@ export default function HeroSection() {
 
         {/* Subhead */}
         <p className="hero-subtext mb-8 max-w-2xl text-base font-normal leading-relaxed text-slate-300 sm:text-xl">
-          NutriLens turns confusing food labels into information you can actually understand.
+          NutriLens turns confusing food labels into information you can actually understand. Sign in to open the label reader.
         </p>
 
         {/* CTAs */}
@@ -127,13 +133,13 @@ export default function HeroSection() {
           ref={ctaRef}
           className="hero-cta pointer-events-auto mb-10 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
         >
-          <button
-            onClick={() => scrollToSection('scan')}
+          <a
+            href={platformHref}
             className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-emerald-400 via-lime-400 to-emerald-400 bg-[length:200%_auto] px-6 py-4 font-bold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all duration-500 hover:bg-[position:right_center] active:scale-95 sm:px-8 sm:hover:scale-105"
           >
-            <span className="text-base">Scan a Label</span>
+            <span className="text-base">{platformHref === '/dashboard' ? 'Open the reader' : 'Sign in to scan'}</span>
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-          </button>
+          </a>
 
           <button
             onClick={() => scrollToSection('problem')}

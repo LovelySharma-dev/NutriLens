@@ -1,0 +1,633 @@
+{
+  "formula": "nutri-score-2017-general-foods",
+  "sklearn": {
+    "loadedWith": "1.9.1",
+    "pickledWith": "1.6.1",
+    "note": "Loading the published joblib emitted InconsistentVersionWarning. Forest letters in this file are what that load predicted. They are not a new held-out accuracy."
+  },
+  "fruitPercent": "unknown, counted as 0",
+  "atwaterRule": "divergent when the gap is above 10% and above 30 kcal; alcohol and polyols omitted",
+  "notAPhotographSet": true,
+  "notAnOpenFoodFactsSample": true,
+  "forest": "loaded nutritrust_random_forest.joblib; the file was not retrained",
+  "catalog": {
+    "n": 12,
+    "formulaLetters": {
+      "A": 7,
+      "B": 2,
+      "C": 0,
+      "D": 1,
+      "E": 2
+    },
+    "screeningLetters": {
+      "A": 6,
+      "B": 3,
+      "C": 0,
+      "D": 1,
+      "E": 2
+    },
+    "formulaScreening": {
+      "agree": 9,
+      "adjacent": 3,
+      "far": 0,
+      "confusion": {
+        "A": {
+          "A": 5,
+          "B": 2,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "B": {
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "C": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "D": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 1,
+          "E": 0
+        },
+        "E": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 2
+        }
+      }
+    },
+    "atwater": {
+      "coherent": 12,
+      "divergent": 0,
+      "unchecked": 0
+    },
+    "proteinCounted": 9,
+    "proteinDropped": 3,
+    "margin": {
+      "bins": {
+        "1": 3,
+        "2": 3,
+        "3-5": 4,
+        "6+": 2
+      },
+      "median": 2.5,
+      "min": 1,
+      "max": 6
+    },
+    "flips": {
+      "energy": {
+        "canFlip": 12,
+        "medianAbsDelta": 208.0,
+        "unit": "kcal",
+        "step": 1.0
+      },
+      "sugars": {
+        "canFlip": 7,
+        "medianAbsDelta": 20.1,
+        "unit": "g",
+        "step": 0.1
+      },
+      "saturatedFat": {
+        "canFlip": 9,
+        "medianAbsDelta": 2.0,
+        "unit": "g",
+        "step": 0.1
+      },
+      "salt": {
+        "canFlip": 12,
+        "medianAbsDelta": 0.625,
+        "unit": "g",
+        "step": 0.01
+      },
+      "fiber": {
+        "canFlip": 8,
+        "medianAbsDelta": 2.3,
+        "unit": "g",
+        "step": 0.1
+      },
+      "proteins": {
+        "canFlip": 7,
+        "medianAbsDelta": 4.3,
+        "unit": "g",
+        "step": 0.1
+      }
+    },
+    "forest": {
+      "compared": 12,
+      "missing": 0,
+      "agree": 9,
+      "adjacent": 3,
+      "far": 0,
+      "confusion": {
+        "A": {
+          "A": 7,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "B": {
+          "A": 0,
+          "B": 2,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "C": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "D": {
+          "A": 0,
+          "B": 0,
+          "C": 1,
+          "D": 0,
+          "E": 0
+        },
+        "E": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 2,
+          "E": 0
+        }
+      },
+      "margin1": {
+        "n": 3,
+        "agree": 2
+      },
+      "margin5OrMore": {
+        "n": 4,
+        "agree": 4
+      }
+    },
+    "rows": [
+      {
+        "id": "roasted-chana",
+        "formula": "A",
+        "score": -6,
+        "margin": 6,
+        "screening": "A",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "rolled-oats",
+        "formula": "A",
+        "score": -5,
+        "margin": 5,
+        "screening": "A",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "moong-dal",
+        "formula": "A",
+        "score": -6,
+        "margin": 6,
+        "screening": "A",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "brown-rice",
+        "formula": "A",
+        "score": -3,
+        "margin": 3,
+        "screening": "B",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "unsweetened-curd",
+        "formula": "A",
+        "score": -1,
+        "margin": 1,
+        "screening": "B",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "toned-milk",
+        "formula": "B",
+        "score": 1,
+        "margin": 2,
+        "screening": "B",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "B"
+      },
+      {
+        "id": "peanut-butter",
+        "formula": "D",
+        "score": 12,
+        "margin": 2,
+        "screening": "D",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "C"
+      },
+      {
+        "id": "soy-chunks",
+        "formula": "A",
+        "score": -5,
+        "margin": 5,
+        "screening": "A",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "almond-drink",
+        "formula": "B",
+        "score": 0,
+        "margin": 1,
+        "screening": "A",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "B"
+      },
+      {
+        "id": "whole-wheat-bread",
+        "formula": "A",
+        "score": -3,
+        "margin": 3,
+        "screening": "A",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "masala-chips",
+        "formula": "E",
+        "score": 19,
+        "margin": 1,
+        "screening": "E",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "D"
+      },
+      {
+        "id": "jaggery-cookies",
+        "formula": "E",
+        "score": 20,
+        "margin": 2,
+        "screening": "E",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "D"
+      }
+    ]
+  },
+  "coherentLattice": {
+    "n": 984,
+    "formulaLetters": {
+      "A": 283,
+      "B": 130,
+      "C": 218,
+      "D": 307,
+      "E": 46
+    },
+    "screeningLetters": {
+      "A": 156,
+      "B": 182,
+      "C": 162,
+      "D": 357,
+      "E": 127
+    },
+    "formulaScreening": {
+      "agree": 542,
+      "adjacent": 390,
+      "far": 52,
+      "confusion": {
+        "A": {
+          "A": 151,
+          "B": 99,
+          "C": 31,
+          "D": 2,
+          "E": 0
+        },
+        "B": {
+          "A": 5,
+          "B": 60,
+          "C": 49,
+          "D": 16,
+          "E": 0
+        },
+        "C": {
+          "A": 0,
+          "B": 23,
+          "C": 72,
+          "D": 120,
+          "E": 3
+        },
+        "D": {
+          "A": 0,
+          "B": 0,
+          "C": 10,
+          "D": 216,
+          "E": 81
+        },
+        "E": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 3,
+          "E": 43
+        }
+      }
+    },
+    "atwater": {
+      "coherent": 984,
+      "divergent": 0,
+      "unchecked": 0
+    },
+    "proteinCounted": 500,
+    "proteinDropped": 484,
+    "margin": {
+      "bins": {
+        "1": 293,
+        "2": 247,
+        "3-5": 381,
+        "6+": 63
+      },
+      "median": 2.0,
+      "min": 1,
+      "max": 9
+    },
+    "flips": {
+      "energy": {
+        "canFlip": 976,
+        "medianAbsDelta": 129.5,
+        "unit": "kcal",
+        "step": 1.0
+      },
+      "sugars": {
+        "canFlip": 654,
+        "medianAbsDelta": 6.9,
+        "unit": "g",
+        "step": 0.1
+      },
+      "saturatedFat": {
+        "canFlip": 732,
+        "medianAbsDelta": 2.0,
+        "unit": "g",
+        "step": 0.1
+      },
+      "salt": {
+        "canFlip": 949,
+        "medianAbsDelta": 0.49,
+        "unit": "g",
+        "step": 0.01
+      },
+      "fiber": {
+        "canFlip": 666,
+        "medianAbsDelta": 2.1,
+        "unit": "g",
+        "step": 0.1
+      },
+      "proteins": {
+        "canFlip": 372,
+        "medianAbsDelta": 6.4,
+        "unit": "g",
+        "step": 0.1
+      }
+    },
+    "forest": {
+      "compared": 984,
+      "missing": 0,
+      "agree": 678,
+      "adjacent": 288,
+      "far": 18,
+      "confusion": {
+        "A": {
+          "A": 282,
+          "B": 1,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "B": {
+          "A": 76,
+          "B": 47,
+          "C": 7,
+          "D": 0,
+          "E": 0
+        },
+        "C": {
+          "A": 18,
+          "B": 26,
+          "C": 174,
+          "D": 0,
+          "E": 0
+        },
+        "D": {
+          "A": 0,
+          "B": 0,
+          "C": 141,
+          "D": 166,
+          "E": 0
+        },
+        "E": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 37,
+          "E": 9
+        }
+      },
+      "margin1": {
+        "n": 293,
+        "agree": 163
+      },
+      "margin5OrMore": {
+        "n": 94,
+        "agree": 88
+      }
+    },
+    "disagreementExamples": [
+      {
+        "id": "coherent-p2.0-c5.0-sf0.05-f20.0-sat0.2-fi3.0",
+        "formula": "B",
+        "score": 1,
+        "margin": 2,
+        "screening": "B",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "coherent-p2.0-c5.0-sf0.05-f20.0-sat0.6-fi0.0",
+        "formula": "D",
+        "score": 12,
+        "margin": 2,
+        "screening": "C",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "C"
+      },
+      {
+        "id": "coherent-p2.0-c5.0-sf0.05-f40.0-sat0.2-fi0.0",
+        "formula": "D",
+        "score": 11,
+        "margin": 1,
+        "screening": "D",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "C"
+      },
+      {
+        "id": "coherent-p2.0-c5.0-sf0.05-f40.0-sat0.6-fi3.0",
+        "formula": "D",
+        "score": 11,
+        "margin": 1,
+        "screening": "D",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "C"
+      },
+      {
+        "id": "coherent-p2.0-c5.0-sf0.4-f20.0-sat0.2-fi3.0",
+        "formula": "B",
+        "score": 1,
+        "margin": 2,
+        "screening": "B",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      },
+      {
+        "id": "coherent-p2.0-c5.0-sf0.4-f40.0-sat0.2-fi0.0",
+        "formula": "D",
+        "score": 11,
+        "margin": 1,
+        "screening": "D",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "C"
+      },
+      {
+        "id": "coherent-p2.0-c5.0-sf0.4-f40.0-sat0.6-fi3.0",
+        "formula": "D",
+        "score": 11,
+        "margin": 1,
+        "screening": "D",
+        "atwater": "coherent",
+        "proteinCounted": false,
+        "forest": "C"
+      },
+      {
+        "id": "coherent-p2.0-c5.0-sf0.9-f20.0-sat0.2-fi3.0",
+        "formula": "B",
+        "score": 1,
+        "margin": 2,
+        "screening": "B",
+        "atwater": "coherent",
+        "proteinCounted": true,
+        "forest": "A"
+      }
+    ],
+    "note": "Energy is the 4/4/9/2 estimate rounded to 0.1 kcal. Salt is 0.05 + 0.15*saturated-fat fraction + 0.02*protein, so salt is not independent of the other axes."
+  },
+  "unitSwapLattice": {
+    "n": 282,
+    "formulaLetters": {
+      "A": 47,
+      "B": 61,
+      "C": 108,
+      "D": 61,
+      "E": 5
+    },
+    "screeningLetters": {
+      "A": 21,
+      "B": 36,
+      "C": 83,
+      "D": 138,
+      "E": 4
+    },
+    "formulaScreening": {
+      "agree": 116,
+      "adjacent": 140,
+      "far": 26,
+      "confusion": {
+        "A": {
+          "A": 15,
+          "B": 22,
+          "C": 10,
+          "D": 0,
+          "E": 0
+        },
+        "B": {
+          "A": 6,
+          "B": 10,
+          "C": 29,
+          "D": 16,
+          "E": 0
+        },
+        "C": {
+          "A": 0,
+          "B": 4,
+          "C": 39,
+          "D": 65,
+          "E": 0
+        },
+        "D": {
+          "A": 0,
+          "B": 0,
+          "C": 5,
+          "D": 52,
+          "E": 4
+        },
+        "E": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 5,
+          "E": 0
+        }
+      }
+    },
+    "atwater": {
+      "coherent": 0,
+      "divergent": 282,
+      "unchecked": 0
+    },
+    "proteinCounted": 163,
+    "proteinDropped": 119,
+    "margin": {
+      "bins": {
+        "1": 101,
+        "2": 76,
+        "3-5": 105,
+        "6+": 0
+      },
+      "median": 2.0,
+      "min": 1,
+      "max": 4
+    },
+    "flips": null,
+    "forest": null,
+    "disagreementExamples": [],
+    "note": "Energy is the Atwater estimate times 4.184, kept only when that value is still at or under 900 kcal. This checks the rule. It is not a rate of kilojoule mix-ups in the wild."
+  }
+}

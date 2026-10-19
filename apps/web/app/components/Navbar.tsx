@@ -69,7 +69,7 @@ export default function Navbar() {
           }`}
         >
           <a
-            href="#"
+            href="/"
             className="flex min-w-0 items-center gap-2 text-white transition-opacity hover:opacity-90 sm:gap-3"
           >
             <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 transition-colors group-hover:border-emerald-400/60">
@@ -90,14 +90,8 @@ export default function Navbar() {
             <button type="button" onClick={() => scrollToSection('problem')} className="hover:text-emerald-400">
               How It Works
             </button>
-            <button type="button" onClick={() => scrollToSection('studio')} className="hover:text-emerald-400">
-              {t('studio')}
-            </button>
-            <button type="button" onClick={() => scrollToSection('intelligence')} className="hover:text-emerald-400">
-              Intelligence
-            </button>
-            <button type="button" onClick={() => scrollToSection('trust')} className="hover:text-emerald-400">
-              Trust & Evidence
+            <button type="button" onClick={() => scrollToSection('how-it-works')} className="hover:text-emerald-400">
+              Pipeline
             </button>
           </div>
 
@@ -108,14 +102,13 @@ export default function Navbar() {
             >
               {user ? 'Account' : 'Sign in'}
             </a>
-            <button
-              type="button"
-              onClick={() => scrollToSection('scan')}
+            <a
+              href={user ? '/dashboard' : '/login'}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-lime-400 px-5 py-2 text-xs font-semibold tracking-wide text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95"
             >
               <Scan className="h-4 w-4 text-slate-950" />
-              <span>{t('scan')}</span>
-            </button>
+              <span>{user ? 'Open the reader' : t('scan')}</span>
+            </a>
           </div>
 
           <button
@@ -136,23 +129,20 @@ export default function Navbar() {
             className="mt-2 flex max-h-[calc(100svh-6rem)] flex-col gap-1 overflow-y-auto rounded-3xl border border-white/10 bg-[#0d0e17]/95 p-3 shadow-2xl backdrop-blur-xl md:hidden"
           >
             <button type="button" className={linkClass} onClick={() => scrollToSection('problem')}>How It Works</button>
-            <button type="button" className={linkClass} onClick={() => scrollToSection('studio')}>{t('studio')}</button>
-            <button type="button" className={linkClass} onClick={() => scrollToSection('intelligence')}>Intelligence</button>
-            <button type="button" className={linkClass} onClick={() => scrollToSection('trust')}>Trust & Evidence</button>
+            <button type="button" className={linkClass} onClick={() => scrollToSection('how-it-works')}>Pipeline</button>
             <a
               href={user ? '/dashboard' : '/login'}
               className={linkClass}
             >
               {user ? 'Account' : 'Sign in'}
             </a>
-            <button
-              type="button"
-              onClick={() => scrollToSection('scan')}
+            <a
+              href={user ? '/dashboard' : '/login'}
               className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-lime-400 px-5 py-3 text-sm font-semibold text-slate-950"
             >
               <Scan className="h-4 w-4" />
-              {t('scan')}
-            </button>
+              {user ? 'Open the reader' : t('scan')}
+            </a>
           </div>
         )}
       </div>

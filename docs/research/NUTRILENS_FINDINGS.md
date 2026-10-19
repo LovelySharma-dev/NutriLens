@@ -2,7 +2,7 @@
 
 **Product:** NutriLens (repository name NutriTrust)  
 **Author:** Lovely Sharma, TeamRocket.exe  
-**Date:** 17 October 2026  
+**Date:** 18 October 2026  
 **Audience:** a downstream model asked to write, extend, or answer questions about this prototype  
 **Companion:** `docs/research/NUTRILENS_PAPER.md`
 
@@ -136,7 +136,102 @@ Thresholds used by the ML health flags and by the shelf screening grade:
 
 Overall screen level is high if any flag is high, otherwise medium if any flag is medium, otherwise low. The shelf's `screeningGrade` adds 2 points for a high band and 1 for a medium band, then subtracts 1 when fiber is at least 6 g or protein is at least 12 g. Score 0 or below is A, 1 is B, 2 is C, 3–4 is D, 5 or more is E. That letter is labeled a screening grade so it is not confused with the random-forest letter on a real scan.
 
-**Boundary.** These are screening bands. They are not a diagnosis and they are not the official Nutri-Score point formula.
+**Boundary.** These are screening bands. They are not a diagnosis. The 2017 point formula is a third letter, measured in F13.
+
+### F12. A fixed one-cell grid moves few wide-margin letters
+
+`services/ml/evaluate_findings.py` wrote `apps/web/app/lib/letter-stability.json` on 18 October 2026. The forest was loaded with scikit-learn 1.6.1 and was not replaced. Each of the eight nutrients was multiplied by 0.5, 0.8, 0.9, 1.1, 1.2, and 1.5. A probe outside a ceiling was rejected. Margin is the predicted-class probability minus the next class. Close is below 0.15, mid is below 0.40, and wide is 0.40 or more.
+
+| Corpus | Tables | Forest matches screening | Mean letter steps | Accepted | Flips | Rejected |
+| --- | --- | --- | --- | --- | --- | --- |
+| Reference shelf | 12 | 6 | 0.5 | 564 | 6 | 12 |
+| Constructed tables | 8 | 3 | 0.875 | 382 | 11 | 2 |
+
+On the shelf, the wide bucket is 1 flip in 469 accepted probes across 10 tables. The mid bucket is 5 flips in 95 accepted probes across 2 tables. There is no close-margin shelf food. On the constructed tables, the one close table (`two-medium`) has 7 flips in 48 accepted probes. The same script under scikit-learn 1.9.1 printed the same summary counts. The cited run is 1.6.1.
+
+The three shelf foods with a flip all move first on saturated fat. Plain dahi ×1.5 goes from A to B. Peanut butter ×0.5 goes from C to A, away from screening D. Jaggery cookies ×1.1 goes from D to E, which is the screening letter. A printed fiber of 0 stays 0 on this grid.
+
+**Boundary.** These are complete tables, not photographs and not corrections a person typed. The margin is not a calibrated probability. The aggregate flip share is not the headline.
+
+### F13. The 2017 foods formula, the screen, and the forest disagree in different places
+
+`apps/web/app/lib/readingAudit.ts` scores the 2017 general-foods table. Kilocalories are multiplied by 4.184. Salt grams become sodium milligrams by dividing by 2.5 and multiplying by 1000. A point is counted only when the value is strictly above the threshold. Fruit percent is unknown and counted as 0, so protein points drop when negative points are 11 or more. Beverages, cheeses, and added fats are not on their own tables.
+
+An energy check estimates kilocalories as 4×protein + 4×carbohydrate + 9×fat + 2×fiber, omitting alcohol and polyols. It flags a gap above 10% and above 30 kcal. The formula letter still uses the stated energy.
+
+On the same tables as F12, checked by `apps/web/app/lib/letter-stability.test.ts`:
+
+| Corpus | Formula matches forest | Formula matches screening | Energy check flagged |
+| --- | --- | --- | --- |
+| Reference shelf | 9 of 12 | 9 of 12 | 0 of 12 |
+| Constructed tables | 7 of 8 | 3 of 8 | 4 of 8 |
+
+Six shelf foods agree on all three letters. Brown rice, plain dahi, and almond drink put the formula with the forest and against the screen. Peanut butter, masala chips, and jaggery cookies put the formula with the screen and against the forest. `protein-offset` is forest A, formula A, and screening D, with forest margin 0.82 and no accepted flip. `two-medium` is the only table where all three letters differ: forest B, screening C, formula A. Its energy check is flagged.
+
+**Boundary.** The formula letter is not a clearance and not the forest letter. Flagged energy checks were still given a formula letter.
+
+### F14. On a 984-table lattice, forest disagreements cluster next to the formula boundary
+
+`services/ml/audit_readings.py` wrote `docs/research/reading-audit.json` on 18 October 2026. The coherent cohort sets energy to the 4/4/9/2 estimate. Protein is 2, 8, 16, or 25 g; carbohydrate 5, 20, 45, or 70 g; sugars 5%, 40%, or 90% of carbohydrate; fat 1, 8, 20, or 40 g; saturated fat 20% or 60% of fat; fibre 0, 3, or 8 g. Rows with fat + carbohydrate + protein above 100 g, or those three plus fibre above 105 g, are dropped. Salt is `0.05 + 0.15 × saturated-fat fraction + 0.02 × protein`. 984 tables remain. This is not a food sample.
+
+All 984 pass the Atwater rule in F13. Formula and screening share a letter on 542, differ by one letter on 390, and differ by two or more on 52. Formula and forest share a letter on 678, differ by one on 288, and differ by two or more on 18. The forest column was predicted by scikit-learn 1.9.1 from a joblib pickled with 1.6.1, and that load warned the unpickle may be invalid. The twelve shelf letters from this load match the 1.6.1 letters in F12. The 984 forest letters were not re-run under 1.6.1.
+
+Of 130 formula-B tables, the forest said A on 76. Of 307 formula-D tables, it said C on 141. Of 46 formula-E tables, it said D on 37 and E on 9. The 18 wider gaps are formula C read as forest A. Formula A agreed on 282 of 283. Protein points were counted on 500 tables and dropped on 484.
+
+Formula margin is Nutri-Score points to the nearest other letter, not the probability margin in F12. Median margin is 2. One-point tables: 293, and the forest matched 163 of them. Margin of 5 or more: 94, and the forest matched 88. Median one-nutrient moves, among tables where that nutrient could change the formula letter: energy 129.5 kcal (976), sugars 6.9 g (654), saturated fat 2.0 g (732), salt 0.49 g (949), fibre 2.1 g (666), protein 6.4 g (372).
+
+A second cohort writes the Atwater estimate times 4.184 into the kilocalorie cell when the result is still at or under 900 kcal. 282 tables qualify, and all 282 are divergent. The cohort was built to fail the rule.
+
+An all-zero table, outside the lattice, is formula B and screening A.
+
+**Boundary.** Do not cite 678/984 as an accuracy. Salt on this lattice is not an independent axis. The unit-swap cohort is a check of the threshold, not a rate of kilojoule mix-ups. The forest column in this finding was not re-run under scikit-learn 1.6.1. F15 is a different grid.
+
+### F15. On 432 declared tables, forest–screening agreement is close to chance
+
+`services/ml/evaluate_factorial.py` wrote `apps/web/app/lib/factorial-agreement.json` on 18 October 2026. The forest was loaded with scikit-learn 1.6.1 and was not replaced. This grid is not the 984-table lattice in F14. Salt is its own axis here.
+
+Sugars are 2, 8, or 24 g. Saturated fat is 0.5, 2.5, or 8 g. Salt is 0.1, 0.6, or 1.8 g. Fibre is 1 or 7 g. Protein is 4 or 14 g. Fat is saturated fat plus 4 g or 10 g. Carbohydrate is sugars plus 12 g or 35 g. Energy is 4×protein + 4×carbohydrate + 9×fat + 2×fiber. That is 432 tables. The energy check flags 0 of 432 because energy is the estimate. The grid is not a food sample and not a photograph set.
+
+Cohen's kappa is (observed agreement − chance agreement) / (1 − chance agreement). Chance agreement multiplies the two readers' shares of each letter and adds those products. Kappa measures agreement beyond that chance. It does not say which letter is correct. Landis and Koch band names are a label, not a cutoff. The Wilson interval uses z = 1.96 and is an interval on the share of tables that share a letter. It is not an interval on kappa.
+
+| Pair | Same letter | Observed | Chance | Kappa | Wilson 95% on the observed share | Mean letter steps |
+| --- | ---: | ---: | ---: | ---: | --- | ---: |
+| Forest and screening | 145 of 432 | 0.3356 | 0.2133 | 0.1555 | 0.2927 to 0.3815 | 0.7755 |
+| Forest and formula | 335 of 432 | 0.7755 | 0.2716 | 0.6918 | 0.7338 to 0.8123 | 0.2292 |
+| Screening and formula | 198 of 432 | 0.4583 | 0.2255 | 0.3006 | 0.4119 to 0.5055 | 0.5648 |
+
+Screening is harsher than the forest by two or more letters on 45 tables and milder on 1. The formula is harsher than the forest by two or more on 1 table and milder on 1. The formula is milder than screening by two or more on 10 tables and harsher on 0. All three letters agree on 141 of 432 (Wilson 0.2839 to 0.372).
+
+Letter counts: forest A 111, B 45, C 169, D 105, E 2; screening A 51, B 63, C 85, D 160, E 73; formula A 88, B 57, C 146, D 130, E 11.
+
+On the twelve reference foods, forest and screening agree on 6 of 12. Observed agreement is 0.5, chance agreement is 0.3472, kappa is 0.234, and the Wilson interval is 0.2538 to 0.7462.
+
+The one-cell factors in F12 were applied to all 432 tables. A probe moves the forest letter on 318 of 432 tables (Wilson 0.6926 to 0.7755). Close margin: 896 flips in 4486 accepted probes, share 0.1997, and 93 of 94 tables flip. Mid: 252 of 5374, share 0.0469, and 101 of 113 tables flip. Wide: 184 of 10732, share 0.0171, and 124 of 225 tables flip. The nearest accepted flip is saturated fat on 113 tables, salt on 90, and sugars on 78. The shelf in F12 has no close-margin food. This grid does, and the flip share falls as the margin widens.
+
+**Boundary.** Do not cite 145/432 or 335/432 as an accuracy. Do not cite kappa as correctness. Do not cite the shelf interval as a precise rate. The margin is not calibrated. The energy check passes by construction.
+
+### F17. The small kappa is a one-letter shift, and the screen is the odd reader
+
+On the same 432 tables as F15, linear weighted kappa gives a miss of *d* letters the weight *d* / 4. An A-versus-B miss weighs 0.25. An A-versus-E miss weighs 1. Forest versus screening: unweighted kappa 0.1555, linear weighted kappa 0.4617, and 386 of 432 tables are within one letter (Wilson 0.8609 to 0.9192). The largest mismatch is forest C with screening D, 104 tables, then forest D with screening E, 63 tables.
+
+When the three letters are not the same, screening is the odd letter on 194 tables, the forest on 57, and the formula on 4. All three differ on 36.
+
+A shuffle of the screening letters, 1000 draws, seed 18, keeps the letter counts and breaks the pairing. Null median kappa is −0.0004. The 95th percentile is 0.0408. Zero draws reached 0.1555.
+
+**Boundary.** Weighted kappa is still agreement, not correctness. The weight is a choice. A kappa of 0.80 is not a cutoff here. The shuffle is a pairing check, not a confidence interval on kappa.
+
+### F16. The matcher misses synonyms and alarms on negated stems
+
+`apps/web/app/lib/matcher-audit.ts` holds twelve constructed lines. `matcher-audit.test.ts` checks them. A hit is a conflict the line should raise. A miss is a synonym the containment check does not see. A false alarm is a shared stem the check treats as the allergen. A clear line raises no personal conflict.
+
+| Mode | Count | Lines |
+| --- | ---: | --- |
+| Hit | 4 | milk powder; almonds against tree nuts; mustard seeds; chicken stock against vegetarian |
+| Miss | 3 | casein; whey protein; groundnut oil |
+| False alarm | 3 | coconut milk; gluten-free oats; peanut-free sauce |
+| Clear | 2 | rice; chickpeas against soy and vegan |
+
+**Boundary.** Twelve constructed strings are not a photographed ingredient corpus. A clear line is not an absence of the allergen on a packet. Do not collapse the four modes into one accuracy.
 
 ### F6. The parser refuses three ways of inventing a nutrient
 
@@ -238,25 +333,30 @@ Email sign-in exists. Forgot-password answers the same way whether or not that e
 | API and web `tsc --noEmit` | Passed at the time of the working paper |
 | Browser studio | Profile, shelf, history, compare, and barcode tabs rendered, with language and access controls. Turning on milk wrote that allergen into local storage and set the toggle to pressed |
 | Protein 9 g / 18 g reversed | Field label `swapped`; the scored object has no accuracy field |
-| Five constructed protein lines, one each in English, Hindi, Marathi, Tamil, and Bengali | `score_constructed.py` on 17 October 2026: `proteins` is `correct` once per file; every other count is 0. These are text lines, not photographs |
+| Constructed lines for protein, sugars, salt, energy, and fat, in en, hi, mr, ta, bn | `score_constructed.py` on 18 October 2026: five `correct` nutrients per language; every other count is 0. Text lines, not photographs |
+| One-cell grid and three-letter check, 18 October 2026 | See F12 and F13. `letter-stability.test.ts` passed against `letter-stability.json` |
+| Coherent lattice of 984 tables, and 282 kilojoule-as-kilocalorie rows | See F14. `readingAudit.test.ts` passed the threshold locks |
+| Factorial of 432 tables, scikit-learn 1.6.1, 18 October 2026 | See F15 and F17. `factorial-agreement.test.ts` locks the kappa, the weighted kappa, the odd-reader counts, the shuffle null, and the flip-share figures |
+| Matcher fixture, 12 lines | See F16. `matcher-audit.test.ts` passed: 4 hits, 3 misses, 3 false alarms, 2 clears |
 
 The random forest was not re-scored on a new photograph set. End-to-end OCR still depends on EasyOCR model files and on the photo.
 
 ## 4. What is still unmeasured
 
-The tools below exist. The measurements do not. A draft must not fill the gaps with estimated percentages.
+F12, F13, F14, and F15 are measured on complete tables. F16 is a twelve-line string fixture. The items below are still unmeasured. A draft must not fill them with estimated percentages.
 
-- The field scorer in `services/ocr/app/field_score.py` labels each nutrient as correct, missed, swapped, wrong unit, invented, or a plain wrong value, and it does not collapse those counts into one accuracy percentage. `services/ocr/benchmarks/constructed/` holds one constructed text line each for English, Hindi, Tamil, Bengali, and Marathi. Those counts are constructed lines. No photographed packet has been scored, so end-to-end precision and recall are still unknown.
+- The field scorer in `services/ocr/app/field_score.py` labels each nutrient as correct, missed, swapped, wrong unit, invented, or a plain wrong value, and it does not collapse those counts into one accuracy percentage. `services/ocr/benchmarks/constructed/` holds text lines for protein, sugars, salt, energy, and fat in English, Hindi, Tamil, Bengali, and Marathi. Those counts are constructed lines. No photographed packet has been scored, so end-to-end precision and recall are still unknown.
 - The grade is withheld when the two column headings are missing, when mean box confidence is below 0.55, or when the line reader and the box reader disagree. Mean box confidence is named as an uncalibrated average of OCR boxes. The 0.55 cutoff is the same heuristic already used to run a second image pass. It is not a calibrated probability, and the share of photographs that abstain has not been measured.
 - The portion table lets a person change one per 100 g cell and asks the model for the letter on the raw read and the letter after that correction.
 - A household shelf stores scans the person confirms. Seven days later the studio asks whether the preference check still agrees. The agreement count uses only those answers. No week-later answers are stored in this repository.
 - Barcode text is checked with the GS1 check digit before lookup. When the box reader and the line reader disagree on a shared nutrient, the grade is withheld.
 - Password reset tries InsForge mail, then SMTP. If neither sends, the code is shown on the reset page for this machine.
 - `services/ml/train_forest.py` can train the same forest from a CSV. The published `nutritrust_random_forest.joblib` was not replaced. TreeSHAP is used when `shap` imports; otherwise the response says occlusion.
-- Hindi, Tamil, Bengali, and Marathi each have a constructed-line case in the scorer. They have not been scored as photographed sets.
+- Hindi, Tamil, Bengali, and Marathi have constructed lines for five nutrients. They have not been scored as photographed sets. The 984-table forest column in F14 was not re-run under scikit-learn 1.6.1. The 432-table grid in F15 was run under 1.6.1. It does not replace the F14 forest column, and it is not a photograph set.
+- The matcher fixture in F16 is twelve constructed strings. It is not a photographed ingredient corpus.
 - The terms and copyright pages say they describe the prototype and are not an approval.
 
-The highest-value measurements still missing are a photographed-label run of the field scorer, a calibration of the 0.55 abstain cutoff, and week-later answers from a household.
+The highest-value measurements still missing are a photographed-label run of the field scorer, a calibration of the 0.55 abstain cutoff, and week-later answers from a household. F12, F13, F14, F15, F16, and F17 do not fill those gaps.
 
 ## 5. Claims that are in bounds, and claims that are not
 
@@ -266,6 +366,12 @@ In bounds:
 - Grade refusal instead of median fill, including the zero-versus-missing distinction.
 - Local explanation by occlusion or TreeSHAP, with the method named.
 - Screening thresholds and the separate screening grade on the shelf.
+- The one-cell grid in F12, with the margin bucket named in the same sentence.
+- The three-letter counts in F13, with fruit percent counted as zero named in the same sentence.
+- The 984-table lattice and the 282-row unit-swap check in F14, with the scikit-learn load named in the same sentence.
+- The 432-table factorial in F15, with kappa, chance agreement, and the Wilson interval on the matching share named together.
+- The letter-distance reading in F17, with the weight *d* / 4 named, and with the statement that 0.80 is not a cutoff.
+- The twelve-line matcher counts in F16, with hits, misses, and false alarms kept separate.
 - Sodium-to-salt and kilojoule conversions, with the assumptions named.
 - Preference matching by string containment, including its miss and false-alarm modes.
 - The twelve-item shelf as a demonstration.
@@ -275,7 +381,11 @@ Out of bounds:
 - Any new accuracy, F1, or OCR percentage.
 - "Safe", "cleared", "medical", "fraud", or "clinically validated".
 - A sentence that email login or the terms page improved nutrition performance.
-- Treating the screening grade and the random-forest grade as the same number.
+- Treating the screening grade, the formula letter, and the random-forest grade as the same number.
+- Citing the grid flip share without its margin bucket, or citing it as an OCR accuracy.
+- Citing 6 of 12, or 145 of 432, as an accuracy, or citing kappa, weighted or unweighted, as a measure of which letter is correct.
+- Treating a kappa of 0.80 as a pass mark on this grid.
+- Collapsing the matcher fixture into one accuracy.
 
 ## References
 
@@ -288,6 +398,14 @@ Rajput, S. "Feature Importance in Random Forests: The Company That Fired the Wro
 Hexisteme. "The Dedicated OCR Engine Lost to the General-Purpose Model — 300× Slower." DEV, https://dev.to/hexisteme/the-dedicated-ocr-engine-lost-to-the-general-purpose-model-300x-slower-2bf7
 
 Pertu, D. "450 label words the test suite will not let us ship without." DEV, https://dev.to/daniel_pertu/450-label-words-the-test-suite-will-not-let-us-ship-without-4102
+
+Parshvi. "Flip Rate Lies When the Model Saturates: A Confidence-Stratified Methodology for Deletion-Based XAI Evaluation." DEV, https://dev.to/parshvi1508/flip-rate-lies-when-the-model-saturates-a-confidence-stratified-methodology-for-deletion-based-xai-4g7o
+
+Kundalia, R. "Why 95 Reviews Beats 20 Reviews — Even When Both Score 95%." DEV, https://dev.to/rajkundalia/why-95-reviews-beats-20-reviews-even-when-both-score-95-2cp9
+
+Peretz, O. "Inter-Rater Agreement and Cohen's Kappa: When Your Labels Are Opinions." DEV, https://dev.to/ofri-peretz/inter-rater-agreement-and-cohens-kappa-when-your-labels-are-opinions-2jdk
+
+Wahiduddin, Faishal. "Calibrating an LLM-as-Judge for a Vision Check to κ 0.80." DEV, https://dev.to/faishalwahiduddin/calibrating-an-llm-as-judge-for-a-vision-check-to-k-080-2h50
 
 Open Food Facts. Product API v2. https://world.openfoodfacts.org
 

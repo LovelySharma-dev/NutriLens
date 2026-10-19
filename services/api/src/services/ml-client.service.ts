@@ -32,6 +32,22 @@ export interface MlPredictionResult {
     level: string;
     flags: Array<{ nutrient: string; value: number; level: string }>;
   };
+  sensitivity?: {
+    margin: number | null;
+    marginBucket: string | null;
+    nearestFlip: {
+      feature: string;
+      factor: number;
+      fromValue: number;
+      toValue: number;
+      grade: string;
+    } | null;
+    accepted: number;
+    rejected: number;
+    flips: number;
+    stable: number;
+    note?: string;
+  } | null;
 }
 
 const ML_SERVICE_URL =

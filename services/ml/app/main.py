@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from app.explain import FEATURES, explain_prediction
+from app.reading_audit import audit_table
 from app.sensitivity import implausible_issues, probe_one_cell, sensitivity_public
 
 
@@ -227,6 +228,16 @@ def predict_nutri_score(data: NutritionInput):
         "imputedFeatures": None,
         "explanation": explanation,
         "sensitivity": sensitivity,
+        "readingAudit": audit_table({
+            "energy": values["energy_100g"],
+            "fat": values["fat_100g"],
+            "saturatedFat": values["saturated-fat_100g"],
+            "carbohydrates": values["carbohydrates_100g"],
+            "sugars": values["sugars_100g"],
+            "fiber": values["fiber_100g"],
+            "proteins": values["proteins_100g"],
+            "salt": values["salt_100g"],
+        }),
         "model": {
             "type": "RandomForestClassifier",
             "estimators": len(model.estimators_),

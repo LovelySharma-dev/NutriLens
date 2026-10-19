@@ -142,8 +142,14 @@ def main() -> None:
     catalog_forest = _forest_letters(model, catalog_tables)
     coherent_forest = _forest_letters(model, coherent)
 
+    import sklearn
     payload = {
         "formula": "nutri-score-2017-general-foods",
+        "sklearn": {
+            "loadedWith": sklearn.__version__,
+            "pickledWith": "1.6.1",
+            "note": "Loading the published joblib emitted InconsistentVersionWarning. Forest letters in this file are what that load predicted. They are not a new held-out accuracy.",
+        },
         "fruitPercent": "unknown, counted as 0",
         "atwaterRule": "divergent when the gap is above 10% and above 30 kcal; alcohol and polyols omitted",
         "notAPhotographSet": True,

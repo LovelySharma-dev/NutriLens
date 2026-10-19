@@ -1,0 +1,18 @@
+{
+  "id": "hi-sugars-columns",
+  "language": "hi",
+  "source": "constructed-lines",
+  "text": "per serving per 100 g\nशर्करा\n4 g\n9 g\n",
+  "expected": {
+    "sugars": {
+      "perPortion": {
+        "value": 4,
+        "unit": "g"
+      },
+      "per100g": {
+        "value": 9,
+        "unit": "g"
+      }
+    }
+  }
+}

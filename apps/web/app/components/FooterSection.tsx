@@ -1,9 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Eye, Leaf, ArrowRight, ShieldCheck } from 'lucide-react';
+import { cachedUser } from '../lib/auth';
 
 export default function FooterSection() {
+  const [platformHref, setPlatformHref] = useState('/login');
+
+  useEffect(() => {
+    setPlatformHref(cachedUser() ? '/dashboard' : '/login');
+  }, []);
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -31,13 +38,13 @@ export default function FooterSection() {
           </div>
 
           <div className="flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-            <button
-              onClick={() => scrollToSection('scan')}
+            <a
+              href={platformHref}
               className="inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-emerald-400 to-lime-400 px-6 py-4 font-bold text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all active:scale-95 sm:px-8 sm:hover:scale-105"
             >
-              <span>Scan a Label</span>
+              <span>{platformHref === '/dashboard' ? 'Open the reader' : 'Sign in to scan'}</span>
               <ArrowRight className="w-5 h-5 text-slate-950" />
-            </button>
+            </a>
 
             <button
               onClick={() => scrollToSection('how-it-works')}
@@ -77,14 +84,9 @@ export default function FooterSection() {
                 </button>
               </li>
               <li>
-                <button onClick={() => scrollToSection('intelligence')} className="hover:text-emerald-400 transition-colors">
-                  Nutrition ML Engine
-                </button>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection('trust')} className="hover:text-emerald-400 transition-colors">
-                  Claim Verification
-                </button>
+                <a href={platformHref} className="hover:text-emerald-400 transition-colors">
+                  Label reader
+                </a>
               </li>
               <li>
                 <a href="/login" className="hover:text-emerald-400 transition-colors">

@@ -1,0 +1,18 @@
+{
+  "id": "bn-energy-columns",
+  "language": "bn",
+  "source": "constructed-lines",
+  "text": "per serving per 100 g\nশক্তি\n110 kcal\n220 kcal\n",
+  "expected": {
+    "energy": {
+      "perPortion": {
+        "value": 110,
+        "unit": "kcal"
+      },
+      "per100g": {
+        "value": 220,
+        "unit": "kcal"
+      }
+    }
+  }
+}

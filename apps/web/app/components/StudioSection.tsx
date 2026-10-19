@@ -1,11 +1,15 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { BarChart3, History, ScanBarcode, ShieldCheck, UserRound, Volume2 } from 'lucide-react';
+import { Activity, BarChart3, History, ScanBarcode, ShieldCheck, UserRound, Volume2 } from 'lucide-react';
 import { usePreferences } from './PreferencesProvider';
-import { ALLERGEN_OPTIONS, CATALOG, assessFit, safeShelf, type CatalogProduct, type DietId, type Nutrients } from '../lib/safety';
+import { ALLERGEN_OPTIONS, CATALOG, assessFit, safeShelf, screeningGrade, type CatalogProduct, type DietId, type Nutrients } from '../lib/safety';
+import { auditTable, formulaGrade } from '../lib/readingAudit';
 import { checkBarcode } from '../lib/barcode';
 import { agreementSummary } from '../lib/household';
+import findings from '../lib/letter-stability.json';
+import factorial from '../lib/factorial-agreement.json';
+import { matcherAudit } from '../lib/matcher-audit';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
@@ -31,7 +35,8 @@ const OCR_LANGUAGES = [
 
 const NUTRIENT_KEYS: Array<keyof Nutrients> = ['energy', 'sugars', 'saturatedFat', 'salt', 'fiber', 'proteins'];
 
-type Tab = 'profile' | 'shelf' | 'history' | 'compare' | 'lookup';
+type Tab = 'profile' | 'shelf' | 'history' | 'compare' | 'lookup' | 'stability';
+type StabilityCorpus = 'reference-shelf' | 'constructed-bands';
 
 type LookupProduct = {
   name: string;
@@ -56,6 +61,8 @@ export default function StudioSection() {
   const [lookup, setLookup] = useState<LookupProduct | null>(null);
   const [lookupError, setLookupError] = useState('');
   const [lookupBusy, setLookupBusy] = useState(false);
+  const [stabilityCorpus, setStabilityCorpus] = useState<StabilityCorpus>('reference-shelf');
+  const [stabilityId, setStabilityId] = useState(findings.corpora['reference-shelf'].rows[0]?.id ?? '');
 
   const shelf = useMemo(() => safeShelf(prefs.profile), [prefs.profile]);
   const household = prefs.household ?? [];
@@ -149,6 +156,7 @@ export default function StudioSection() {
     { id: 'history', label: prefs.t('history'), icon: <History className="w-4 h-4" aria-hidden="true" /> },
     { id: 'compare', label: prefs.t('compare'), icon: <BarChart3 className="w-4 h-4" aria-hidden="true" /> },
     { id: 'lookup', label: prefs.t('lookup'), icon: <ScanBarcode className="w-4 h-4" aria-hidden="true" /> },
+    { id: 'stability', label: prefs.t('stability'), icon: <Activity className="w-4 h-4" aria-hidden="true" /> },
   ];
 
   return (
@@ -279,7 +287,7 @@ export default function StudioSection() {
                 <div className="mb-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
                   <div>
                     <h3 className="text-lg font-semibold text-white">{prefs.t('referenceShelf')}</h3>
-                    <p className="text-sm text-slate-300">{shelf.length} matches. These twelve foods are a demonstration.</p>
+                    <p className="text-sm text-slate-300">{shelf.length} matches. These twelve foods are a demonstration. Screen is the traffic-light grade. Formula is the 2017 Nutri-Score foods table, with fruit percent counted as zero.</p>
                   </div>
                   <button type="button" onClick={readShelf} className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm">
                     <Volume2 className="w-4 h-4" aria-hidden="true" /> {prefs.t('readAloud')}
@@ -351,6 +359,24 @@ export default function StudioSection() {
               {lookup && <LookupResult product={lookup} />}
             </form>
           )}
+
+          {tab === 'stability' && (
+            <StabilityPanel
+              corpus={stabilityCorpus}
+              rowId={stabilityId}
+              note={prefs.t('stabilityNote')}
+              factorialNote={prefs.t('factorialNote')}
+              claimLead={prefs.t('claimLead')}
+              stableOnGrid={prefs.t('stableOnGrid')}
+              screeningBeside={prefs.t('screeningBeside')}
+              onCorpus={(next) => {
+                setStabilityCorpus(next);
+                setStabilityId(findings.corpora[next].rows[0]?.id ?? '');
+              }}
+              onRow={setStabilityId}
+              onSpeak={prefs.speak}
+            />
+          )}
         </div>
       </div>
     </section>
@@ -366,6 +392,8 @@ function Toggle({ pressed, onClick, children }: { pressed: boolean; onClick: () 
 }
 
 function ProductCard({ product, grade }: { product: CatalogProduct; grade: string }) {
+  const formula = formulaGrade(product.per100g);
+  const formulaLetter = formula.status === 'ready' ? formula.letter : '—';
   return (
     <li className="rounded-2xl border border-white/10 bg-black/30 p-4">
       <div className="flex items-start justify-between gap-3">
@@ -373,7 +401,10 @@ function ProductCard({ product, grade }: { product: CatalogProduct; grade: strin
           <h3 className="font-semibold text-white">{product.name}</h3>
           <p className="text-sm text-slate-400">{product.category}</p>
         </div>
-        <span className="rounded-full bg-emerald-400 px-3 py-1 text-sm font-bold text-slate-950">{grade}</span>
+        <div className="flex flex-col items-end gap-1">
+          <span className="rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold text-slate-950">Screen {grade}</span>
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${formulaLetter === 'D' || formulaLetter === 'E' ? 'bg-amber-300 text-slate-950' : 'bg-white/10 text-white'}`}>Formula {formulaLetter}</span>
+        </div>
       </div>
       <p className="mt-3 text-sm text-slate-300">
         {product.per100g.proteins} g protein · {product.per100g.sugars} g sugars · {product.per100g.salt} g salt
@@ -410,11 +441,28 @@ function ComparePanel({ leftId, rightId, setLeftId, setRightId, hint }: { leftId
                 <td className={right.per100g[key] < left.per100g[key] ? 'text-emerald-300' : 'text-slate-200'}>{right.per100g[key]}</td>
               </tr>
             ))}
+            <tr className="border-t border-white/10">
+              <th className="py-2 font-medium text-slate-200">Screen letter</th>
+              <td>{screeningGrade(left.per100g)}</td>
+              <td>{screeningGrade(right.per100g)}</td>
+            </tr>
+            <tr className="border-t border-white/10">
+              <th className="py-2 font-medium text-slate-200">Formula letter</th>
+              <td>{formulaText(left.per100g)}</td>
+              <td>{formulaText(right.per100g)}</td>
+            </tr>
           </tbody>
         </table>
       )}
     </div>
   );
+}
+
+function formulaText(nutrients: Nutrients) {
+  const formula = formulaGrade(nutrients);
+  if (formula.status !== 'ready') return 'uncomputed';
+  const points = formula.margin.points;
+  return `${formula.letter}, ${points} point${points === 1 ? '' : 's'} from ${formula.margin.toward.join(' or ')}`;
 }
 
 function ProductSelect({ id, value, onChange }: { id: string; value: string; onChange: (id: string) => void }) {
@@ -425,6 +473,174 @@ function ProductSelect({ id, value, onChange }: { id: string; value: string; onC
   );
 }
 
+const PAIR_LABEL = {
+  forestScreen: { title: 'Forest and screening', right: 'Screening' },
+  forestFormula: { title: 'Forest and formula', right: 'Formula' },
+  screenFormula: { title: 'Screening and formula', right: 'Formula' },
+} as const;
+
+type PairKey = keyof typeof PAIR_LABEL;
+
+function FactorialBlock({ note, claimLead, onSpeak }: { note: string; claimLead: string; onSpeak: (text: string) => void }) {
+  const [pairKey, setPairKey] = useState<PairKey>('forestScreen');
+  const pair = factorial.pairs[pairKey];
+  const label = PAIR_LABEL[pairKey];
+  const audit = matcherAudit();
+  const misses = audit.rows.filter((row) => row.expect === 'miss').map((row) => row.text);
+  const alarms = audit.rows.filter((row) => row.expect === 'false-alarm').map((row) => row.text);
+  const nearest = Object.entries(factorial.probes.nearestFlipByFeature)
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 3);
+  const shelf = factorial.shelf.forestScreen;
+  const exact = factorial.pairs.forestScreen;
+  const odd = factorial.anatomy.oddReader;
+  const topMismatch = factorial.anatomy.forestScreenOffDiagonal[0];
+  const shuffled = factorial.anatomy.forestScreenPermutation;
+  const spoken = `${claimLead} Exact kappa ${exact.kappa}. Linear weighted kappa ${exact.linearWeightedKappa}. Within one letter, ${exact.withinOneLetter.k} of ${exact.withinOneLetter.n}. Screening is the odd letter on ${odd.screeningOdd} tables. ${label.title}: observed ${pair.observed}, kappa ${pair.kappa}.`;
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-white/10 bg-black/30 p-4">
+      <p className="text-base font-semibold text-white">{claimLead}</p>
+      <p>
+        Exact-letter kappa is {exact.kappa}. Counting a one-letter miss as a quarter of an A-versus-E miss, linear weighted kappa is {exact.linearWeightedKappa}.
+        Forest and screening stay within one letter on {exact.withinOneLetter.k} of {exact.withinOneLetter.n} tables
+        {' '}(Wilson {exact.withinOneLetter.low} to {exact.withinOneLetter.high}).
+        The largest mismatch is forest {topMismatch.forest} with screening {topMismatch.screening}, {topMismatch.n} tables.
+        When the three letters are not the same, screening is the odd letter on {odd.screeningOdd} tables, the forest on {odd.forestOdd}, and the formula on {odd.formulaOdd}.
+        Shuffling the screening letters {shuffled.draws} times left a null median of {shuffled.nullMedian}. {shuffled.nullsAtOrAboveObserved} of those draws reached the observed kappa.
+      </p>
+      <p>{note}</p>
+      <p>
+        {factorial.design.tables} declared tables. Energy is the 4/4/9/2 estimate, so the energy check flags {factorial.energyCheckFlagged}.
+        All three letters agree on {factorial.threeWayAgreement.k} of {factorial.threeWayAgreement.n}
+        {' '}(Wilson {factorial.threeWayAgreement.low} to {factorial.threeWayAgreement.high}).
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {(Object.keys(PAIR_LABEL) as PairKey[]).map((key) => (
+          <button
+            key={key}
+            type="button"
+            aria-pressed={pairKey === key}
+            onClick={() => setPairKey(key)}
+            className={`rounded-full px-4 py-2 font-semibold ${pairKey === key ? 'bg-lime-300 text-slate-950' : 'border border-white/15 text-white'}`}
+          >
+            {PAIR_LABEL[key].title}
+          </button>
+        ))}
+        <button type="button" onClick={() => onSpeak(spoken)} className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 px-4 py-2 text-emerald-200">
+          <Volume2 className="h-4 w-4" aria-hidden="true" />
+          Read this pair
+        </button>
+      </div>
+      <p>
+        {label.title}: {pair.agreed} of {pair.n} tables share a letter.
+        Observed agreement {pair.observed}. Chance agreement {pair.chance}. Cohen&apos;s kappa {pair.kappa}.
+        Wilson 95% interval on that share: {pair.wilson.low} to {pair.wilson.high}.
+        Mean distance {pair.meanAbsoluteLetterSteps} letter steps.
+        {label.right} is harsher by two or more letters on {pair.rightHarsherByTwoOrMore} tables and milder on {pair.rightMilderByTwoOrMore}.
+      </p>
+      <p>
+        A one-cell probe moves the forest letter on {factorial.probes.tablesWithAFlip} of {factorial.design.tables} tables
+        {' '}(Wilson {factorial.probes.tablesWithAFlipWilson.low} to {factorial.probes.tablesWithAFlipWilson.high}).
+        Close margin: {factorial.probes.byMarginBucket.close.flips} of {factorial.probes.byMarginBucket.close.accepted} accepted probes.
+        Mid: {factorial.probes.byMarginBucket.mid.flips} of {factorial.probes.byMarginBucket.mid.accepted}.
+        Wide: {factorial.probes.byMarginBucket.wide.flips} of {factorial.probes.byMarginBucket.wide.accepted}.
+        Nearest moves: {nearest.map(([feature, count]) => `${nutrientName(feature)} ${count}`).join(', ')}.
+      </p>
+      <p className="text-slate-400">
+        The twelve-food shelf agrees on {shelf.agreed} of {shelf.n}. Its Wilson interval is {shelf.wilson.low} to {shelf.wilson.high}, and its kappa is {shelf.kappa}. That interval is too wide to be the headline.
+      </p>
+      <p>
+        Matcher fixture, {audit.rows.length} lines: {audit.hits} hits, {audit.misses} misses ({misses.join(', ')}), {audit.falseAlarms} false alarms ({alarms.join(', ')}), {audit.clears} clears.
+        {audit.failed.length ? ` Failed: ${audit.failed.join(', ')}.` : ' Every line matched its expected mode.'}
+      </p>
+    </div>
+  );
+}
+
+function StabilityPanel({
+  corpus,
+  rowId,
+  note,
+  factorialNote,
+  claimLead,
+  stableOnGrid,
+  screeningBeside,
+  onCorpus,
+  onRow,
+  onSpeak,
+}: {
+  corpus: StabilityCorpus;
+  rowId: string;
+  note: string;
+  factorialNote: string;
+  claimLead: string;
+  stableOnGrid: string;
+  screeningBeside: string;
+  onCorpus: (next: StabilityCorpus) => void;
+  onRow: (id: string) => void;
+  onSpeak: (text: string) => void;
+}) {
+  const selected = findings.corpora[corpus];
+  const summary = selected.summary;
+  const row = selected.rows.find((item) => item.id === rowId) ?? selected.rows[0];
+  const audit = row?.per100g ? auditTable(row.per100g) : null;
+  const formulaLetter = audit?.status === 'ready' ? audit.formula.letter : null;
+  const nearest = row?.nearestFlip;
+  const spoken = row
+    ? `${note} Forest ${row.forest}. Screening ${row.screening}. ${formulaLetter ? `Formula ${formulaLetter}.` : ''} ${nearest ? `${nutrientName(nearest.feature)} times ${nearest.factor} moves the forest letter to ${nearest.grade}.` : stableOnGrid}`
+    : note;
+
+  return (
+    <div className="space-y-4 text-sm text-slate-200">
+      <p className="text-slate-300">{note}</p>
+      <FactorialBlock note={factorialNote} claimLead={claimLead} onSpeak={onSpeak} />
+      <div className="flex flex-wrap gap-2">
+        <button type="button" aria-pressed={corpus === 'reference-shelf'} onClick={() => onCorpus('reference-shelf')} className={`rounded-full px-4 py-2 font-semibold ${corpus === 'reference-shelf' ? 'bg-emerald-400 text-slate-950' : 'border border-white/15 text-white'}`}>Reference shelf</button>
+        <button type="button" aria-pressed={corpus === 'constructed-bands'} onClick={() => onCorpus('constructed-bands')} className={`rounded-full px-4 py-2 font-semibold ${corpus === 'constructed-bands' ? 'bg-emerald-400 text-slate-950' : 'border border-white/15 text-white'}`}>Constructed tables</button>
+        <button type="button" onClick={() => onSpeak(spoken)} className="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 px-4 py-2 text-emerald-200">
+          <Volume2 className="h-4 w-4" aria-hidden="true" />
+          Read aloud
+        </button>
+      </div>
+      <p>
+        Forest letter matched the screening letter on {summary.exactLetterAgreement} of {summary.tables} tables.
+        Mean absolute distance is {summary.meanAbsoluteLetterSteps} letter steps.
+        {summary.tablesWithAFlip} tables have at least one accepted probe that moves the forest letter.
+      </p>
+      <ul className="space-y-1 text-slate-300">
+        {(['close', 'mid', 'wide'] as const).map((bucket) => {
+          const item = summary.byMarginBucket[bucket];
+          const share = item.flipShareOfAccepted == null ? 'no accepted probes' : `${item.flips} of ${item.accepted} accepted probes moved the letter`;
+          return <li key={bucket}>{bucket} margin, {findings.marginBuckets[bucket]}: {item.tables} tables, {share}.</li>;
+        })}
+      </ul>
+      <p className="text-slate-400">{screeningBeside} The aggregate flip share is {summary.flipShareOfAccepted}. Read it beside the margin buckets. Rejected probes: {summary.rejected}.</p>
+      {row && (
+        <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+          <label className="block text-slate-300" htmlFor="stability-row">
+            Table
+            <select id="stability-row" value={row.id} onChange={(event) => onRow(event.target.value)} className="mt-1 w-full rounded-xl border border-white/15 bg-black px-3 py-2 text-white">
+              {selected.rows.map((item) => <option key={item.id} value={item.id}>{rowLabel(item.id)}</option>)}
+            </select>
+          </label>
+          <p className="mt-3">Forest {row.forest.toUpperCase()}. Screening {row.screening}.{formulaLetter ? ` Formula ${formulaLetter}.` : ''} Margin {row.margin} ({row.marginBucket}).</p>
+          <p className="mt-2">{nearest ? `Nearest grid change: ${nutrientName(nearest.feature)} × ${nearest.factor} (${nearest.fromValue} to ${nearest.toValue}) moves the forest letter to ${nearest.grade.toUpperCase()}.` : stableOnGrid}</p>
+          <p className="mt-2 text-slate-400">{row.flips} of {row.accepted} accepted probes moved this letter. {row.rejected} were rejected.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function rowLabel(id: string) {
+  return CATALOG.find((item) => item.id === id)?.name ?? id.replaceAll('-', ' ');
+}
+
+function nutrientName(feature: string) {
+  return feature.replace(/_100g$/, '').replaceAll('-', ' ').replace('proteins', 'protein');
+}
+
 function LookupResult({ product }: { product: LookupProduct }) {
   const { profile } = usePreferences();
   const fit = assessFit({ ...product, additives: false }, profile);
@@ -432,7 +648,11 @@ function LookupResult({ product }: { product: LookupProduct }) {
     <div className={`rounded-2xl border p-4 ${fit.safe ? 'border-emerald-400/40' : 'border-red-400/40'}`}>
       <h3 className="text-lg font-semibold text-white">{product.name}</h3>
       <p className="text-sm text-slate-400">{product.brand} · {product.source}</p>
-      <p className="mt-2 text-sm text-slate-200">{fit.safe ? `Screening grade ${fit.grade}. No profile conflict in the public record.` : fit.reasons.join(' ')}</p>
+      <p className="mt-2 text-sm text-slate-200">
+        {fit.safe
+          ? `Screening grade ${fit.grade}. Formula letter ${formulaText(product.per100g)}. No profile conflict in the public record. A missing public nutrient is already stored as 0.`
+          : `${fit.reasons.join(' ')} Formula letter ${formulaText(product.per100g)}. A missing public nutrient is already stored as 0.`}
+      </p>
     </div>
   );
 }

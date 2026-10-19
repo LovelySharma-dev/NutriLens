@@ -123,9 +123,10 @@ By combining **EasyOCR text extraction**, **spatial label parsing**, **nutrition
 - Generates a holistic **Trust Score (0–100%)** based on verification & data completeness.
 - Provides actionable recommendations with severity, rationale, and recommended consumer action.
 
-### 💻 7. A short landing page and a working dashboard
-- The landing page is the introduction: what the lens does, and links to sign in.
-- The dashboard is where a scan, the portion table, the report, and the kitchen live.
+### 💻 7. A short landing page, then the reader
+- http://localhost:3000 is the introduction: what the lens does, and a sign-in link. It does not upload a label.
+- After sign-in, `/dashboard` is the platform: the OCR pipeline, the portion table, the report, and the kitchen.
+- Opening `/dashboard` without a session returns you to `/login`.
 
 ### 📏 8. Portion next to per 100 g
 - A packet that prints both columns keeps them apart. `9 g` on its own line, `9 gm`, and a split `9` plus `g` are read as grams.
@@ -261,7 +262,7 @@ The commands live in [`run/`](run/README.md). From the repository root:
 
 `run-all.cmd`, `run-web.cmd`, `run-api.cmd`, `run-ml.cmd`, `run-ocr.cmd`, `stop-all.cmd`, and `test-ocr.cmd` at the repository root call the same scripts. A window that finds its port already open leaves that process running.
 
-Open http://localhost:3000, sign in, and use the dashboard. Email sign-in works without PostgreSQL. Saving a scan needs the database. A grade needs the ML service. A photograph needs the OCR service.
+Open http://localhost:3000 for the landing page. Sign in at `/login`, then the label reader is at `/dashboard`. Email sign-in works without PostgreSQL. Saving a scan needs the database. A grade needs the ML service. A photograph needs the OCR service.
 
 ---
 
@@ -336,7 +337,7 @@ cd apps/web
 pnpm dev
 ```
 
-Now open **http://localhost:3000** in your browser! 🎉
+Now open **http://localhost:3000** in your browser. That page is the introduction. Sign in, and the label reader is at **http://localhost:3000/dashboard**.
 
 </details>
 
@@ -437,9 +438,9 @@ curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
 ```
 
 ### 🎬 Recommended Demo Flow
-1. **Landing page**: A short introduction, then Terms and Copyright in the footer.
+1. **Landing page**: A short introduction. There is no upload on this page. Terms and Copyright are in the footer.
 2. **Sign in**: Email and password at `/login`. Reset from `/forgot`.
-3. **Dashboard**: Upload a label, or run the demo scan.
+3. **Dashboard**: The OCR pipeline. Upload a label, or run the demo scan. Without a session this route sends you back to sign in.
 4. **Portion table**: Portion beside per 100 g, including a line such as `9 g`.
 5. **Report**: Grade, the local explanation, and nutrient screens. A shelf match is a preference, not a clearance.
 6. **Kitchen**: Allergens, diet screens, history, compare, and a barcode lookup.

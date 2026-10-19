@@ -73,6 +73,18 @@ export interface AnalysisData {
             contribution: number;
           }>;
         } | null;
+        sensitivity?: {
+          margin: number | null;
+          nearestFlip: {
+            feature: string;
+            factor: number;
+            fromValue: number;
+            toValue: number;
+            grade: string;
+          } | null;
+          rejected: number;
+          note?: string;
+        } | null;
         imputedFeatures?: string[] | null;
       };
     };

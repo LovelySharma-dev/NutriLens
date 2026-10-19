@@ -1,0 +1,18 @@
+{
+  "id": "ta-salt-columns",
+  "language": "ta",
+  "source": "constructed-lines",
+  "text": "per serving per 100 g\nஉப்பு\n0.2 g\n0.5 g\n",
+  "expected": {
+    "salt": {
+      "perPortion": {
+        "value": 0.2,
+        "unit": "g"
+      },
+      "per100g": {
+        "value": 0.5,
+        "unit": "g"
+      }
+    }
+  }
+}

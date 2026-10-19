@@ -20,7 +20,8 @@ packages/database/.env
 .env.*.local
 !.env.example
 .env*
-
+.venv/
+.venv311/
 # Logs
 *.log
 npm-debug.log*

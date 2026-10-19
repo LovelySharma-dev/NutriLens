@@ -13,8 +13,6 @@ from __future__ import annotations
 from statistics import median
 from typing import Any
 
-from app.sensitivity import screening_letter as shelf_screening_letter
-
 
 FORMULA_ID = "nutri-score-2017-general-foods"
 KCAL_TO_KJ = 4.184
@@ -152,12 +150,43 @@ def formula_grade(table: dict[str, Any]) -> dict[str, Any]:
 
 
 def screening_grade(table: dict[str, Any]) -> dict[str, Any]:
-    """Same bands as the shelf screening grade. Not the Nutri-Score formula."""
+    """Same bands as the shelf screening grade in apps/web/app/lib/safety.ts."""
     if not _ready(table):
         return {"status": "unchecked", "reason": "missing"}
+    score = 0
+    if table["sugars"] >= 22.5:
+        score += 2
+    elif table["sugars"] >= 5:
+        score += 1
+    if table["saturatedFat"] >= 5:
+        score += 2
+    elif table["saturatedFat"] >= 1.5:
+        score += 1
+    if table["salt"] >= 1.5:
+        score += 2
+    elif table["salt"] >= 0.3:
+        score += 1
+    if table["energy"] >= 400:
+        score += 2
+    elif table["energy"] >= 250:
+        score += 1
+    if table["fiber"] >= 6:
+        score -= 1
+    if table["proteins"] >= 12:
+        score -= 1
+    if score <= 0:
+        letter = "A"
+    elif score == 1:
+        letter = "B"
+    elif score == 2:
+        letter = "C"
+    elif score <= 4:
+        letter = "D"
+    else:
+        letter = "E"
     return {
         "status": "ready",
-        "letter": shelf_screening_letter({key: float(table[key]) for key in REQUIRED}),
+        "letter": letter,
         "note": "Screening grade from the UK-style bands already used on the shelf. Not the 2017 Nutri-Score formula.",
     }
 
@@ -336,6 +365,7 @@ def summarize(rows: list[dict[str, Any]], *, forest_letters: list[str | None] | 
     }
     agree = adjacent = far = 0
     coherent = divergent = unchecked = 0
+    protein_counted = protein_dropped = 0
     margin_bins = {"1": 0, "2": 0, "3-5": 0, "6+": 0}
     margins: list[int] = []
     flip_deltas: dict[str, list[float]] = {name: [] for name in FLIP_STEPS}
@@ -362,6 +392,10 @@ def summarize(rows: list[dict[str, Any]], *, forest_letters: list[str | None] | 
             unchecked += 1
         points = int(row["formula"]["margin"]["points"])
         margins.append(points)
+        if row["formula"]["proteinCounted"]:
+            protein_counted += 1
+        else:
+            protein_dropped += 1
         if points <= 1:
             margin_bins["1"] += 1
         elif points == 2:
@@ -439,6 +473,8 @@ def summarize(rows: list[dict[str, Any]], *, forest_letters: list[str | None] | 
         "screeningLetters": screening_letters,
         "formulaScreening": {"agree": agree, "adjacent": adjacent, "far": far, "confusion": confusion},
         "atwater": {"coherent": coherent, "divergent": divergent, "unchecked": unchecked},
+        "proteinCounted": protein_counted,
+        "proteinDropped": protein_dropped,
         "margin": {
             "bins": margin_bins,
             "median": None if not margins else float(median(margins)),
