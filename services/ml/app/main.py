@@ -221,6 +221,8 @@ def predict_nutri_score(data: NutritionInput):
     return {
         "predictedGrade": str(prediction),
         "probabilities": probability_map,
+        "probabilitiesCalibrated": False,
+        "calibrationStatus": "unvalidated",
         "healthRisk": {
             "level": risk_level,
             "flags": health_risk_flags,

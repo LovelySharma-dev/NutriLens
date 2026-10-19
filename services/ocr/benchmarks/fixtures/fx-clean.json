@@ -1,0 +1,29 @@
+{
+  "schema_version": "photographed-label-1",
+  "image_id": "fx-clean-protein",
+  "product_id": "synth-clean",
+  "source": "synthetic_fixture",
+  "image_source": "authored-text-for-tests",
+  "license": "internal-synthetic",
+  "consent": "synthetic-not-a-real-package",
+  "annotation_version": "1",
+  "annotator": "repository-fixture",
+  "split": "test",
+  "conditions": [],
+  "language": "en",
+  "ocr_text": "per serving per 100 g\nProtein\n9 g\n18 g\nIngredients: oats, milk\n",
+  "observed_text": "per serving per 100 g\nProtein\n9 g\n18 g\nIngredients: oats, milk\n",
+  "image_path": null,
+  "image_sha256": null,
+  "ingredient_spans": [{ "text": "oats", "start": 52, "end": 56 }],
+  "ingredients": ["oats", "milk"],
+  "allergens": ["milk"],
+  "nutrition": {
+    "proteins": {
+      "perPortion": { "value": 9, "unit": "g" },
+      "per100g": { "value": 18, "unit": "g" }
+    }
+  },
+  "parsing_errors": [],
+  "reading": { "mean_box_confidence": null, "readers_disagree": [], "confidence_source": "unmeasured" }
+}

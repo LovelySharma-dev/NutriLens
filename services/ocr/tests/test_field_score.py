@@ -55,6 +55,13 @@ def test_abstain_names_the_signal():
 
     ready = decide_reading("portion-then-100", 0.8, [])
     assert ready["disposition"] == "grade"
+    assert ready["decision"] == "reliable"
+    assert ready["confidence"]["kind"] == "heuristic"
+    assert "not that the food is safe" in ready["decisionNote"]
+
+    empty = decide_reading("portion-then-100", 0.0, [], 0)
+    assert empty["decision"] == "insufficient_evidence"
+    assert "unreadable_text" in empty["reasons"]
 
 
 if __name__ == "__main__":

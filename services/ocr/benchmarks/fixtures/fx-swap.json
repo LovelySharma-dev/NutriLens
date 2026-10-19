@@ -1,0 +1,29 @@
+{
+  "schema_version": "photographed-label-1",
+  "image_id": "fx-swap-protein",
+  "product_id": "synth-swap",
+  "source": "synthetic_fixture",
+  "image_source": "authored-text-for-tests",
+  "license": "internal-synthetic",
+  "consent": "synthetic-not-a-real-package",
+  "annotation_version": "1",
+  "annotator": "repository-fixture",
+  "split": "validation",
+  "conditions": ["rotation"],
+  "language": "en",
+  "ocr_text": "per serving per 100 g\nProtein\n9 g\n18 g\n",
+  "observed_text": "per serving per 100 g\nProtein\n9 g\n18 g\n",
+  "image_path": null,
+  "image_sha256": null,
+  "ingredient_spans": [],
+  "ingredients": [],
+  "allergens": [],
+  "nutrition": {
+    "proteins": {
+      "perPortion": { "value": 18, "unit": "g" },
+      "per100g": { "value": 9, "unit": "g" }
+    }
+  },
+  "parsing_errors": ["incorrect_table_association"],
+  "reading": { "mean_box_confidence": null, "readers_disagree": [], "confidence_source": "unmeasured" }
+}

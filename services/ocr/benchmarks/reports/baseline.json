@@ -1,0 +1,741 @@
+{
+  "schema_version": "photographed-label-1",
+  "easyocr_invoked": false,
+  "invalid_cases": [],
+  "photographed_validation": {
+    "schema_version": "photographed-label-1",
+    "cases": 0,
+    "row_errors": [],
+    "duplicate_image_ids": [],
+    "duplicate_image_sha256": [],
+    "split_leakage_product_ids": [],
+    "statistics": {
+      "by_source": {},
+      "by_split": {},
+      "by_condition": {},
+      "missing_observed_text": 0,
+      "missing_image_path": 0,
+      "missing_image_sha256": 0
+    },
+    "accepted": true
+  },
+  "fixture_validation": {
+    "schema_version": "photographed-label-1",
+    "cases": 8,
+    "row_errors": [],
+    "duplicate_image_ids": [],
+    "duplicate_image_sha256": [],
+    "split_leakage_product_ids": [],
+    "statistics": {
+      "by_source": {
+        "synthetic_fixture": 8
+      },
+      "by_split": {
+        "calibration": 2,
+        "test": 2,
+        "train": 2,
+        "validation": 2
+      },
+      "by_condition": {
+        "(none)": 1,
+        "blur": 1,
+        "crop": 1,
+        "curvature": 1,
+        "glare": 1,
+        "low_light": 1,
+        "occlusion": 1,
+        "perspective": 1,
+        "rotation": 1
+      },
+      "missing_observed_text": 0,
+      "missing_image_path": 8,
+      "missing_image_sha256": 8
+    },
+    "accepted": true
+  },
+  "photographed": {
+    "cohort": "photographed",
+    "cases": 0,
+    "field_counts": {
+      "correct": 0,
+      "missed": 0,
+      "swapped": 0,
+      "wrong_unit": 0,
+      "invented": 0,
+      "wrong_value": 0
+    },
+    "field_prf": {
+      "status": "unavailable",
+      "reason": "benchmarks/photographed has no valid annotated photographs. End-to-end rates on real packets are unmeasured."
+    },
+    "cer": {
+      "status": "unavailable",
+      "reason": "benchmarks/photographed has no valid annotated photographs. End-to-end rates on real packets are unmeasured."
+    },
+    "wer": {
+      "status": "unavailable",
+      "reason": "benchmarks/photographed has no valid annotated photographs. End-to-end rates on real packets are unmeasured."
+    },
+    "numeric_per100g": {
+      "status": "unavailable",
+      "reason": "benchmarks/photographed has no valid annotated photographs. End-to-end rates on real packets are unmeasured."
+    },
+    "unit_normalization_errors": {
+      "status": "unavailable",
+      "reason": "benchmarks/photographed has no valid annotated photographs. End-to-end rates on real packets are unmeasured."
+    },
+    "allergen_recall": {
+      "status": "unavailable",
+      "reason": "benchmarks/photographed has no valid annotated photographs. End-to-end rates on real packets are unmeasured."
+    },
+    "end_to_end_success": {
+      "status": "unavailable",
+      "reason": "benchmarks/photographed has no valid annotated photographs. End-to-end rates on real packets are unmeasured."
+    },
+    "taxonomy": {},
+    "rows": []
+  },
+  "synthetic_fixture": {
+    "cohort": "synthetic_fixture",
+    "cases": 8,
+    "field_counts": {
+      "correct": 3,
+      "missed": 1,
+      "swapped": 1,
+      "wrong_unit": 1,
+      "invented": 1,
+      "wrong_value": 0
+    },
+    "field_prf": {
+      "true_positive": 3,
+      "false_positive": 3,
+      "false_negative": 3,
+      "precision": {
+        "numerator": 3,
+        "denominator": 6,
+        "rate": 0.5
+      },
+      "recall": {
+        "numerator": 3,
+        "denominator": 6,
+        "rate": 0.5
+      },
+      "f1": 0.5
+    },
+    "cer": {
+      "numerator": 26,
+      "denominator": 336,
+      "rate": 0.0774
+    },
+    "wer": {
+      "numerator": 11,
+      "denominator": 73,
+      "rate": 0.1507
+    },
+    "cer_cases": 8,
+    "numeric_per100g": {
+      "numerator": 3,
+      "denominator": 6,
+      "rate": 0.5
+    },
+    "unit_normalization_errors": {
+      "count": 1,
+      "scored_fields": 7
+    },
+    "allergen_recall": {
+      "numerator": 3,
+      "denominator": 4,
+      "rate": 0.75
+    },
+    "end_to_end_success": {
+      "numerator": 1,
+      "denominator": 8,
+      "rate": 0.125
+    },
+    "taxonomy": {
+      "allergen_miss": 1,
+      "incorrect_table_association": 1,
+      "ingredient_boundary_error": 1,
+      "ocr_substitution": 2,
+      "omitted_text": 3,
+      "unit_conversion_error": 1,
+      "unsupported_inference": 1
+    },
+    "rows": [
+      {
+        "image_id": "fx-allergen-milk",
+        "product_id": "synth-allergen",
+        "split": "test",
+        "parser_input": "observed_text",
+        "nutrients": {},
+        "text_errors": {
+          "cer": {
+            "numerator": 1,
+            "denominator": 24,
+            "rate": 0.0417
+          },
+          "wer": {
+            "numerator": 1,
+            "denominator": 3,
+            "rate": 0.3333
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 1,
+          "hits": 0,
+          "predicted": 0
+        },
+        "ingredients_match": false,
+        "errors": [
+          {
+            "code": "omitted_text",
+            "role": "secondary",
+            "detail": "1 reference characters absent from observed_text"
+          },
+          {
+            "code": "allergen_miss",
+            "role": "primary",
+            "detail": "missing annotated allergens: milk"
+          }
+        ],
+        "end_to_end_success": false
+      },
+      {
+        "image_id": "fx-boundary-peanut",
+        "product_id": "synth-boundary",
+        "split": "validation",
+        "parser_input": "observed_text",
+        "nutrients": {},
+        "text_errors": {
+          "cer": {
+            "numerator": 1,
+            "denominator": 34,
+            "rate": 0.0294
+          },
+          "wer": {
+            "numerator": 1,
+            "denominator": 4,
+            "rate": 0.25
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 1,
+          "hits": 1,
+          "predicted": 1
+        },
+        "ingredients_match": false,
+        "errors": [
+          {
+            "code": "omitted_text",
+            "role": "secondary",
+            "detail": "1 reference characters absent from observed_text"
+          },
+          {
+            "code": "ingredient_boundary_error",
+            "role": "primary",
+            "detail": "ingredient tokens were joined or split"
+          }
+        ],
+        "end_to_end_success": false
+      },
+      {
+        "image_id": "fx-clean-protein",
+        "product_id": "synth-clean",
+        "split": "test",
+        "parser_input": "observed_text",
+        "nutrients": {
+          "proteins": "correct"
+        },
+        "text_errors": {
+          "cer": {
+            "numerator": 0,
+            "denominator": 63,
+            "rate": 0.0
+          },
+          "wer": {
+            "numerator": 0,
+            "denominator": 13,
+            "rate": 0.0
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 1,
+          "hits": 1,
+          "predicted": 1
+        },
+        "ingredients_match": true,
+        "errors": [],
+        "end_to_end_success": true
+      },
+      {
+        "image_id": "fx-invented-salt",
+        "product_id": "synth-invented",
+        "split": "calibration",
+        "parser_input": "observed_text",
+        "nutrients": {
+          "proteins": "correct",
+          "salt": "invented"
+        },
+        "text_errors": {
+          "cer": {
+            "numerator": 17,
+            "denominator": 39,
+            "rate": 0.4359
+          },
+          "wer": {
+            "numerator": 5,
+            "denominator": 10,
+            "rate": 0.5
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 0,
+          "hits": 0,
+          "predicted": 0
+        },
+        "ingredients_match": true,
+        "errors": [
+          {
+            "code": "unsupported_inference",
+            "role": "primary",
+            "detail": "salt field label is invented"
+          }
+        ],
+        "end_to_end_success": false
+      },
+      {
+        "image_id": "fx-omitted-protein",
+        "product_id": "synth-omitted",
+        "split": "train",
+        "parser_input": "observed_text",
+        "nutrients": {
+          "proteins": "missed"
+        },
+        "text_errors": {
+          "cer": {
+            "numerator": 2,
+            "denominator": 39,
+            "rate": 0.0513
+          },
+          "wer": {
+            "numerator": 1,
+            "denominator": 10,
+            "rate": 0.1
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 0,
+          "hits": 0,
+          "predicted": 0
+        },
+        "ingredients_match": true,
+        "errors": [
+          {
+            "code": "omitted_text",
+            "role": "primary",
+            "detail": "proteins field label is missed"
+          },
+          {
+            "code": "ocr_substitution",
+            "role": "secondary",
+            "detail": "2 character substitutions"
+          }
+        ],
+        "end_to_end_success": false
+      },
+      {
+        "image_id": "fx-substitution-oats",
+        "product_id": "synth-oats",
+        "split": "train",
+        "parser_input": "observed_text",
+        "nutrients": {
+          "proteins": "correct"
+        },
+        "text_errors": {
+          "cer": {
+            "numerator": 1,
+            "denominator": 63,
+            "rate": 0.0159
+          },
+          "wer": {
+            "numerator": 1,
+            "denominator": 13,
+            "rate": 0.0769
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 1,
+          "hits": 1,
+          "predicted": 1
+        },
+        "ingredients_match": false,
+        "errors": [
+          {
+            "code": "ocr_substitution",
+            "role": "primary",
+            "detail": "1 character substitutions"
+          }
+        ],
+        "end_to_end_success": false
+      },
+      {
+        "image_id": "fx-swap-protein",
+        "product_id": "synth-swap",
+        "split": "validation",
+        "parser_input": "observed_text",
+        "nutrients": {
+          "proteins": "swapped"
+        },
+        "text_errors": {
+          "cer": {
+            "numerator": 0,
+            "denominator": 39,
+            "rate": 0.0
+          },
+          "wer": {
+            "numerator": 0,
+            "denominator": 10,
+            "rate": 0.0
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 0,
+          "hits": 0,
+          "predicted": 0
+        },
+        "ingredients_match": true,
+        "errors": [
+          {
+            "code": "incorrect_table_association",
+            "role": "primary",
+            "detail": "proteins field label is swapped"
+          }
+        ],
+        "end_to_end_success": false
+      },
+      {
+        "image_id": "fx-unit-salt",
+        "product_id": "synth-unit",
+        "split": "calibration",
+        "parser_input": "observed_text",
+        "nutrients": {
+          "salt": "wrong_unit"
+        },
+        "text_errors": {
+          "cer": {
+            "numerator": 4,
+            "denominator": 35,
+            "rate": 0.1143
+          },
+          "wer": {
+            "numerator": 2,
+            "denominator": 10,
+            "rate": 0.2
+          },
+          "note": "Edit distance between ocr_text and observed_text. This is not an EasyOCR run."
+        },
+        "allergens": {
+          "expected": 0,
+          "hits": 0,
+          "predicted": 0
+        },
+        "ingredients_match": true,
+        "errors": [
+          {
+            "code": "unit_conversion_error",
+            "role": "primary",
+            "detail": "salt field label is wrong_unit"
+          }
+        ],
+        "end_to_end_success": false
+      }
+    ]
+  },
+  "synthetic_note": "Synthetic fixture metrics are parser checks on authored text. They are not photographed-label evidence.",
+  "constructed_lines": {
+    "source": "constructed-lines",
+    "note": "These counts are constructed text lines, not photographs. Do not cite them as end-to-end OCR accuracy, precision, or recall.",
+    "languages": {
+      "bn": {
+        "cases": 5,
+        "counts": {
+          "correct": 5,
+          "missed": 0,
+          "swapped": 0,
+          "wrong_unit": 0,
+          "invented": 0,
+          "wrong_value": 0
+        },
+        "source": "constructed-lines"
+      },
+      "en": {
+        "cases": 5,
+        "counts": {
+          "correct": 5,
+          "missed": 0,
+          "swapped": 0,
+          "wrong_unit": 0,
+          "invented": 0,
+          "wrong_value": 0
+        },
+        "source": "constructed-lines"
+      },
+      "hi": {
+        "cases": 5,
+        "counts": {
+          "correct": 5,
+          "missed": 0,
+          "swapped": 0,
+          "wrong_unit": 0,
+          "invented": 0,
+          "wrong_value": 0
+        },
+        "source": "constructed-lines"
+      },
+      "mr": {
+        "cases": 5,
+        "counts": {
+          "correct": 5,
+          "missed": 0,
+          "swapped": 0,
+          "wrong_unit": 0,
+          "invented": 0,
+          "wrong_value": 0
+        },
+        "source": "constructed-lines"
+      },
+      "ta": {
+        "cases": 5,
+        "counts": {
+          "correct": 5,
+          "missed": 0,
+          "swapped": 0,
+          "wrong_unit": 0,
+          "invented": 0,
+          "wrong_value": 0
+        },
+        "source": "constructed-lines"
+      }
+    },
+    "cases": [
+      {
+        "id": "bn-energy-columns",
+        "language": "bn",
+        "source": "constructed-lines",
+        "nutrients": {
+          "energy": "correct"
+        }
+      },
+      {
+        "id": "bn-fat-columns",
+        "language": "bn",
+        "source": "constructed-lines",
+        "nutrients": {
+          "fat": "correct"
+        }
+      },
+      {
+        "id": "bn-salt-columns",
+        "language": "bn",
+        "source": "constructed-lines",
+        "nutrients": {
+          "salt": "correct"
+        }
+      },
+      {
+        "id": "bn-sugars-columns",
+        "language": "bn",
+        "source": "constructed-lines",
+        "nutrients": {
+          "sugars": "correct"
+        }
+      },
+      {
+        "id": "bn-protein-columns",
+        "language": "bn",
+        "source": "constructed-lines",
+        "nutrients": {
+          "proteins": "correct"
+        }
+      },
+      {
+        "id": "en-energy-columns",
+        "language": "en",
+        "source": "constructed-lines",
+        "nutrients": {
+          "energy": "correct"
+        }
+      },
+      {
+        "id": "en-fat-columns",
+        "language": "en",
+        "source": "constructed-lines",
+        "nutrients": {
+          "fat": "correct"
+        }
+      },
+      {
+        "id": "en-salt-columns",
+        "language": "en",
+        "source": "constructed-lines",
+        "nutrients": {
+          "salt": "correct"
+        }
+      },
+      {
+        "id": "en-sugars-columns",
+        "language": "en",
+        "source": "constructed-lines",
+        "nutrients": {
+          "sugars": "correct"
+        }
+      },
+      {
+        "id": "en-protein-columns",
+        "language": "en",
+        "source": "constructed-lines",
+        "nutrients": {
+          "proteins": "correct"
+        }
+      },
+      {
+        "id": "hi-energy-columns",
+        "language": "hi",
+        "source": "constructed-lines",
+        "nutrients": {
+          "energy": "correct"
+        }
+      },
+      {
+        "id": "hi-fat-columns",
+        "language": "hi",
+        "source": "constructed-lines",
+        "nutrients": {
+          "fat": "correct"
+        }
+      },
+      {
+        "id": "hi-salt-columns",
+        "language": "hi",
+        "source": "constructed-lines",
+        "nutrients": {
+          "salt": "correct"
+        }
+      },
+      {
+        "id": "hi-sugars-columns",
+        "language": "hi",
+        "source": "constructed-lines",
+        "nutrients": {
+          "sugars": "correct"
+        }
+      },
+      {
+        "id": "hi-protein-columns",
+        "language": "hi",
+        "source": "constructed-lines",
+        "nutrients": {
+          "proteins": "correct"
+        }
+      },
+      {
+        "id": "mr-energy-columns",
+        "language": "mr",
+        "source": "constructed-lines",
+        "nutrients": {
+          "energy": "correct"
+        }
+      },
+      {
+        "id": "mr-fat-columns",
+        "language": "mr",
+        "source": "constructed-lines",
+        "nutrients": {
+          "fat": "correct"
+        }
+      },
+      {
+        "id": "mr-salt-columns",
+        "language": "mr",
+        "source": "constructed-lines",
+        "nutrients": {
+          "salt": "correct"
+        }
+      },
+      {
+        "id": "mr-sugars-columns",
+        "language": "mr",
+        "source": "constructed-lines",
+        "nutrients": {
+          "sugars": "correct"
+        }
+      },
+      {
+        "id": "mr-protein-columns",
+        "language": "mr",
+        "source": "constructed-lines",
+        "nutrients": {
+          "proteins": "correct"
+        }
+      },
+      {
+        "id": "ta-energy-columns",
+        "language": "ta",
+        "source": "constructed-lines",
+        "nutrients": {
+          "energy": "correct"
+        }
+      },
+      {
+        "id": "ta-fat-columns",
+        "language": "ta",
+        "source": "constructed-lines",
+        "nutrients": {
+          "fat": "correct"
+        }
+      },
+      {
+        "id": "ta-salt-columns",
+        "language": "ta",
+        "source": "constructed-lines",
+        "nutrients": {
+          "salt": "correct"
+        }
+      },
+      {
+        "id": "ta-sugars-columns",
+        "language": "ta",
+        "source": "constructed-lines",
+        "nutrients": {
+          "sugars": "correct"
+        }
+      },
+      {
+        "id": "ta-protein-columns",
+        "language": "ta",
+        "source": "constructed-lines",
+        "nutrients": {
+          "proteins": "correct"
+        }
+      }
+    ]
+  },
+  "constructed_note": "These counts are constructed text lines, not photographs. Do not cite them as end-to-end OCR accuracy, precision, or recall. CER and WER are unavailable: each file has one text field and no separate OCR hypothesis.",
+  "unavailable_on_photographs": [
+    "character error rate",
+    "word error rate",
+    "field precision, recall, and F1",
+    "numeric per-100 g accuracy",
+    "unit-normalization error count",
+    "allergen recall",
+    "end-to-end task success",
+    "error-taxonomy rates"
+  ]
+}

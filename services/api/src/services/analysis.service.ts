@@ -6,6 +6,7 @@ import { mapNutritionFactsToInput } from "./nutrition-fact-mapper.service.js";
 import { predictNutrition } from "./nutrition-prediction.service.js";
 import { generateRecommendations, applyProfile, type ConsumerProfile } from "./recommendation.service.js";
 import { describeAbstain, type ReadingSignal } from "./reading-policy.js";
+import { decideUncertainty } from "./uncertainty.js";
 
 function extractAllergensFromText(text: string): string[] {
   const knownTerms = [
@@ -160,10 +161,34 @@ export async function analyzeScan(
     }
   }
 
+  const voteShares = nutritionPrediction?.prediction?.probabilities
+    ? Object.values(nutritionPrediction.prediction.probabilities).filter((value) => typeof value === "number")
+    : [];
+  const topVoteShare = voteShares.length ? Math.max(...voteShares) : null;
+
   const abstainMessage = describeAbstain(reading);
   if (abstainMessage) {
     nutritionPredictionStatus = "WITHHELD";
     gradeMessage = gradeMessage ? `${abstainMessage} ${gradeMessage}` : abstainMessage;
+    if (nutritionPrediction?.prediction) {
+      nutritionPrediction = { ...nutritionPrediction, prediction: null };
+    }
+  }
+
+  const uncertainty = decideUncertainty({
+    reading,
+    missingFeatures: nutritionPrediction?.withheld?.missingFeatures ?? missingNutritionFeatures,
+    servingSizeRead: nutritionMapping.servingSizeGrams !== undefined,
+    implausibleCount: nutritionPrediction?.withheld?.implausible?.length ?? 0,
+    ingredientCount: ingredients.length,
+    allergenMentionCount: ingredientAnalysis?.allergens?.length ?? 0,
+    rawText: scan.labelData.rawOcrText,
+    modelUnavailable: nutritionPredictionStatus === "UNAVAILABLE",
+    topVoteShare,
+  });
+  if (uncertainty.decision !== "reliable") {
+    if (nutritionPredictionStatus !== "UNAVAILABLE") nutritionPredictionStatus = "WITHHELD";
+    gradeMessage = uncertainty.summary;
     if (nutritionPrediction?.prediction) {
       nutritionPrediction = { ...nutritionPrediction, prediction: null };
     }
@@ -301,6 +326,7 @@ export async function analyzeScan(
 
       personalFit: personalized.personalFit,
       recommendations: personalized.recommendations,
+      uncertainty,
     },
   };
 }

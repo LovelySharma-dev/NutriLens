@@ -1,0 +1,29 @@
+{
+  "schema_version": "photographed-label-1",
+  "image_id": "fx-omitted-protein",
+  "product_id": "synth-omitted",
+  "source": "synthetic_fixture",
+  "image_source": "authored-text-for-tests",
+  "license": "internal-synthetic",
+  "consent": "synthetic-not-a-real-package",
+  "annotation_version": "1",
+  "annotator": "repository-fixture",
+  "split": "train",
+  "conditions": ["low_light"],
+  "language": "en",
+  "ocr_text": "per serving per 100 g\nProtein\n9 g\n18 g\n",
+  "observed_text": "per serving per 100 g\nProtien\n9 g\n18 g\n",
+  "image_path": null,
+  "image_sha256": null,
+  "ingredient_spans": [],
+  "ingredients": [],
+  "allergens": [],
+  "nutrition": {
+    "proteins": {
+      "perPortion": { "value": 9, "unit": "g" },
+      "per100g": { "value": 18, "unit": "g" }
+    }
+  },
+  "parsing_errors": ["omitted_text"],
+  "reading": { "mean_box_confidence": null, "readers_disagree": [], "confidence_source": "unmeasured" }
+}

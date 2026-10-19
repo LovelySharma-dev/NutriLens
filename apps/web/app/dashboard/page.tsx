@@ -56,7 +56,7 @@ export default function DashboardPage() {
     let productName = 'Scanned label';
     let ingredients: string[] = [];
     let ocrColumns: ColumnRow[] | null = null;
-    let reading: { columnOrder?: string; meanBoxConfidence?: number; readersDisagree?: string[] } | undefined;
+    let reading: { columnOrder?: string; meanBoxConfidence?: number; readersDisagree?: string[]; estimatedNutrients?: string[] } | undefined;
     try {
       setIsLoading(true);
       setError(null);
@@ -79,10 +79,20 @@ export default function DashboardPage() {
         if (parsed) {
           ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
           ocrColumns = toColumns(parsed.nutrition ?? {});
+          const nutritionRecord = parsed.nutrition ?? {};
+          const estimatedNutrients = Object.entries(nutritionRecord)
+            .filter(([, detail]) => {
+              const source = detail && typeof detail === 'object' && 'sourceText' in detail
+                ? String((detail as { sourceText?: string }).sourceText ?? '')
+                : '';
+              return source.startsWith('estimated from sodium');
+            })
+            .map(([name]) => name);
           reading = {
             columnOrder: parsed.columnOrder,
             meanBoxConfidence: typeof ocrResult.data?.confidence === 'number' ? ocrResult.data.confidence : undefined,
             readersDisagree: parsed.readersDisagree ?? parsed.reading?.readersDisagree ?? [],
+            estimatedNutrients,
           };
           setColumns(ocrColumns);
           setServing(parsed.servingSizeGrams ?? null);
@@ -138,12 +148,16 @@ export default function DashboardPage() {
         personalStatus: data.analysis.personalFit?.status ?? 'NO_PROFILE',
         trustScore: data.trustScore?.score ?? null,
       });
-      const spokenGrade = data.analysis.nutritionPrediction?.status === 'WITHHELD'
-        ? 'Model grade withheld.'
-        : `Model grade ${data.analysis.nutritionPrediction?.result?.predictedGrade ?? 'unavailable'}.`;
+      const spokenDecision = data.analysis.uncertainty?.decision === 'insufficient_evidence'
+        ? 'Insufficient evidence. Grade withheld.'
+        : data.analysis.uncertainty?.decision === 'review_required'
+          ? 'Review required. Grade withheld.'
+          : data.analysis.nutritionPrediction?.status === 'WITHHELD'
+            ? 'Model grade withheld.'
+            : `Model grade ${data.analysis.nutritionPrediction?.result?.predictedGrade ?? 'unavailable'}.`;
       const spokenAudit = auditTable(toNutrients(displayed ?? []));
       const spokenFormula = spokenAudit.status === 'ready' ? ` Formula letter ${spokenAudit.formula.letter}.` : '';
-      speak(`${productName}. ${spokenGrade}${spokenFormula}`);
+      speak(`${productName}. ${spokenDecision}${spokenFormula}`);
       setLoadingProgress(100);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong while analyzing the label.');

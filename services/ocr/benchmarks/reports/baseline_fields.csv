@@ -1,0 +1,10 @@
+cohort,image_id,product_id,split,nutrient,field_label,end_to_end_success
+synthetic_fixture,fx-allergen-milk,synth-allergen,test,,,False
+synthetic_fixture,fx-boundary-peanut,synth-boundary,validation,,,False
+synthetic_fixture,fx-clean-protein,synth-clean,test,proteins,correct,True
+synthetic_fixture,fx-invented-salt,synth-invented,calibration,proteins,correct,False
+synthetic_fixture,fx-invented-salt,synth-invented,calibration,salt,invented,False
+synthetic_fixture,fx-omitted-protein,synth-omitted,train,proteins,missed,False
+synthetic_fixture,fx-substitution-oats,synth-oats,train,proteins,correct,False
+synthetic_fixture,fx-swap-protein,synth-swap,validation,proteins,swapped,False
+synthetic_fixture,fx-unit-salt,synth-unit,calibration,salt,wrong_unit,False

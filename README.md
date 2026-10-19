@@ -491,7 +491,7 @@ curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
 - [x] **One-cell correction**: The report can compare the model letter on the raw read with the letter after one edited cell.
 - [x] **Household shelf**: Confirmed scans are stored on this device, and a week later the studio asks whether the preference check still agrees.
 - [x] **Barcode check digit**: An 8, 12, 13, or 14 digit code is rejected when the GS1 check digit fails.
-- [ ] **Photographed-label set**: The scorer is ready. No photographed packets have been scored, so end-to-end precision and recall are still unknown.
+- [ ] **Photographed-label set**: Schema `photographed-label-1` and `services/ocr/scripts/score_benchmark.py` are in place. `services/ocr/benchmarks/photographed/` has no annotated packets, so photographed precision, recall, and error rates are still unmeasured. Synthetic fixtures are test-only. See `docs/evaluation/BASELINE_REPORT.md`.
 - [ ] **Enhanced table reconstruction**: Heavier geometry for curved or torn labels.
 - [ ] **Mobile native application**: The web app is usable on a phone browser; a store app is still separate.
 

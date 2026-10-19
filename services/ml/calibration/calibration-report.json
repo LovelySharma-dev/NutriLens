@@ -1,0 +1,41 @@
+{
+  "task": "held-out calibration of NutriLens scores",
+  "labelDirectory": "D:\\NutriTrust\\services\\ml\\calibration\\labels",
+  "temperatureScaling": {
+    "method": "temperature_scaling",
+    "status": "unsupported",
+    "probabilitiesCalibrated": false,
+    "reason": "The published RandomForestClassifier returns a vote share from predict_proba. The joblib does not expose logits, so temperature scaling is not applied."
+  },
+  "ocrScores": {
+    "source": "mean_box_confidence",
+    "kind": "heuristic",
+    "probabilitiesCalibrated": false,
+    "reason": "EasyOCR box scores are not classifier probabilities. Platt scaling, isotonic regression, and temperature scaling are not fit on them."
+  },
+  "probabilitiesCalibrated": false,
+  "status": "unvalidated",
+  "rows": 0,
+  "ece": {
+    "status": "unavailable",
+    "reason": "No held-out calibration labels are stored."
+  },
+  "brier": {
+    "status": "unavailable",
+    "reason": "No held-out calibration labels are stored."
+  },
+  "nll": {
+    "status": "unavailable",
+    "reason": "No held-out calibration labels are stored."
+  },
+  "coverageRisk": {
+    "status": "unavailable",
+    "reason": "No held-out calibration labels are stored."
+  },
+  "fit": {
+    "status": "unvalidated",
+    "method": null,
+    "probabilitiesCalibrated": false,
+    "reason": "The calibration label directory has no rows, so no map was fit."
+  }
+}

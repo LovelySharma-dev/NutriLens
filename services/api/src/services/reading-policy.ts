@@ -5,6 +5,7 @@ export type ReadingSignal = {
   columnOrder?: string | null;
   meanBoxConfidence?: number | null;
   readersDisagree?: string[];
+  estimatedNutrients?: string[];
 };
 
 export function abstainReasons(reading?: ReadingSignal | null) {

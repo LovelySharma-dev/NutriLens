@@ -1,0 +1,29 @@
+{
+  "schema_version": "photographed-label-1",
+  "image_id": "fx-unit-salt",
+  "product_id": "synth-unit",
+  "source": "synthetic_fixture",
+  "image_source": "authored-text-for-tests",
+  "license": "internal-synthetic",
+  "consent": "synthetic-not-a-real-package",
+  "annotation_version": "1",
+  "annotator": "repository-fixture",
+  "split": "calibration",
+  "conditions": ["glare"],
+  "language": "en",
+  "ocr_text": "per serving per 100 g\nSalt\n1 g\n1 g\n",
+  "observed_text": "per serving per 100 g\nSalt\n1000 mg\n1 g\n",
+  "image_path": null,
+  "image_sha256": null,
+  "ingredient_spans": [],
+  "ingredients": [],
+  "allergens": [],
+  "nutrition": {
+    "salt": {
+      "perPortion": { "value": 1, "unit": "g" },
+      "per100g": { "value": 1, "unit": "g" }
+    }
+  },
+  "parsing_errors": ["unit_conversion_error"],
+  "reading": { "mean_box_confidence": null, "readers_disagree": [], "confidence_source": "unmeasured" }
+}

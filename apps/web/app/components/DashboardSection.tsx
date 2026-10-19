@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Activity, ShieldCheck, ChevronDown, ChevronUp, AlertOctagon, CheckCircle2, ShieldAlert, AlertCircle, Volume2 } from 'lucide-react';
 import { usePreferences } from './PreferencesProvider';
+import { decisionPresentation } from '../lib/uncertainty';
 
 export interface AnalysisData {
   scanId: string;
@@ -100,6 +101,17 @@ export interface AnalysisData {
       reason: string;
       action: string;
     }>;
+    uncertainty?: {
+      decision: 'reliable' | 'review_required' | 'insufficient_evidence';
+      summary: string;
+      reasons: string[];
+      probabilitiesCalibrated: boolean;
+      calibrationStatus: string;
+      ocr: { value: number | null; kind: string; calibrated: boolean };
+      completeness: { present: number; required: number; servingSizeRead: boolean };
+      allergen: { status: string; kind: string };
+      decisionScore: { topVoteShare: number | null; kind: string; calibrated: boolean };
+    };
   };
 }
 
@@ -122,7 +134,8 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
   const nutritionPrediction = analysis.nutritionPrediction?.result;
   const predictedGrade = nutritionPrediction?.predictedGrade ?? null;
   const gradeLabel = predictedGrade ?? (gradeWithheld ? '—' : '…');
-  const healthRiskLevel = nutritionPrediction?.healthRisk?.level || analysis.nutritionPrediction?.healthRisk?.level || analysis.riskLevel;
+  const healthRiskLevel = nutritionPrediction?.healthRisk?.level || analysis.nutritionPrediction?.healthRisk?.level || 'UNKNOWN';
+  const presentation = decisionPresentation(analysis.uncertainty?.decision);
   const healthRiskFlags = nutritionPrediction?.healthRisk?.flags || analysis.nutritionPrediction?.healthRisk?.flags || [];
 
   return (
@@ -145,14 +158,35 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 border border-white/10 text-xs font-mono text-emerald-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>Real-time API Verified</span>
+        <div className={`flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-xs ${
+          presentation.tone === 'incomplete' ? 'border-amber-500/40 bg-amber-950/40 text-amber-200' :
+          presentation.tone === 'review' ? 'border-amber-500/40 bg-slate-900 text-amber-200' :
+          'border-white/10 bg-slate-900 text-slate-300'
+        }`}>
+          <span>{presentation.title}</span>
         </div>
       </div>
 
       {/* Data Incomplete Warning */}
-      {(gradeWithheld || gradeUnavailable) && (
+      {analysis.uncertainty && (
+        <div className={`mb-8 rounded-xl border p-4 text-sm ${
+          presentation.tone === 'incomplete' || presentation.tone === 'review'
+            ? 'border-amber-500/30 bg-amber-950/40 text-amber-100'
+            : 'border-white/10 bg-slate-950/60 text-slate-200'
+        }`}>
+          <p className="font-semibold">{presentation.title}</p>
+          <p className="mt-2">{analysis.uncertainty.summary}</p>
+          <dl className="mt-4 grid gap-2 text-xs font-mono sm:grid-cols-2">
+            <div>OCR score: {analysis.uncertainty.ocr.value ?? 'unavailable'} ({analysis.uncertainty.ocr.kind}, calibrated {String(analysis.uncertainty.ocr.calibrated)})</div>
+            <div>Vote share: {analysis.uncertainty.decisionScore.topVoteShare ?? 'unavailable'} ({analysis.uncertainty.decisionScore.kind})</div>
+            <div>Completeness: {analysis.uncertainty.completeness.present}/{analysis.uncertainty.completeness.required}, serving {analysis.uncertainty.completeness.servingSizeRead ? 'read' : 'missing'}</div>
+            <div>Allergen evidence: {analysis.uncertainty.allergen.status} ({analysis.uncertainty.allergen.kind})</div>
+            <div>Calibration: {analysis.uncertainty.calibrationStatus}</div>
+          </dl>
+        </div>
+      )}
+
+      {!analysis.uncertainty && (gradeWithheld || gradeUnavailable) && (
         <div className="mb-8 p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-sm flex items-start gap-3">
           <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <p>
@@ -165,8 +199,11 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
       )}
 
       {analysis.personalFit && analysis.personalFit.status !== 'NO_PROFILE' && (
-        <div className={`mb-8 p-4 rounded-xl border text-sm ${analysis.personalFit.status === 'CONFLICT' ? 'bg-red-950/40 border-red-500/40 text-red-100' : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-100'}`}>
+        <div className={`mb-8 p-4 rounded-xl border text-sm ${analysis.personalFit.status === 'CONFLICT' ? 'bg-red-950/40 border-red-500/40 text-red-100' : 'bg-slate-950/60 border-white/10 text-slate-200'}`}>
           <p className="font-semibold">{analysis.personalFit.status === 'CONFLICT' ? t('fitConflict') : t('fitClear')}</p>
+          {analysis.personalFit.status === 'CLEAR' && (
+            <p className="mt-1 text-xs text-slate-400">A preference match is not a safety clearance.</p>
+          )}
           <ul className="mt-2 space-y-1">
             {analysis.personalFit.reasons.map((reason) => <li key={reason}>{reason}</li>)}
             {analysis.personalFit.reasons.length === 0 && <li>{t('fitClearDetail')}</li>}
@@ -258,7 +295,7 @@ export default function DashboardSection({ data }: DashboardSectionProps) {
             }`}>
               {healthRiskLevel}
             </span>
-            <span className="text-[10px] font-mono text-slate-500 block mt-1">Nutrient Alert</span>
+            <span className="text-[10px] font-mono text-slate-500 block mt-1">Nutrient screen, not a safety clearance</span>
           </div>
           <ShieldAlert className={`w-10 h-10 ${
             healthRiskLevel === 'HIGH' ? 'text-red-400' :

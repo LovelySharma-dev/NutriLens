@@ -119,6 +119,7 @@ async def extract_text(
             parsed_label.get("columnOrder"),
             round(average, 4),
             parsed_label.get("readersDisagree") or [],
+            len(detections),
         )
 
         return {
