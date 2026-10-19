@@ -1,5 +1,10 @@
 """Locks the 2017 foods table, the Atwater double threshold, and the zero table."""
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from app.reading_audit import atwater, audit_table, formula_grade, letter_for, points_above, serving_illusion
 from app.reading_audit import ENERGY_KJ, SUGARS_G
 

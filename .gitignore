@@ -2,6 +2,10 @@
 # Dependencies
 node_modules/
 
+# One lockfile, at the repository root
+apps/*/pnpm-lock.yaml
+services/*/pnpm-lock.yaml
+
 # Next.js
 .next/
 out/

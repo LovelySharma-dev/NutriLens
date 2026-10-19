@@ -19,8 +19,6 @@ That opens four windows. If a port is already in use, that window says the servi
 | `run\status.cmd` | Prints each health check | |
 | `run\test-ocr.cmd` | Sends one image to the API | |
 
-The files `run-all.cmd`, `run-web.cmd`, `run-api.cmd`, `run-ml.cmd`, `run-ocr.cmd`, `stop-all.cmd`, and `test-ocr.cmd` in the repository root call these same scripts.
-
 Sign in at http://localhost:3000/login, then use the dashboard. Scans are stored in the hosted Postgres database named in `services/api/.env` as `DATABASE_URL`. Email sign-in does not need that database. A grade needs the ML window. A photographed label needs the OCR window.
 
 First-time Python setup, from the repository root:

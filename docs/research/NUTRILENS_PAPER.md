@@ -127,7 +127,7 @@ Hindi, Marathi, Tamil, and Bengali protein words are recognized beside the Engli
 
 A unit check confirms the labels: protein 9 g / 18 g reversed is `swapped`; salt 1000 mg against 1 g is `wrong_unit`; an extra energy cell is `invented`; a missing fiber cell is `missed`; sugars 9 g against 5 g is `wrong_value`. The scored object has no `accuracy` field.
 
-`services/ocr/benchmarks/constructed/` holds text lines, not photographs. The original five lines are "per serving per 100 g", then the word for protein, then "9 g" and "18 g". Twenty further lines use the same shape for sugars, salt, energy, and fat, in English, Hindi, Marathi, Tamil, and Bengali, with the nutrient words already listed in the parser. Run on 18 October 2026, `score_constructed.py` labeled five nutrients `correct` in each of those five languages. Every other count was zero. That is five nutrient patterns in five scripts. It is not a language accuracy and not a photograph result. The scorer's own note says not to cite these counts as end-to-end precision or recall.
+`services/ocr/benchmarks/constructed/` holds text lines, not photographs. The original five lines are "per serving per 100 g", then the word for protein, then "9 g" and "18 g". Twenty further lines use the same shape for sugars, salt, energy, and fat, in English, Hindi, Marathi, Tamil, and Bengali, with the nutrient words already listed in the parser. Run on 18 October 2026, `services/ocr/scripts/score_constructed.py` labeled five nutrients `correct` in each of those five languages. Every other count was zero. That is five nutrient patterns in five scripts. It is not a language accuracy and not a photograph result. The scorer's own note says not to cite these counts as end-to-end precision or recall.
 
 ## 6. Grade model
 
@@ -142,7 +142,7 @@ The classifier is the existing `RandomForestClassifier` in `services/ml/nutritru
 | ROC-AUC | 0.9960 |
 | PR-AUC | 0.9853 |
 
-Those numbers describe the held-out table task from the training run that produced the published file. They do not describe phone photographs. `services/ml/train_forest.py` can train the same recipe from a CSV of at least 500 complete rows. Without `--replace` it does not overwrite the published joblib. This paper did not replace it.
+Those numbers describe the held-out table task from the training run that produced the published file. They do not describe phone photographs. `services/ml/training/train_forest.py` can train the same recipe from a CSV of at least 500 complete rows. Without `--replace` it does not overwrite the published joblib. This paper did not replace it.
 
 ### 6.1 Missing and impossible values
 
@@ -177,7 +177,7 @@ The dashboard portion table accepts an edit to one per-100 g cell. A second edit
 
 ### 6.5 One-cell grid on complete tables
 
-`services/ml/evaluate_findings.py` writes `apps/web/app/lib/letter-stability.json`. The cited run used scikit-learn 1.6.1. The same script under 1.9.1 printed the same summary counts; 1.6.1 is cited because that is the version that pickled the forest. The forest file was not replaced.
+`services/ml/scripts/evaluate_findings.py` writes `apps/web/app/lib/letter-stability.json`. The cited run used scikit-learn 1.6.1. The same script under 1.9.1 printed the same summary counts; 1.6.1 is cited because that is the version that pickled the forest. The forest file was not replaced.
 
 Margin is the predicted-class probability minus the next class. Close means margin below 0.15, mid means below 0.40, and wide means 0.40 or more. A flip is an accepted probe whose letter differs from the unperturbed table.
 
@@ -210,7 +210,7 @@ On the constructed tables, 4 of 8 are flagged by the energy check, and their for
 
 ### 6.7 A declared lattice of 984 coherent tables
 
-Sections 6.5 and 6.6 use 20 complete tables. This section uses a larger declared lattice so the same three letters can be counted off a grid whose shape is written down. It is still not a sample of packaged food and not a photograph set. The script is `services/ml/audit_readings.py`. The counts are in `docs/research/reading-audit.json`, from the run on 18 October 2026.
+Sections 6.5 and 6.6 use 20 complete tables. This section uses a larger declared lattice so the same three letters can be counted off a grid whose shape is written down. It is still not a sample of packaged food and not a photograph set. The script is `services/ml/scripts/audit_readings.py`. The counts are in `docs/research/reading-audit.json`, from the run on 18 October 2026.
 
 Energy on the coherent lattice is the 4/4/9/2 estimate, rounded to 0.1 kcal, so the Atwater rule is expected to pass. Protein is 2, 8, 16, or 25 g. Carbohydrate is 5, 20, 45, or 70 g. Sugars are 5%, 40%, or 90% of carbohydrate. Fat is 1, 8, 20, or 40 g. Saturated fat is 20% or 60% of fat. Fibre is 0, 3, or 8 g. A row is dropped when fat, carbohydrate, and protein sum to more than 100 g, or when those three plus fibre sum to more than 105 g. Salt is `0.05 + 0.15 × the saturated-fat fraction + 0.02 × protein`, so salt is not its own axis. 984 tables remain. All 984 are inside the Atwater rule.
 
@@ -235,7 +235,7 @@ The scan report names the formula letter, the screening letter, the point margin
 
 ### 6.8 Chance-corrected agreement on 432 declared tables
 
-Section 6.7 counts raw letter matches on a lattice where salt is not its own axis, and its forest column was loaded with scikit-learn 1.9.1. This section is a different grid. It was scored with scikit-learn 1.6.1, the version recorded in the joblib. The published forest was not replaced. The script is `services/ml/evaluate_factorial.py`. The counts are in `apps/web/app/lib/factorial-agreement.json`, from the run on 18 October 2026.
+Section 6.7 counts raw letter matches on a lattice where salt is not its own axis, and its forest column was loaded with scikit-learn 1.9.1. This section is a different grid. It was scored with scikit-learn 1.6.1, the version recorded in the joblib. The published forest was not replaced. The script is `services/ml/scripts/evaluate_factorial.py`. The counts are in `apps/web/app/lib/factorial-agreement.json`, from the run on 18 October 2026.
 
 Sugars are 2, 8, or 24 g. Saturated fat is 0.5, 2.5, or 8 g. Salt is 0.1, 0.6, or 1.8 g, and it is its own axis. Fibre is 1 or 7 g. Protein is 4 or 14 g. Fat is saturated fat plus 4 g or 10 g. Carbohydrate is sugars plus 12 g or 35 g. Energy is 4×protein + 4×carbohydrate + 9×fat + 2×fiber. That is 432 tables. The energy check flags 0 of 432 because energy is the estimate. The grid is not a sample of packaged food and not a photograph set.
 

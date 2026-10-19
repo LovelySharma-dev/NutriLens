@@ -1,10 +1,14 @@
 import json
+import sys
 from pathlib import Path
+
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SERVICE_ROOT))
 
 from app.field_score import fields_from_parse, score_fields
 from app.label_parser import parse_label
 
-BENCHMARKS = Path(__file__).resolve().parent / "benchmarks" / "constructed"
+BENCHMARKS = SERVICE_ROOT / "benchmarks" / "constructed"
 NOTE = (
     "These counts are constructed text lines, not photographs. "
     "Do not cite them as end-to-end OCR accuracy, precision, or recall."

@@ -27,7 +27,7 @@ FEATURES = [
     "salt_100g",
 ]
 TARGET = "nutrition_grade_fr"
-PUBLISHED = Path(__file__).resolve().parent / "nutritrust_random_forest.joblib"
+PUBLISHED = Path(__file__).resolve().parents[1] / "nutritrust_random_forest.joblib"
 
 
 def train(frame: pd.DataFrame, random_state: int = 42) -> tuple[RandomForestClassifier, dict]:

@@ -140,7 +140,7 @@ Overall screen level is high if any flag is high, otherwise medium if any flag i
 
 ### F12. A fixed one-cell grid moves few wide-margin letters
 
-`services/ml/evaluate_findings.py` wrote `apps/web/app/lib/letter-stability.json` on 18 October 2026. The forest was loaded with scikit-learn 1.6.1 and was not replaced. Each of the eight nutrients was multiplied by 0.5, 0.8, 0.9, 1.1, 1.2, and 1.5. A probe outside a ceiling was rejected. Margin is the predicted-class probability minus the next class. Close is below 0.15, mid is below 0.40, and wide is 0.40 or more.
+`services/ml/scripts/evaluate_findings.py` wrote `apps/web/app/lib/letter-stability.json` on 18 October 2026. The forest was loaded with scikit-learn 1.6.1 and was not replaced. Each of the eight nutrients was multiplied by 0.5, 0.8, 0.9, 1.1, 1.2, and 1.5. A probe outside a ceiling was rejected. Margin is the predicted-class probability minus the next class. Close is below 0.15, mid is below 0.40, and wide is 0.40 or more.
 
 | Corpus | Tables | Forest matches screening | Mean letter steps | Accepted | Flips | Rejected |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -172,7 +172,7 @@ Six shelf foods agree on all three letters. Brown rice, plain dahi, and almond d
 
 ### F14. On a 984-table lattice, forest disagreements cluster next to the formula boundary
 
-`services/ml/audit_readings.py` wrote `docs/research/reading-audit.json` on 18 October 2026. The coherent cohort sets energy to the 4/4/9/2 estimate. Protein is 2, 8, 16, or 25 g; carbohydrate 5, 20, 45, or 70 g; sugars 5%, 40%, or 90% of carbohydrate; fat 1, 8, 20, or 40 g; saturated fat 20% or 60% of fat; fibre 0, 3, or 8 g. Rows with fat + carbohydrate + protein above 100 g, or those three plus fibre above 105 g, are dropped. Salt is `0.05 + 0.15 × saturated-fat fraction + 0.02 × protein`. 984 tables remain. This is not a food sample.
+`services/ml/scripts/audit_readings.py` wrote `docs/research/reading-audit.json` on 18 October 2026. The coherent cohort sets energy to the 4/4/9/2 estimate. Protein is 2, 8, 16, or 25 g; carbohydrate 5, 20, 45, or 70 g; sugars 5%, 40%, or 90% of carbohydrate; fat 1, 8, 20, or 40 g; saturated fat 20% or 60% of fat; fibre 0, 3, or 8 g. Rows with fat + carbohydrate + protein above 100 g, or those three plus fibre above 105 g, are dropped. Salt is `0.05 + 0.15 × saturated-fat fraction + 0.02 × protein`. 984 tables remain. This is not a food sample.
 
 All 984 pass the Atwater rule in F13. Formula and screening share a letter on 542, differ by one letter on 390, and differ by two or more on 52. Formula and forest share a letter on 678, differ by one on 288, and differ by two or more on 18. The forest column was predicted by scikit-learn 1.9.1 from a joblib pickled with 1.6.1, and that load warned the unpickle may be invalid. The twelve shelf letters from this load match the 1.6.1 letters in F12. The 984 forest letters were not re-run under 1.6.1.
 
@@ -188,7 +188,7 @@ An all-zero table, outside the lattice, is formula B and screening A.
 
 ### F15. On 432 declared tables, forest–screening agreement is close to chance
 
-`services/ml/evaluate_factorial.py` wrote `apps/web/app/lib/factorial-agreement.json` on 18 October 2026. The forest was loaded with scikit-learn 1.6.1 and was not replaced. This grid is not the 984-table lattice in F14. Salt is its own axis here.
+`services/ml/scripts/evaluate_factorial.py` wrote `apps/web/app/lib/factorial-agreement.json` on 18 October 2026. The forest was loaded with scikit-learn 1.6.1 and was not replaced. This grid is not the 984-table lattice in F14. Salt is its own axis here.
 
 Sugars are 2, 8, or 24 g. Saturated fat is 0.5, 2.5, or 8 g. Salt is 0.1, 0.6, or 1.8 g. Fibre is 1 or 7 g. Protein is 4 or 14 g. Fat is saturated fat plus 4 g or 10 g. Carbohydrate is sugars plus 12 g or 35 g. Energy is 4×protein + 4×carbohydrate + 9×fat + 2×fiber. That is 432 tables. The energy check flags 0 of 432 because energy is the estimate. The grid is not a food sample and not a photograph set.
 
@@ -333,7 +333,7 @@ Email sign-in exists. Forgot-password answers the same way whether or not that e
 | API and web `tsc --noEmit` | Passed at the time of the working paper |
 | Browser studio | Profile, shelf, history, compare, and barcode tabs rendered, with language and access controls. Turning on milk wrote that allergen into local storage and set the toggle to pressed |
 | Protein 9 g / 18 g reversed | Field label `swapped`; the scored object has no accuracy field |
-| Constructed lines for protein, sugars, salt, energy, and fat, in en, hi, mr, ta, bn | `score_constructed.py` on 18 October 2026: five `correct` nutrients per language; every other count is 0. Text lines, not photographs |
+| Constructed lines for protein, sugars, salt, energy, and fat, in en, hi, mr, ta, bn | `services/ocr/scripts/score_constructed.py` on 18 October 2026: five `correct` nutrients per language; every other count is 0. Text lines, not photographs |
 | One-cell grid and three-letter check, 18 October 2026 | See F12 and F13. `letter-stability.test.ts` passed against `letter-stability.json` |
 | Coherent lattice of 984 tables, and 282 kilojoule-as-kilocalorie rows | See F14. `readingAudit.test.ts` passed the threshold locks |
 | Factorial of 432 tables, scikit-learn 1.6.1, 18 October 2026 | See F15 and F17. `factorial-agreement.test.ts` locks the kappa, the weighted kappa, the odd-reader counts, the shuffle null, and the flip-share figures |
@@ -351,7 +351,7 @@ F12, F13, F14, and F15 are measured on complete tables. F16 is a twelve-line str
 - A household shelf stores scans the person confirms. Seven days later the studio asks whether the preference check still agrees. The agreement count uses only those answers. No week-later answers are stored in this repository.
 - Barcode text is checked with the GS1 check digit before lookup. When the box reader and the line reader disagree on a shared nutrient, the grade is withheld.
 - Password reset tries InsForge mail, then SMTP. If neither sends, the code is shown on the reset page for this machine.
-- `services/ml/train_forest.py` can train the same forest from a CSV. The published `nutritrust_random_forest.joblib` was not replaced. TreeSHAP is used when `shap` imports; otherwise the response says occlusion.
+- `services/ml/training/train_forest.py` can train the same forest from a CSV. The published `nutritrust_random_forest.joblib` was not replaced. TreeSHAP is used when `shap` imports; otherwise the response says occlusion.
 - Hindi, Tamil, Bengali, and Marathi have constructed lines for five nutrients. They have not been scored as photographed sets. The 984-table forest column in F14 was not re-run under scikit-learn 1.6.1. The 432-table grid in F15 was run under 1.6.1. It does not replace the F14 forest column, and it is not a photograph set.
 - The matcher fixture in F16 is twelve constructed strings. It is not a photographed ingredient corpus.
 - The terms and copyright pages say they describe the prototype and are not an approval.

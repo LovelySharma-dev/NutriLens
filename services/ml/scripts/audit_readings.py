@@ -12,18 +12,22 @@ Writes docs/research/reading-audit.json.
 from __future__ import annotations
 
 import json
+import sys
 from itertools import product
 from pathlib import Path
 
 import pandas as pd
 
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SERVICE_ROOT))
+
 from app.explain import FEATURES
 from app.reading_audit import KCAL_TO_KJ, audit_table, summarize
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = SERVICE_ROOT.parents[1]
 CATALOG_PATH = ROOT / "apps" / "web" / "app" / "lib" / "catalog.json"
-MODEL_PATH = Path(__file__).resolve().parent / "nutritrust_random_forest.joblib"
+MODEL_PATH = SERVICE_ROOT / "nutritrust_random_forest.joblib"
 OUTPUT_PATH = ROOT / "docs" / "research" / "reading-audit.json"
 
 PROTEINS = (2.0, 8.0, 16.0, 25.0)

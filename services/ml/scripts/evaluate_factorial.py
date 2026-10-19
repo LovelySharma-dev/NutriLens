@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import math
 import random
+import sys
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -20,12 +21,15 @@ import joblib
 import pandas as pd
 import sklearn
 
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SERVICE_ROOT))
+
 from app.explain import FEATURES
 from app.sensitivity import FACTORS, implausible_issues, margin_bucket, screening_letter
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = SERVICE_ROOT.parents[1]
 OUTPUT_PATH = ROOT / "apps" / "web" / "app" / "lib" / "factorial-agreement.json"
-MODEL_PATH = Path(__file__).resolve().parent / "nutritrust_random_forest.joblib"
+MODEL_PATH = SERVICE_ROOT / "nutritrust_random_forest.joblib"
 CATALOG_PATH = ROOT / "apps" / "web" / "app" / "lib" / "catalog.json"
 
 ENERGY_KJ = [335, 670, 1005, 1340, 1675, 2010, 2345, 2680, 3015, 3350]

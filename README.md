@@ -37,6 +37,7 @@
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🧠 Machine Learning Model](#-machine-learning-model)
 - [🔄 System Architecture & Data Flow](#-system-architecture--data-flow)
+- [🗂️ Repository layout](#-repository-layout)
 - [🚀 How to Run & Use the Project](#-how-to-run--use-the-project)
 - [📸 Screenshots & Demo Details](#-screenshots--demo-details)
 - [👥 Team Details](#-team-details)
@@ -221,6 +222,27 @@ flowchart TD
 
 ---
 
+## 🗂️ Repository layout
+
+```text
+apps/web                 Next.js app
+services/api             Express API
+services/ml/app          Grade model
+services/ml/training     Forest training
+services/ml/scripts      Audit and agreement checks
+services/ml/tests        Model reading checks
+services/ocr/app         Label reader
+services/ocr/scripts     Constructed-line scorer
+services/ocr/tests       Field-score checks
+services/ocr/benchmarks  Constructed label lines
+docs/                    Deployment, requirements, PRD, research, sample labels
+run/                     Windows launchers
+```
+
+Product notes live in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md), [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md), and [`docs/prd.md`](docs/prd.md). Install JavaScript dependencies from this directory so `apps/web` and `services/api` share one pnpm lockfile.
+
+---
+
 ## 🚀 How to Run & Use the Project
 
 ### 📋 Prerequisites
@@ -260,7 +282,7 @@ The commands live in [`run/`](run/README.md). From the repository root:
 | `.\run\stop.cmd` | Stops ports 3000, 4000, 8000, and 8001 | |
 | `.\run\test-ocr.cmd "path\to\label.jpg"` | One image through the API | |
 
-`run-all.cmd`, `run-web.cmd`, `run-api.cmd`, `run-ml.cmd`, `run-ocr.cmd`, `stop-all.cmd`, and `test-ocr.cmd` at the repository root call the same scripts. A window that finds its port already open leaves that process running.
+Launchers live only in [`run/`](run/README.md). A window that finds its port already open leaves that process running.
 
 Open http://localhost:3000 for the landing page. Sign in at `/login`, then the label reader is at `/dashboard`. Email sign-in works without PostgreSQL. Saving a scan needs the database. A grade needs the ML service. A photograph needs the OCR service.
 
@@ -421,20 +443,20 @@ Now open **http://localhost:3000** in your browser. That page is the introductio
 ### 🧪 Sample Food Label Test
 
 A sample test image is included in the repository for instant testing:
-📁 [`sampleData/sample_food_label.jpg`](sampleData/sample_food_label.jpg)
+📁 [`docs/samples/sample_food_label.jpg`](docs/samples/sample_food_label.jpg)
 
 <div align="center">
 
 | Sample Food Label Image | OCR & Analysis Endpoint |
 | :---: | :---: |
-| <img src="sampleData/sample_food_label.jpg" width="350" alt="Sample Food Label" /> | `POST /api/v1/ocr/extract` |
+| <img src="docs/samples/sample_food_label.jpg" width="350" alt="Sample Food Label" /> | `POST /api/v1/ocr/extract` |
 
 </div>
 
 #### Test OCR API via cURL:
 ```powershell
 curl.exe -X POST "http://localhost:4000/api/v1/ocr/extract" `
-  -F "file=@sampleData/sample_food_label.jpg"
+  -F "file=@docs/samples/sample_food_label.jpg"
 ```
 
 ### 🎬 Recommended Demo Flow

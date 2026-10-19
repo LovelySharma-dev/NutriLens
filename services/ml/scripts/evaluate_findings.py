@@ -8,6 +8,7 @@ photographs, and the script does not report an OCR accuracy.
 from __future__ import annotations
 
 import json
+import sys
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -15,12 +16,15 @@ from pathlib import Path
 import joblib
 import sklearn
 
+SERVICE_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SERVICE_ROOT))
+
 from app.sensitivity import implausible_issues, probe_one_cell, screening_letter
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = SERVICE_ROOT.parents[1]
 CATALOG_PATH = ROOT / "apps" / "web" / "app" / "lib" / "catalog.json"
 OUTPUT_PATH = ROOT / "apps" / "web" / "app" / "lib" / "letter-stability.json"
-MODEL_PATH = Path(__file__).resolve().parent / "nutritrust_random_forest.joblib"
+MODEL_PATH = SERVICE_ROOT / "nutritrust_random_forest.joblib"
 
 CONSTRUCTED = [
     {
